@@ -90,13 +90,13 @@ SHELL
     broker1.vm.hostname = "kafka-cluster-broker1.vbx"
     # broker1.vm.network "private_network", type: "dhcp"
     broker1.vm.network "private_network", ip: "192.168.60.101"
-    broker1.vm.network "forwarded_port", guest: 9092, host: 19092, host_ip: "0.0.0.0", id: "broker1 node", auto_correct: true
+    broker1.vm.network "forwarded_port", guest: 9091, host: 19091, host_ip: "0.0.0.0", id: "broker1 node", auto_correct: true
   end
   config.vm.define "broker2" do |broker2|
     broker2.vm.hostname = "kafka-cluster-broker2.vbx"
     # broker2.vm.network "private_network", type: "dhcp"
     broker2.vm.network "private_network", ip: "192.168.60.102"
-    broker2.vm.network "forwarded_port", guest: 9093, host: 19093, host_ip: "0.0.0.0", id: "broker2 node", auto_correct: true
+    broker2.vm.network "forwarded_port", guest: 9092, host: 19092, host_ip: "0.0.0.0", id: "broker2 node", auto_correct: true
   end
 
 
