@@ -82,20 +82,20 @@ SHELL
 
   config.vm.define "zookeeper" do |zookeeper|
     zookeeper.vm.hostname = "kafka-cluster-zookeeper.vbx"
-    # zookeeper.vm.network "private_network", type: "dhcp"
-    zookeeper.vm.network "private_network", ip: "192.168.60.100"
+    # zookeeper.vm.network "public_network", type: "dhcp"
+    zookeeper.vm.network "public_network", ip: "192.168.60.100"
     zookeeper.vm.network "forwarded_port", guest: 9181, host: 19181, host_ip: "0.0.0.0", id: "zookeeper node", auto_correct: true
   end
   config.vm.define "broker1" do |broker1|
     broker1.vm.hostname = "kafka-cluster-broker1.vbx"
-    # broker1.vm.network "private_network", type: "dhcp"
-    broker1.vm.network "private_network", ip: "192.168.60.101"
+    # broker1.vm.network "public_network", type: "dhcp"
+    broker1.vm.network "public_network", ip: "192.168.60.101"
     broker1.vm.network "forwarded_port", guest: 9091, host: 19091, host_ip: "0.0.0.0", id: "broker1 node", auto_correct: true
   end
   config.vm.define "broker2" do |broker2|
     broker2.vm.hostname = "kafka-cluster-broker2.vbx"
-    # broker2.vm.network "private_network", type: "dhcp"
-    broker2.vm.network "private_network", ip: "192.168.60.102"
+    # broker2.vm.network "public_network", type: "dhcp"
+    broker2.vm.network "public_network", ip: "192.168.60.102"
     broker2.vm.network "forwarded_port", guest: 9092, host: 19092, host_ip: "0.0.0.0", id: "broker2 node", auto_correct: true
   end
 
