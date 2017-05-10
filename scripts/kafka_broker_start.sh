@@ -26,4 +26,4 @@ echo "$cmd"
 eval "$cmd" &
 echo "Output will be redirected to $broker_log_file"
 sleep 3
-ps aux |grep java
+ps aux |grep java |grep --color -v grep

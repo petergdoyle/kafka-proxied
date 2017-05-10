@@ -84,7 +84,7 @@ SHELL
     zookeeper.vm.hostname = "kafka-cluster-zookeeper.vbx"
     # zookeeper.vm.network "private_network", type: "dhcp"
     zookeeper.vm.network "private_network", ip: "192.168.60.100"
-    zookeeper.vm.network "forwarded_port", guest: 9181, host: 19181, host_ip: "0.0.0.0", id: "zookeeper node", auto_correct: true
+    zookeeper.vm.network "forwarded_port", guest: 2181, host: 12181, host_ip: "0.0.0.0", id: "zookeeper node", auto_correct: true
   end
   config.vm.define "broker1" do |broker1|
     broker1.vm.hostname = "kafka-cluster-broker1.vbx"

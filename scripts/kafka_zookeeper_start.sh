@@ -26,3 +26,4 @@ cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.prop
 echo "$cmd"
 eval "$cmd" &
 echo "Output will be redirected to $zk_log_file"
+ps ax | grep java | grep -i QuorumPeerMain | grep -v grep
