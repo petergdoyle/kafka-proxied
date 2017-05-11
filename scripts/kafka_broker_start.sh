@@ -21,10 +21,10 @@ host_name=`hostname| cut -d"." -f1`
 
 kafka_version="10.0.1"
 broker_config_file="not found"
-while [ ! -f "$broker_config_file" ]; then
+while [ ! -f "$broker_config_file" ]; do
   read -e -p "Confirm Kafka Version: " -i "$kafka_version" kafka_version
   broker_config_file=`find config/ -name "$node_name*$kafka_version*"`
-fi
+done
 
 sudo cp -v config/* /usr/kafka/default/config/
 
@@ -37,4 +37,4 @@ echo "Output will be redirected to $broker_log_file"
 sleep 3
 ps aux |grep java |grep --color -v grep
 sleep 1
-tail -f ""
+tail -f "$broker_log_file"
