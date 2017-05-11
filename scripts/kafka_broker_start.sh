@@ -17,7 +17,7 @@ if [ -d /tmp/zookeeper ]; then
 fi
 
 node_name=`hostname |grep -io broker[0-9] |awk '{print tolower($0)}'`
-host_name=`hostname| cut -d"." -f1
+host_name=`hostname| cut -d"." -f1`
 
 kafka_version="10.0.1"
 broker_config_file="not found"
@@ -37,4 +37,4 @@ echo "Output will be redirected to $broker_log_file"
 sleep 3
 ps aux |grep java |grep --color -v grep
 sleep 1
-tail -f "$broker_log_file"
+tail -f ""
