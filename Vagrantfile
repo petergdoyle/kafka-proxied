@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
 
-      yum -y install net-tools telnet htop
+      yum -y install net-tools telnet htop bash-completion
 
       grep ^192.168.60 /etc/hosts> /dev/null 2>&1
       if [ $? -ne 0 ]; then
