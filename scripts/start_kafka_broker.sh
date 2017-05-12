@@ -17,7 +17,7 @@ if [ -d /tmp/zookeeper ]; then
 fi
 
 node_name=`hostname |grep -io broker[0-9] |awk '{print tolower($0)}'| grep '.*'`
-if [ $? -eq 0 ]; then
+if [ $? -eq 1 ]; then
   "It doesn't seem like you are on a machine named appropriately for a broker. Cannot continue"
   exit 1
 fi
@@ -38,7 +38,7 @@ cmd="$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/$broker_config_file > $br
 echo "$cmd"
 eval "$cmd" &
 echo "Output will be redirected to $broker_log_file"
-sleep 3
+sleep 1
 ps aux |grep java |grep --color -v grep
 sleep 1
 tail -f "$broker_log_file"
