@@ -16,7 +16,11 @@ if [ -d /tmp/zookeeper ]; then
   fi
 fi
 
-node_name=`hostname |grep -io broker[0-9] |awk '{print tolower($0)}'`
+node_name=`hostname |grep -io broker[0-9] |awk '{print tolower($0)}'| grep '.*'`
+if [ $? -eq 0 ]; then
+  "It doesn't seem like you are on a machine named appropriately for a broker. Cannot continue"
+  exit 1
+fi
 host_name=`hostname| cut -d"." -f1`
 
 kafka_version="10.0.1"
