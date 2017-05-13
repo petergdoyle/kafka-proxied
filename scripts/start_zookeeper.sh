@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+./install_kafka.sh
 
 if [ -d /tmp/kafka-logs ]; then
   read -e -p "Destroy old logs? (y/n): " -i "y" response

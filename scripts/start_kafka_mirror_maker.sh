@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+./install_kafka.sh
 
 sudo cp -v config/* /usr/kafka/default/config/
 

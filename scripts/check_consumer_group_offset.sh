@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+./install_kafka.sh
 
 if [ $# -lt 2 ]; then
   node=`hostname |grep -io node[0-9] |awk '{print tolower($0)}'`

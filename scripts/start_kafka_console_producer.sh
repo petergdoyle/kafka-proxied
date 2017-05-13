@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+./install_kafka.sh
 
 if [ -z $KAFKA_HOME ]; then
   kafka_home="$PWD/local/default"
