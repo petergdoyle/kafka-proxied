@@ -1,4 +1,7 @@
 logs
 local
 .vagrant
-broker*.properties
+*-broker.properties
+*-mm_consumer.properties
+*-mm_producer.properties
+*-zookeeper.properties
