@@ -20,7 +20,7 @@ fi
 
 create_zookeeper_config
 
-mkdir -p $PWD/logs/$node_name/
+mkdir -p $PWD/../local/logs/$node_name/
 zk_log_file="$PWD/../local/logs/$node_name/kafka_zookeeper_console.log"
 cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zk_log_file 2>&1"
 echo "$cmd"
