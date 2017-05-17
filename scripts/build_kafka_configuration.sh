@@ -66,6 +66,8 @@ function configure_broker() {
   max_message_size=$((1024*1024*$max_message_size_mb))
   sed -i "s#message.max.bytes=.*#message.max.bytes=$max_message_size#g" $broker_config_file
 
+  read -e -p "You must make sure that the Kafka consumer configuration parameter fetch.message.max.bytes is specified as at least $max_message_size!. The default size is 1MB" -i "" blah
+
   log_segment_size_gb=1
   read -e -p "Specify Size of a Kafka data file (log.segment.bytes) in GiB. Must be larger than any single message. Default value: (1 GiB): " -i $log_segment_size_gb log_segment_size_gb
   log_segment_size=$((1024*1024*1024*$max_message_size_mb))
