@@ -21,7 +21,7 @@ fi
 create_broker_config
 
 mkdir -p $PWD/logs/$node_name/
-broker_log_file="$PWD/logs/$node_name/kafka_broker_console.log"
+broker_log_file="$PWD/../local/logs/$node_name/kafka_broker_console.log"
 cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_log_file 2>&1"
 echo "$cmd"
 eval "$cmd" &
