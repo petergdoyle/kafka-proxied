@@ -61,6 +61,16 @@ function configure_broker() {
   configure_zookeeper
   sed -i "s/zookeeper.connect=.*/zookeeper.connect=$zk_host_port/g" $broker_config_file
 
+  max_message_size_mb=1
+  read -e -p "Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): " -i $max_message_size max_message_size
+  max_message_size=$((1024*1024*$max_message_size_mb))
+  sed -i "s#message.max.bytes=.*#message.max.bytes=$max_message_size#g" $broker_config_file
+
+  log_segment_size_gb=1
+  read -e -p "Specify Size of a Kafka data file (log.segment.bytes) in GiB. Must be larger than any single message. Default value: (1 GiB): " -i $log_segment_size_gb log_segment_size_gb
+  log_segment_size=$((1024*1024*1024*$max_message_size_mb))
+  sed -i "s#message.max.bytes=.*#message.max.bytes=$log_segment_size#g" $broker_config_file
+
   read -e -p "Enter Kafka Log Retention Hours: " -i "1" kafka_log_retention_hrs
   read -e -p "Enter Kafka Log Retention Size (Mb): " -i "25" kafka_log_retention_size_mb
   kafka_log_retention_size=$((1024*1024*$kafka_log_retention_size_mb))
