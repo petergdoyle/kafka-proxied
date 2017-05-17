@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
       grep ^192.168.60 /etc/hosts> /dev/null 2>&1
       if [ $? -ne 0 ]; then
     cat >>/etc/hosts <<-EOF
-192.168.60.100  kafka-cluster-zookeeper.vbx zookeeper
+192.168.60.100  kafka-cluster-zookeeper1.vbx zookeeper1
 192.168.60.101  kafka-cluster-broker1.vbx broker1
 192.168.60.102  kafka-cluster-broker2.vbx broker2
 EOF
@@ -80,10 +80,10 @@ EOF
 SHELL
 
 
-  config.vm.define "zookeeper" do |zookeeper|
-    zookeeper.vm.hostname = "kafka-cluster-zookeeper.vbx"
-    zookeeper.vm.network "private_network", ip: "192.168.60.100"
-    zookeeper.vm.network "forwarded_port", guest: 2181, host: 12181, host_ip: "0.0.0.0", id: "zookeeper node", auto_correct: true
+  config.vm.define "zookeeper1" do |zookeeper1|
+    zookeeper1.vm.hostname = "kafka-cluster-zookeeper1.vbx"
+    zookeeper1.vm.network "private_network", ip: "192.168.60.100"
+    zookeeper1.vm.network "forwarded_port", guest: 2181, host: 12181, host_ip: "0.0.0.0", id: "zookeeper1 node", auto_correct: true
   end
   config.vm.define "broker1" do |broker1|
     broker1.vm.hostname = "kafka-cluster-broker1.vbx"
