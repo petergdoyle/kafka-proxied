@@ -1,6 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)
-./install_kafka.sh
+source ./install_kafka.sh
+source ./build_kafka_configuration.sh
 
 if [ -d /tmp/kafka-logs ]; then
   read -e -p "Destroy old logs? (y/n): " -i "y" response
@@ -17,25 +18,11 @@ if [ -d /tmp/zookeeper ]; then
   fi
 fi
 
-node_name=`hostname |grep -io broker[0-9] |awk '{print tolower($0)}'| grep '.*'`
-if [ $? -eq 1 ]; then
-  "It doesn't seem like you are on a machine named appropriately for a broker. Cannot continue"
-  exit 1
-fi
-host_name=`hostname| cut -d"." -f1`
-
-kafka_version="10.0.1"
-broker_config_file="not found"
-while [ ! -f "$broker_config_file" ]; do
-  read -e -p "Confirm Kafka Version: " -i "$kafka_version" kafka_version
-  broker_config_file=`find config/ -name "$node_name*$kafka_version*"`
-done
-
-sudo cp -v config/* /usr/kafka/default/config/
+create_broker_config
 
 mkdir -p $PWD/logs/$node_name/
 broker_log_file="$PWD/logs/$node_name/kafka_broker_console.log"
-cmd="$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/$broker_config_file > $broker_log_file 2>&1"
+cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_log_file 2>&1"
 echo "$cmd"
 eval "$cmd" &
 echo "Output will be redirected to $broker_log_file"

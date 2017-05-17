@@ -1,12 +1,11 @@
 #!/bin/sh
 cd $(dirname $0)
-./install_kafka.sh
+source ./install_kafka.sh
+source ./build_kafka_configuration.sh
 
-sudo cp -v config/* /usr/kafka/default/config/
+create_mirror_maker_config
 
 consumer_group='".*”'
-
-node_name=`hostname| cut -d"." -f1`
 mkdir -p $PWD/logs/$node/
 mm_log_file="$PWD/logs/$node/kafka_mirrormaker_console.log"
 cmd="$KAFKA_HOME/bin/kafka-mirror-maker.sh \

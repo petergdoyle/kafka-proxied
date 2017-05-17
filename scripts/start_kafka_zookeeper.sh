@@ -1,6 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)
-./install_kafka.sh
+. ./install_kafka.sh
+. ./build_kafka_configuration.sh
 
 if [ -d /tmp/kafka-logs ]; then
   read -e -p "Destroy old logs? (y/n): " -i "y" response
@@ -17,13 +18,11 @@ if [ -d /tmp/zookeeper ]; then
   fi
 fi
 
-sudo cp -v config/* /usr/kafka/default/config/
+create_zookeeper_config
 
-# read -e -p "Start kafka with which node?: " -i "`hostname |grep -io node[0-9] |awk '{print tolower($0)}'`" node
-node_name=`hostname| cut -d"." -f1`
 mkdir -p $PWD/logs/$node_name/
 zk_log_file="$PWD/logs/$node_name/kafka_zookeeper_console.log"
-cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties > $zk_log_file 2>&1"
+cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zk_log_file 2>&1"
 echo "$cmd"
 eval "$cmd" &
 echo "Output will be redirected to $zk_log_file"
