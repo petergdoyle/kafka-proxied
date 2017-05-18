@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+. ./common.sh
 ./install_kafka.sh
 
 zk_host_port='localhost:2181'
@@ -20,5 +21,4 @@ cmd="$KAFKA_HOME/bin/kafka-topics.sh --create \
 --partitions $partitions \
 --topic $topic"
 
-echo "$cmd"
-eval "$cmd"
+confirm_execute "$cmd"

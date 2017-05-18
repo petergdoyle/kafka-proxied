@@ -1,6 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)
-./install_kafka.sh
+. ./common.sh
+. ./install_kafka.sh
 
 if [ -z $KAFKA_HOME ]; then
   kafka_home="$PWD/local/default"
@@ -13,4 +14,7 @@ read -e -p "Enter a kafka broker server: " -i "$bootstrap_server" bootstrap_serv
 topic='hertz-edifact'
 read -e -p "Enter the topic name: " -i "$topic" topic
 
-$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic
+cmd="$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic"
+
+echo "$cmd"
+eval "$cmd"

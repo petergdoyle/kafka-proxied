@@ -1,6 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)
-./install_kafka.sh
+. ./common.sh
+. ./install_kafka.sh
 
 if [ -z $KAFKA_HOME ]; then
   kafka_home="$PWD/local/default"
@@ -19,5 +20,4 @@ cmd="$KAFKA_HOME/bin/kafka-console-consumer.sh \
 --topic $topic \
 --from-beginning"
 
-echo "$cmd"
-eval "$cmd"
+confirm_execute "$cmd"

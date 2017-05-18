@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+. ./common.sh
 source ./install_kafka.sh
 source ./build_kafka_configuration.sh
 
@@ -13,6 +14,7 @@ cmd="$KAFKA_HOME/bin/kafka-mirror-maker.sh \
 --producer.config $KAFKA_HOME/config/mm_producer.properties \
 --whitelist="'"hertz-edifact"'"  \
 > $mm_log_file 2>&1"
-echo "$cmd"
-# eval "$cmd" &
-# echo "Output will be redirected to $mm_log_file"
+
+confirm_execute "$cmd"
+
+echo "Output will be redirected to $mm_log_file"

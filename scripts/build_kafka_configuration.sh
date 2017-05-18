@@ -1,9 +1,9 @@
 #!/bin/sh
 # cd $(dirname $0)
+. ./common.sh
+
 DIR=`dirname $0`
 
-host_name=`hostname| cut -d"." -f1`
-node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`
 if [ $? -eq 1 ]; then
   node_name=$host_name
   read -e -p "Cannot determine node name. Please supply a value to name this node: " -i "$node_name" node_name
@@ -61,17 +61,17 @@ function configure_broker() {
   configure_zookeeper
   sed -i "s/zookeeper.connect=.*/zookeeper.connect=$zk_host_port/g" $broker_config_file
 
-  max_message_size_mb=1
-  read -e -p "Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): " -i $max_message_size max_message_size
+  max_message_size_mb='1'
+  read -e -p "Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): " -i $max_message_size_mb max_message_size_mb
   max_message_size=$((1024*1024*$max_message_size_mb))
   sed -i "s#message.max.bytes=.*#message.max.bytes=$max_message_size#g" $broker_config_file
 
-  read -e -p "You must make sure that the Kafka consumer configuration parameter fetch.message.max.bytes is specified as at least $max_message_size!. The default size is 1MB" -i "" blah
+  read -e -p "You must make sure that the Kafka consumer configuration parameter fetch.message.max.bytes is specified as at least $max_message_size!" -i "" bla
 
-  log_segment_size_gb=1
+  log_segment_size_gb='1'
   read -e -p "Specify Size of a Kafka data file (log.segment.bytes) in GiB. Must be larger than any single message. Default value: (1 GiB): " -i $log_segment_size_gb log_segment_size_gb
-  log_segment_size=$((1024*1024*1024*$max_message_size_mb))
-  sed -i "s#message.max.bytes=.*#message.max.bytes=$log_segment_size#g" $broker_config_file
+  log_segment_size=$((1024*1024*1024*$log_segment_size_gb))
+  sed -i "s#log.segment.bytes=.*#log.segment.bytes=$log_segment_size#g" $broker_config_file
 
   read -e -p "Enter Kafka Log Retention Hours: " -i "1" kafka_log_retention_hrs
   read -e -p "Enter Kafka Log Retention Size (Mb): " -i "25" kafka_log_retention_size_mb

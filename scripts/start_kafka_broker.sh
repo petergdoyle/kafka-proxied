@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
+. ./common.sh
 source ./install_kafka.sh
 source ./build_kafka_configuration.sh
 
