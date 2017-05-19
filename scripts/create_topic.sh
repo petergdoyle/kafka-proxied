@@ -15,10 +15,21 @@ read -e -p "Enter the number of partitions: " -i "$partitions" partitions
 replication_factor='1'
 read -e -p "Enter the replication factor: " -i "$replication_factor" replication_factor
 
+read -e -p "Enter topic retention hours: " -i "1" kafka_topic_log_retention_hrs
+kafka_topic_log_retention_ms=$((60*60*1000*$kafka_topic_log_retention_hrs))
+read -e -p "Enter topic retention size (Mb): " -i "25" kafka_topic_log_retention_size_mb
+kafka_topic_log_retention_size_bytes=$((1024*1024*$kafka_topic_log_retention_size_mb))
+read -e -p "Enter topic max message size (Kb): " -i "256" kafka_topic_max_message_size_kb
+kafka_topic_max_message_size_bytes=$((1024*$kafka_topic_max_message_size_kb))
+
+
 cmd="$KAFKA_HOME/bin/kafka-topics.sh --create \
 --zookeeper $zk_host_port \
 --replication-factor $replication_factor \
 --partitions $partitions \
---topic $topic"
+--topic $topic \
+--config max.message.bytes=$kafka_topic_max_message_size_bytes \
+--config retention.bytes=$kafka_topic_log_retention_size_bytes \
+--config retention.ms=$kafka_topic_log_retention_ms"
 
 confirm_execute "$cmd"
