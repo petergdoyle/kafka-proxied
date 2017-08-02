@@ -10,5 +10,5 @@ if [ -z "$PIDS" ]; then
   echo "No kafka zookeeper to stop"
   exit 1
 else
-  kill -s TERM $PIDS
+  kill -9 TERM $PIDS
 fi

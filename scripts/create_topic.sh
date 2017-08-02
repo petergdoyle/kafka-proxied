@@ -1,7 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
 . ./common.sh
-. ./install_kafka.sh
 
 zk_host_port='localhost:2181'
 read -e -p "Enter the zk host/port: " -i "$zk_host_port" zk_host_port

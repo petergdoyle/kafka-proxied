@@ -46,7 +46,8 @@ mm_consumer_config_file="$kafka_runtime_config_dir/$node_name-mm_consumer.proper
 
 function confirm_execute() {
   local cmd="$1"
-  read -e -p "$(echo -e $BOLD$YELLOW$cmd$GREEN)" -i "y" response
+  local prompt="about to run command, confirm (y/n): "
+  read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $GREEN)" -i "y" response
   echo -e $RESET
   if [ "$run_it" == "y" ]; then
     eval "$cmd"

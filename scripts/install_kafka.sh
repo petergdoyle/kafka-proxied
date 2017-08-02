@@ -2,13 +2,6 @@
 
 . ./common.sh
 
-# prompt="Confirm Kafka version: "
-# default_value="$kafka_version"
-# read -e -p "$prompt" -i "$default_value" kafka_version
-# prompt="Confirm Scala version: "
-# default_value="$scala_version"
-# read -e -p "$prompt" -i "$default_value" scala_version
-
 if [ -d $kafka_installation_dir ]; then
   install_anyway="n"
   prompt="It appears kafka is already installed at $kafka_installation_dir, Install it again (y/n)? "
@@ -19,9 +12,6 @@ if [ -d $kafka_installation_dir ]; then
   fi
 fi
 
-# prompt="Specify Kafka download/installation directory: "
-# default_value="$kafka_base_location"
-# read -e -p "$prompt" -i "$default_value" kafka_base_location
 if [ ! -d "$kafka_base_location" ]; then
  mkdir -p $kafka_base_location
 fi

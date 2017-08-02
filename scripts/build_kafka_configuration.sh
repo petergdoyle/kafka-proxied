@@ -57,7 +57,7 @@ function configure_broker() {
 
   configure_zookeeper
   sed -i "s/zookeeper.connect=.*/zookeeper.connect=$zk_host_port/g" $broker_config_file
- 
+
   max_message_size_mb='1'
   read -e -p "Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): " -i $max_message_size_mb max_message_size_mb
   max_message_size=$((1024*1024*$max_message_size_mb))
@@ -79,8 +79,8 @@ function configure_broker() {
 }
 
 function create_mirror_maker_config() {
-  cp -vf config/$kafka_version/mm_producer-template.properties $mm_producer_config_file
-  cp -vf config/$kafka_version/mm_consumer-template.properties $mm_consumer_config_file
+  cp -vf $mm_producer_config_template_file $mm_producer_config_file
+  cp -vf $mm_consumer_config_template_file $mm_consumer_config_file
   configure_mirror_maker
 }
 
@@ -91,13 +91,11 @@ function configure_mirror_maker() {
   read -e -p "Enter Kafka zookeeper_connect for kafka_mirror_maker (consumers): " -i "$mirror_maker_zookeeper_connect" mirror_maker_zookeeper_connect
   sed -i "s/zookeeper.connect=.*/zookeeper.connect=$mirror_maker_zookeeper_connect/g" $mm_consumer_config_file
   sed -i "s/group.id=.*/group.id=$host_name-mirrormaker-group-1/g" $mm_consumer_config_file
-  sudo cp -vf $mm_consumer_config_file $KAFKA_HOME/default/config/
 
   # mirror_maker_bootstrap_servers=`echo $advertised_listeners |sed 's#PLAINTEXT://##g'`
   mirror_maker_bootstrap_server="localhost:9091"
   read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker (producer): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
   sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_producer_config_file
-  sudo cp -vf $mm_producer_config_file $KAFKA_HOME/default/config/
 
 }
 

@@ -11,5 +11,5 @@ if [ -z "$PIDS" ]; then
   echo "No mirror-maker to stop"
   exit 1
 else
-  kill -s TERM $PIDS
+  kill -9 TERM $PIDS
 fi

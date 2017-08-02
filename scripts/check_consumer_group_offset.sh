@@ -1,6 +1,5 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./install_kafka.sh
 . ./common.sh
 
 if [ $# -lt 2 ]; then
