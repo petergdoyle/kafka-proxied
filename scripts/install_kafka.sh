@@ -1,44 +1,39 @@
 #!/usr/bin/env bash
 
+. ./common.sh
 
-if [ -z ${KAFKA_HOME+x} ]; then
-  read -e -p "Kafka does not appear to be installed. Install Kafka locally? " -i "y" response
-  if [ "$response" != 'y' ]; then
-   echo "Cannot continue"
-   exit 1
+# prompt="Confirm Kafka version: "
+# default_value="$kafka_version"
+# read -e -p "$prompt" -i "$default_value" kafka_version
+# prompt="Confirm Scala version: "
+# default_value="$scala_version"
+# read -e -p "$prompt" -i "$default_value" scala_version
+
+if [ -d $kafka_installation_dir ]; then
+  install_anyway="n"
+  prompt="It appears kafka is already installed at $kafka_installation_dir, Install it again (y/n)? "
+  default_value="$install_anyway"
+  read -e -p "$prompt" -i "$default_value" install_anyway
+  if [ "$install_anyway" != "y" ]; then
+    exit 0
   fi
-else
-  read -e -p "Kafka already appears to be installed. Install Kafka anyway? " -i "y" response
-  if [ "$response" != 'y' ]; then
-   echo "Cannot continue"
-   exit 1
-  fi
 fi
 
-kafka_version="0.10.0.1"
-scala_version="2.11"
-read -e -p "Confirm Kafka version: " -i "$kafka_version" kafka_version
-read -e -p "Confirm Scala version: " -i "$scala_version" scala_version
-
-kafka_base_location="$PWD/../local"
-read -e -p "Specify Kafka installation location: " -i "$kafka_base_location" kafka_base_location
-
-install_anyway="y"
-if [ -d $kafka_base_location/kafka_$scala_version-$kafka_version ]; then
- read -e -p "It appears kafka is already installed at $kafka_base_location/kafka_$scala_version-$kafka_version. Install again (y/n)? " -i "$install_anyway" install_anyway
-fi
-if [ "$install_anyway" != "y" ]; then
-  exit 0
-fi
-
+# prompt="Specify Kafka download/installation directory: "
+# default_value="$kafka_base_location"
+# read -e -p "$prompt" -i "$default_value" kafka_base_location
 if [ ! -d "$kafka_base_location" ]; then
  mkdir -p $kafka_base_location
 fi
 
 downloadable="kafka_$scala_version-$kafka_version.tgz"
 download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
-echo "downloading $download_url..."
+display_info "downloading $download_url to $kafka_base_location..."
 kafka_home="$kafka_base_location/default"
+
+if [ -d $kafka_home ]; then
+  rm -v $kafka_home
+fi
 
 curl -O $download_url \
 && tar -xvf $downloadable -C $kafka_base_location \
@@ -47,7 +42,7 @@ curl -O $download_url \
 
 if `grep KAFKA_HOME ~/.bash_profile` ; then
   # replace
-  sed -i "s/export KAFKA_HOME=.*/export KAFKA_HOME=$kafka_home/g" ~/.bash_profile
+  sed -i "s@export KAFKA_HOME=.*@export KAFKA_HOME="$kafka_home"@g" ~/.bash_profile
 else
   # insert
  export KAFKA_HOME=$kafka_base_location/default
@@ -56,7 +51,12 @@ export KAFKA_HOME=$KAFKA_HOME
 EOF
 fi
 
-mkdir -p $kafka_base_location/logs \
-&& chmod 1777 $kafka_base_location/logs
+cleanup_kafka
 
-echo -e "\e[7;44;96m*$kafka_version is now installed at $kafka_base_location/default. Log out and log back in to set the proper envariable. \e[0m"
+display_info "Kafka $kafka_version is now installed at $kafka_installation_dir and symlinked at $kafka_base_location/default"
+
+display_info "Kafka configuration files are located at $kafka_base_location/config"
+
+display_info "Kafka console logs are located at $kafka_base_location/logs"
+
+display_info "Log out and log back in to set the KAFKA_HOME env variable for running other scripts OR source your ~/.bash_profile now."

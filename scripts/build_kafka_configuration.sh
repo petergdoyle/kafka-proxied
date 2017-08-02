@@ -1,5 +1,4 @@
 #!/bin/sh
-# cd $(dirname $0)
 . ./common.sh
 
 DIR=`dirname $0`
@@ -8,22 +7,20 @@ if [ $? -eq 1 ]; then
   node_name=$host_name
   read -e -p "Cannot determine node name. Please supply a value to name this node: " -i "$node_name" node_name
 fi
-kafka_version="10.0.1"
-read -e -p "Confirm the kafka version: " -i "$kafka_version" kafka_version
-broker_config_file="$DIR/config/$node_name-broker.properties"
-zookeeper_config_file="$DIR/config/$node_name-zookeeper.properties"
-mm_producer_config_file="$DIR/config/$node_name-mm_producer.properties"
-mm_consumer_config_file="$DIR/config/$node_name-mm_consumer.properties"
+
+if [ ! -d config/$kafka_version ]; then
+  echo "No configuration templates found for kafka version $kafka_version, Cannot continue"
+  exit 1
+fi
+
 
 function create_zookeeper_config() {
-  cp -vf $DIR/config/$kafka_version/zookeeper-template.properties $zookeeper_config_file
   configure_zookeeper
-  sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
-  sudo cp -vf $zookeeper_config_file $KAFKA_HOME/default/config/
+  sed "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_template_file >$zookeeper_config_file
 }
 
 function configure_zookeeper() {
-  zk_host='192.168.60.100'
+  zk_host='localhost'
   read -e -p "Enter the zookeeper host: " -i "$zk_host" zk_host
   zk_port='2181'
   read -e -p "Enter the zookeeper host port: " -i "$zk_port" zk_port
@@ -31,12 +28,12 @@ function configure_zookeeper() {
 }
 
 function create_broker_config() {
-  cp -vf $DIR/config/$kafka_version/broker-template.properties $broker_config_file
   configure_broker
 }
 
 function configure_broker() {
 
+  cat $broker_config_template_file> $broker_config_file
   broker_id=`echo $node_name |grep -o '[0-9:]*'`
   number_regex='^[0-9]+$'
   if ! [[ "$broker_id" =~ $number_regex ]]; then
@@ -60,7 +57,7 @@ function configure_broker() {
 
   configure_zookeeper
   sed -i "s/zookeeper.connect=.*/zookeeper.connect=$zk_host_port/g" $broker_config_file
-
+ 
   max_message_size_mb='1'
   read -e -p "Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): " -i $max_message_size_mb max_message_size_mb
   max_message_size=$((1024*1024*$max_message_size_mb))
@@ -78,13 +75,12 @@ function configure_broker() {
   kafka_log_retention_size=$((1024*1024*$kafka_log_retention_size_mb))
   sed -i "s/log.retention.hours=.*/log.retention.hours=$kafka_log_retention_hrs/g" $broker_config_file
   sed -i "s/log.retention.bytes=.*/log.retention.bytes=$kafka_log_retention_size/g" $broker_config_file
-
-  sudo cp -vf $broker_config_file $KAFKA_HOME/default/config/
+                 s
 }
 
 function create_mirror_maker_config() {
-  cp -vf $DIR/config/$kafka_version/mm_producer-template.properties $mm_producer_config_file
-  cp -vf $DIR/config/$kafka_version/mm_consumer-template.properties $mm_consumer_config_file
+  cp -vf config/$kafka_version/mm_producer-template.properties $mm_producer_config_file
+  cp -vf config/$kafka_version/mm_consumer-template.properties $mm_consumer_config_file
   configure_mirror_maker
 }
 
@@ -102,5 +98,43 @@ function configure_mirror_maker() {
   read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker (producer): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
   sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_producer_config_file
   sudo cp -vf $mm_producer_config_file $KAFKA_HOME/default/config/
+
+}
+
+function cleanup_kafka() {
+
+  if [ ! -d $kafka_runtime_console_logs_dir ]; then\
+    mkdir -p $kafka_runtime_console_logs_dir \
+    && chmod 1777 $kafka_runtime_console_logs_dir
+  else
+    read -e -p "Destroy old console logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv $kafka_runtime_console_logs_dir/*
+    fi
+  fi
+
+  if [ ! -d $kafka_runtime_config_dir ]; then
+    mkdir -p $kafka_runtime_config_dir \
+    && chmod 1777 $kafka_runtime_config_dir
+  else
+    read -e -p "Destroy old kafka configuration files? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv $kafka_runtime_config_dir/*
+    fi
+  fi
+
+  if [ -d /tmp/kafka-logs ]; then
+    read -e -p "Destroy old persistent Kafka Broker logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv /tmp/kafka-logs
+    fi
+  fi
+
+  if [ -d /tmp/zookeeper ]; then
+    read -e -p "Destroy old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv /tmp/zookeeper
+    fi
+  fi
 
 }

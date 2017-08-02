@@ -1,23 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)
 . ./common.sh
-source ./install_kafka.sh
-source ./build_kafka_configuration.sh
-
-if [ -d /tmp/kafka-logs ]; then
-  read -e -p "Destroy old logs? (y/n): " -i "y" response
-  if [ "$response" == 'y' ]; then
-    rm -frv /tmp/kafka-logs
-    sudo rm -frv $KAFKA_HOME/logs
-  fi
-fi
-
-if [ -d /tmp/zookeeper ]; then
-  read -e -p "Destroy old Topics? (y/n): " -i "y" response
-  if [ "$response" == 'y' ]; then
-    rm -frv /tmp/zookeeper
-  fi
-fi
+. ./build_kafka_configuration.sh
 
 create_broker_config
 
