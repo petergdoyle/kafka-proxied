@@ -12,10 +12,11 @@
 RESET="\033[0m"
 BOLD="\033[1m"
 YELLOW="\033[38;5;11m"
-GREEN="\033[32m"
-BLUE="\033[34m"
+GREEN="\033[1,32m"
+BLUE="\033[1;36m"
 RED="\033[1;31m"
-ORANGE="\033[1;33m"
+ORANGE="\033[0,33m"
+# ORANGE=$'\e[33;40m'
 
 
 host_name=`hostname| cut -d"." -f1`
@@ -82,7 +83,7 @@ function prompt() {
 
 function display_info() {
   local msg="$1"
-  echo -e $BOLD$BLUE"[info] $msg"$RESET
+  echo -e $BLUE"[info] $msg"$RESET
 }
 
 function display_error() {
@@ -143,7 +144,7 @@ function check_broker_status() {
 
 }
 
-function check_mirror-maker_status() {
+function check_mirror_maker_status() {
 
   MM_PIDS=`ps ax | grep -i MirrorMaker | grep -v grep | awk '{print $1}'`
 
@@ -154,7 +155,7 @@ function check_mirror-maker_status() {
 }
 
 
-function show_kafka_state() {
+function show_cluster_state() {
 
   display_info "Host Details:"
   display_info "full host name: `hostname`"
@@ -175,10 +176,23 @@ function show_kafka_state() {
 
   display_info "Kafka Configuration:"
   display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
-  display_info "kafka broker config file: $broker_config_file"
-  display_info "kafka zookeeper config file: $zookeeper_config_file"
-  display_info "kafka mirror-maker producer config file: $mm_producer_config_file"
-  display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file"
+
+  [[ -f $broker_config_file ]] \
+  && display_info "kafka runtime configuration location: $broker_config_file" \
+  || display_warn "kafka runtime configuration location: $broker_config_file *Does not exist"
+
+  [[ -f $zookeeper_config_file ]] \
+  && display_info "kafka zookeeper config file: $zookeeper_config_file" \
+  || display_warn "kafka zookeeper config file: $zookeeper_config_file *Does not exist"
+
+  [[ -f $mm_producer_config_file ]] \
+  && display_info "kafka mirror-maker producer config file: $mm_producer_config_file" \
+  || display_warn "kafka mirror-maker producer config file: $mm_producer_config_file *Does not exist"
+
+  [[ -f $mm_consumer_config_file ]] \
+  && display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file" \
+  || display_warn "kafka mirror-maker consumer config file: $mm_consumer_config_file *Does not exist"
+
   display_info " "
 
   display_info "Kafka Configuration Templates:"
@@ -190,17 +204,35 @@ function show_kafka_state() {
   display_info " "
 
   display_info "Kafka Logs:"
-  display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
-  display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir"
-  display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir"
-  display_info "kafka broker runtime console log: $broker_runtime_console_log_file"
-  display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file"
-  display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file"
+  [[ -f $kafka_broker_logs_dir ]] \
+  && display_info "kafka cluster broker logs location: $kafka_broker_logs_dir" \
+  || display_warn "kafka cluster broker logs location: $kafka_broker_logs_dir *Does not exist"
+
+  [[ -f $zookeeper_logs_dir ]] \
+  && display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir" \
+  || display_warn "kafka cluster zookeeper logs location: $zookeeper_logs_dir *Does not exist"
+
+  [[ -f $kafka_runtime_console_logs_dir ]] \
+  && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
+  || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Does not exist"
+
+  [[ -f $broker_runtime_console_log_file ]] \
+  && display_info "kafka broker runtime console log: $broker_runtime_console_log_file" \
+  || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Does not exist"
+
+  [[ -f $zookeeper_runtime_console_log_file ]] \
+  && display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file" \
+  || display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Does not exist"
+
+  [[ -f $mm_runtime_console_log_file ]] \
+  && display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file" \
+  || display_warn "kafka mirror-maker runtime console log: $mm_runtime_console_log_file *Does not exist"
+
   display_info " "
 
   display_info "Kafka Cluster Status:"
   check_zookeper_status
   check_broker_status
-  check_mirror-maker_status
+  check_mirror_maker_status
 
 }
