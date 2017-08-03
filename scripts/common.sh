@@ -1,11 +1,21 @@
 #!/bin/sh
 
+# Black        0;30     Dark Gray     1;30
+# Red          0;31     Light Red     1;31
+# Green        0;32     Light Green   1;32
+# Brown/Orange 0;33     Yellow        1;33
+# Blue         0;34     Light Blue    1;34
+# Purple       0;35     Light Purple  1;35
+# Cyan         0;36     Light Cyan    1;36
+# Light Gray   0;37     White         1;37
+
 RESET="\033[0m"
 BOLD="\033[1m"
 YELLOW="\033[38;5;11m"
 GREEN="\033[32m"
 BLUE="\033[34m"
-RED="\033[91m"
+RED="\033[1;31m"
+ORANGE="\033[1;33m"
 
 
 host_name=`hostname| cut -d"." -f1`
@@ -27,9 +37,9 @@ fi
 kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
 
 kafka_runtime_console_logs_dir="$kafka_base_location/logs"
-broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker.log"
-zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper.log"
-mm_runtime_console_log_file="$kafka_base_location/logs/$node_name-mm.log"
+broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
+zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-console.log"
+mm_runtime_console_log_file="$kafka_base_location/logs/$node_name-mirror-maker-console.log"
 
 kafka_templates_config_dir="$PWD/config/$kafka_version"
 broker_config_template_file="$kafka_templates_config_dir/broker-template.properties"
@@ -43,6 +53,10 @@ zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper.properties
 mm_producer_config_file="$kafka_runtime_config_dir/$node_name-mm_producer.properties"
 mm_consumer_config_file="$kafka_runtime_config_dir/$node_name-mm_consumer.properties"
 
+zookeeper_process_running_cmd="ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'"
+
+kafka_broker_logs_dir='/tmp/kafka-logs'
+zookeeper_logs_dir='/tmp/zookeeper'
 
 function confirm_execute() {
   local cmd="$1"
@@ -68,15 +82,20 @@ function prompt() {
 
 function display_info() {
   local msg="$1"
-  echo -e "[info] "$BOLD$BLUE$msg$RESET
+  echo -e $BOLD$BLUE"[info] $msg"$RESET
+}
+
+function display_error() {
+  local msg="$1"
+  echo -e $BOLD$RED"[error] $msg"$RESET
+}
+
+function display_warn() {
+  local msg="$1"
+  echo -e $BOLD$ORANGE"[warn] $msg"$RESET
 }
 
 function check_kafka_installed() {
-  if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install kafka
-    kafka_base_location="/usr/kafka"
-  else
-    kafka_base_location=$parent_dir/local/kafka
-  fi
   if [ "$(ls -A $kafka_base_location)" ]; then
     echo "true"
     #  echo "Take action $DIR is not Empty"
@@ -100,28 +119,88 @@ function check_env() {
 
 }
 
+# ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
+# BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
+# MM_PIDS=`ps ax | grep -i MirrorMaker | grep -v grep | awk '{print $1}'`
 
-display_info " "
-display_info "host_name: $host_name"
-display_info "cluster node_name: $node_name"
-display_info "host_name: $host_name"
-display_info " "
+function check_zookeper_status() {
 
-display_info "kafka version: $kafka_version"
-display_info "kafka installation location: $kafka_installation_dir"
-display_info "kafka configuration templates location: $kafka_templates_config_dir"
-display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
-display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir"
-display_info " "
+  ZK_PIDS=`ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
-display_info "kafka broker config file: $broker_config_file"
-display_info "kafka zookeeper config file: $zookeeper_config_file"
-display_info "kafka mirror-maker producer config file: $mm_producer_config_file"
-display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file"
-display_info " "
+  [[ ! -z $ZK_PIDS ]] \
+    && display_info "Zookeeper process(es) running: $ZK_PIDS" \
+    || display_warn "Zookeeper process(es) running: No Zookeeper processes running"
 
-display_info "kafka broker config template file: $broker_config_template_file"
-display_info "kafka zookeeper config template file: $zookeeper_config_template_file"
-display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
-display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
-display_info " "
+}
+
+function check_broker_status() {
+
+  BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
+
+  [[ ! -z $BKR_PIDS ]] \
+    && display_info "Kafka Broker process(es) running: $BKR_PIDS" \
+    || display_warn "Kafka Broker process(es) running: No Kafka Broker processes running"
+
+}
+
+function check_mirror-maker_status() {
+
+  MM_PIDS=`ps ax | grep -i MirrorMaker | grep -v grep | awk '{print $1}'`
+
+  [[ ! -z $MM_PIDS ]] \
+    && display_info "Mirror-Maker process(es) running: $MM_PIDS" \
+    || display_warn "Mirror-Maker process(es) running: No Mirror-Maker processes running"
+
+}
+
+
+function show_kafka_state() {
+
+  display_info "Host Details:"
+  display_info "full host name: `hostname`"
+  display_info "host name: $host_name"
+  display_info "kafka cluster node_name: $node_name"
+  display_info "network interfaces: `ifconfig |grep 'inet '| awk '{print $2}'| tr '\n' '  '|sed '$s/.$//'`"
+  display_info " "
+
+  display_info "Kafka Details:"
+  display_info "kafka version: $kafka_version"
+  [[ -d $kafka_installation_dir ]] \
+  && display_info "kafka installation location: $kafka_installation_dir" \
+  || display_warn "kafka installation location: Not installed"
+  [[ ! -z $KAFKA_HOME ]] \
+  && display_info "KAFKA_HOME: $KAFKA_HOME" \
+  || display_warn "KAFKA_HOME: Not set"
+  display_info " "
+
+  display_info "Kafka Configuration:"
+  display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
+  display_info "kafka broker config file: $broker_config_file"
+  display_info "kafka zookeeper config file: $zookeeper_config_file"
+  display_info "kafka mirror-maker producer config file: $mm_producer_config_file"
+  display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file"
+  display_info " "
+
+  display_info "Kafka Configuration Templates:"
+  display_info "kafka configuration templates location: $kafka_templates_config_dir"
+  display_info "kafka broker config template file: $broker_config_template_file"
+  display_info "kafka zookeeper config template file: $zookeeper_config_template_file"
+  display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
+  display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
+  display_info " "
+
+  display_info "Kafka Logs:"
+  display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
+  display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir"
+  display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir"
+  display_info "kafka broker runtime console log: $broker_runtime_console_log_file"
+  display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file"
+  display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file"
+  display_info " "
+
+  display_info "Kafka Cluster Status:"
+  check_zookeper_status
+  check_broker_status
+  check_mirror-maker_status
+
+}

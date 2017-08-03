@@ -1,19 +1,6 @@
 #!/bin/sh
 . ./common.sh
 
-DIR=`dirname $0`
-
-if [ $? -eq 1 ]; then
-  node_name=$host_name
-  read -e -p "Cannot determine node name. Please supply a value to name this node: " -i "$node_name" node_name
-fi
-
-if [ ! -d config/$kafka_version ]; then
-  echo "No configuration templates found for kafka version $kafka_version, Cannot continue"
-  exit 1
-fi
-
-
 function create_zookeeper_config() {
   configure_zookeeper
   sed "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_template_file >$zookeeper_config_file
@@ -101,38 +88,67 @@ function configure_mirror_maker() {
 
 function cleanup_kafka() {
 
-  if [ ! -d $kafka_runtime_console_logs_dir ]; then\
-    mkdir -p $kafka_runtime_console_logs_dir \
-    && chmod 1777 $kafka_runtime_console_logs_dir
-  else
+  local dir=$kafka_runtime_console_logs_dir
+  local name="kafka runtime console logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
     read -e -p "Destroy old console logs? (y/n): " -i "y" response
     if [ "$response" == 'y' ]; then
       rm -frv $kafka_runtime_console_logs_dir/*
     fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+    if [ -d $dir ]; then
+      mkdir -pv $kafka_runtime_console_logs_dir \
+      && chmod 1777 $kafka_runtime_console_logs_dir
+    fi
   fi
 
-  if [ ! -d $kafka_runtime_config_dir ]; then
-    mkdir -p $kafka_runtime_config_dir \
-    && chmod 1777 $kafka_runtime_config_dir
-  else
+  local dir=$kafka_runtime_config_dir
+  local name="kafka runtime config dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
     read -e -p "Destroy old kafka configuration files? (y/n): " -i "y" response
     if [ "$response" == 'y' ]; then
       rm -frv $kafka_runtime_config_dir/*
     fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+    if [ -d $dir ]; then
+      mkdir -pv $kafka_runtime_config_dir \
+      && chmod 1777 $kafka_runtime_config_dir
+    fi
   fi
 
-  if [ -d /tmp/kafka-logs ]; then
+  local dir=$kafka_broker_logs_dir
+  local name="kafka broker logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
     read -e -p "Destroy old persistent Kafka Broker logs? (y/n): " -i "y" response
     if [ "$response" == 'y' ]; then
-      rm -frv /tmp/kafka-logs
+      rm -frv $kafka_broker_logs_dir
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+    if [ -d $dir ]; then
+      echo "Kafka brokers will create these on their own"
     fi
   fi
 
-  if [ -d /tmp/zookeeper ]; then
-    read -e -p "Destroy old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
-    if [ "$response" == 'y' ]; then
-      rm -frv /tmp/zookeeper
-    fi
+local dir=$zookeeper_logs_dir
+local name="zookeeper logs dir"
+if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+  echo "$name($dir) Exists and is not Empty";
+  read -e -p "Destroy old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
+  if [ "$response" == 'y' ]; then
+    rm -frv $zookeeper_logs_dir
   fi
+else
+  display_info "$name($dir) Doesn't Exist or is Empty"
+  if [ -d $dir ]; then
+    echo "Zookeper will create this on his own"
+  fi
+fi
+
 
 }

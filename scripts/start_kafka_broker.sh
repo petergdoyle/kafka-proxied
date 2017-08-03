@@ -1,17 +1,28 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./common.sh
 . ./build_kafka_configuration.sh
+
+if [ -z $KAFKA_HOME ]; then
+  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
+  exit 1
+fi
 
 create_broker_config
 
-mkdir -p $PWD/../local/logs/$node_name/
-broker_log_file="$PWD/../local/logs/$node_name/kafka_broker_console.log"
-cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_log_file 2>&1"
-echo "$cmd"
-eval "$cmd" &
-echo "Output will be redirected to $broker_log_file"
-sleep 1
-ps aux |grep java |grep --color -v grep
-sleep 1
-tail -f "$broker_log_file"
+if [ ! -d $kafka_runtime_console_logs_dir ]; then
+  mkdir -pv $kafka_runtime_console_logs_dir
+fi
+cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_runtime_console_log_file 2>&1"
+confirm_execute "$cmd"
+sleep 2
+PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep java | grep -v grep | awk '{print $1}'`
+if [ ! -z $PIDS ]; then
+  prompt="Tail on log file? (y/n): "
+  default_value="y"
+  read -e -p "$prompt" -i $default_value response
+  if [ "$response" == 'y' ]; then
+    tail -f "$broker_runtime_console_log_file"
+  fi
+else
+  display_error "broker does not appear to be running"
+fi

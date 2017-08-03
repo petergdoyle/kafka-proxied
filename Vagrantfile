@@ -29,7 +29,7 @@ EOF
     # install java on all nodes
     java -version > /dev/null 2>&1
     if [ $? -eq 127 ]; then
-      mkdir -p /usr/java \
+      mkdir -pv /usr/java \
       && echo "downloading java..."
       #install java jdk 8 from oracle
       # curl -O -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" \
@@ -67,7 +67,7 @@ EOF
     kafka_version='kafka_2.11-0.10.1.1/'
     kafka_base_location="/usr/kafka"
 #     if [ ! -d "$kafka_base_location/$kafka_version" ]; then
-#       mkdir -p $kafka_base_location \
+#       mkdir -pv $kafka_base_location \
 #       && echo "downloading $kafka_version..."
 #
 #       curl -O http://www-us.apache.org/dist/kafka/0.10.0.1/kafka_2.11-0.10.0.1.tgz \
@@ -79,7 +79,7 @@ EOF
 #       cat >/etc/profile.d/kafka.sh <<-EOF
 # export KAFKA_HOME=$KAFKA_HOME
 # EOF
-#       mkdir -p $kafka_base_location/kafka_2.11-0.10.0.1/logs \
+#       mkdir -pv $kafka_base_location/kafka_2.11-0.10.0.1/logs \
 #       && chmod 1777 $kafka_base_location/kafka_2.11-0.10.0.1/logs
 #
 #     else

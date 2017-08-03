@@ -2,6 +2,11 @@
 cd $(dirname $0)
 . ./common.sh
 
+if [ -z $KAFKA_HOME ]; then
+  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
+  exit 1
+fi
+
 if [ $# -lt 2 ]; then
   node=`hostname |grep -io node[0-9] |awk '{print tolower($0)}'`
   read -e -p "Enter the consumer group id: " -i "$host_name-consumer-group-1" consumer_group_id

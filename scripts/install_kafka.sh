@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/sh
 . ./common.sh
 
 if [ -d $kafka_installation_dir ]; then
@@ -13,7 +12,7 @@ if [ -d $kafka_installation_dir ]; then
 fi
 
 if [ ! -d "$kafka_base_location" ]; then
- mkdir -p $kafka_base_location
+ mkdir -pv $kafka_base_location
 fi
 
 downloadable="kafka_$scala_version-$kafka_version.tgz"
