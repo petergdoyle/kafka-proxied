@@ -157,14 +157,14 @@ function check_mirror_maker_status() {
 
 function show_cluster_state() {
 
-  display_info "Host Details:"
+  echo -e $BOLD$GREEN"Host Details:"$RESET
   display_info "full host name: `hostname`"
   display_info "host name: $host_name"
   display_info "kafka cluster node_name: $node_name"
   display_info "network interfaces: `ifconfig |grep 'inet '| awk '{print $2}'| tr '\n' '  '|sed '$s/.$//'`"
   display_info " "
 
-  display_info "Kafka Details:"
+  echo -e $BOLD$GREEN"Kafka Details:"$RESET
   display_info "kafka version: $kafka_version"
   [[ -d $kafka_installation_dir ]] \
   && display_info "kafka installation location: $kafka_installation_dir" \
@@ -174,28 +174,23 @@ function show_cluster_state() {
   || display_warn "KAFKA_HOME: Not set"
   display_info " "
 
-  display_info "Kafka Configuration:"
+  echo -e $BOLD$GREEN"Kafka Configuration:"$RESET
   display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
-
   [[ -f $broker_config_file ]] \
   && display_info "kafka runtime configuration location: $broker_config_file" \
   || display_warn "kafka runtime configuration location: $broker_config_file *Does not exist"
-
   [[ -f $zookeeper_config_file ]] \
   && display_info "kafka zookeeper config file: $zookeeper_config_file" \
   || display_warn "kafka zookeeper config file: $zookeeper_config_file *Does not exist"
-
   [[ -f $mm_producer_config_file ]] \
   && display_info "kafka mirror-maker producer config file: $mm_producer_config_file" \
   || display_warn "kafka mirror-maker producer config file: $mm_producer_config_file *Does not exist"
-
   [[ -f $mm_consumer_config_file ]] \
   && display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file" \
   || display_warn "kafka mirror-maker consumer config file: $mm_consumer_config_file *Does not exist"
-
   display_info " "
 
-  display_info "Kafka Configuration Templates:"
+  echo -e $BOLD$GREEN"Kafka Configuration Templates:"$RESET
   display_info "kafka configuration templates location: $kafka_templates_config_dir"
   display_info "kafka broker config template file: $broker_config_template_file"
   display_info "kafka zookeeper config template file: $zookeeper_config_template_file"
@@ -203,34 +198,26 @@ function show_cluster_state() {
   display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
   display_info " "
 
-  display_info "Kafka Logs:"
-  [[ -f $kafka_broker_logs_dir ]] \
-  && display_info "kafka cluster broker logs location: $kafka_broker_logs_dir" \
-  || display_warn "kafka cluster broker logs location: $kafka_broker_logs_dir *Does not exist"
-
+  echo -e $BOLD$GREEN"Kafka Logs:"$RESET
+  display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
   [[ -f $zookeeper_logs_dir ]] \
   && display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir" \
   || display_warn "kafka cluster zookeeper logs location: $zookeeper_logs_dir *Does not exist"
-
   [[ -f $kafka_runtime_console_logs_dir ]] \
   && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
   || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Does not exist"
-
   [[ -f $broker_runtime_console_log_file ]] \
   && display_info "kafka broker runtime console log: $broker_runtime_console_log_file" \
   || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Does not exist"
-
   [[ -f $zookeeper_runtime_console_log_file ]] \
   && display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file" \
   || display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Does not exist"
-
   [[ -f $mm_runtime_console_log_file ]] \
   && display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file" \
   || display_warn "kafka mirror-maker runtime console log: $mm_runtime_console_log_file *Does not exist"
-
   display_info " "
 
-  display_info "Kafka Cluster Status:"
+  echo -e $BOLD$GREEN"Kafka Cluster Status:"$RESET
   check_zookeper_status
   check_broker_status
   check_mirror_maker_status
