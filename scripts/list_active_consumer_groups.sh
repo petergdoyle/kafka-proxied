@@ -16,9 +16,9 @@ cmd="$KAFKA_HOME/bin/kafka-run-class.sh kafka.admin.ConsumerGroupCommand \
 --bootstrap-server $bootstrap_server"
 
 echo "$cmd"
-prompt=$BOLD$YELLOW"About to start Kafka Console Consumer, continue? (y/n): $RESET"
+prompt="About to start Kafka Console Consumer, continue? (y/n): "
 default_value="y"
-read -e -p "$(echo -e $prompt)" -i $default_value response
+read -e -p "$prompt" -i $default_value response
 if [ "$response" == 'y' ]; then
   eval "$cmd" &
 fi
