@@ -19,4 +19,5 @@ cmd="$KAFKA_HOME/bin/kafka-console-consumer.sh \
 --topic $topic \
 --from-beginning"
 
-confirm_execute "$cmd"
+echo "$cmd"
+eval "$cmd"

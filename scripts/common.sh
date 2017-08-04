@@ -198,7 +198,7 @@ function show_cluster_state() {
   display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
   display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
   display_info " "
-
+  
   echo -e $BOLD$GREEN"Kafka Logs:"$RESET
   display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
   [[ -d $zookeeper_logs_dir ]] \
