@@ -162,6 +162,7 @@ function show_cluster_state() {
   display_info "host name: $host_name"
   display_info "kafka cluster node_name: $node_name"
   display_info "network interfaces: `ifconfig |grep 'inet '| awk '{print $2}'| tr '\n' '  '|sed '$s/.$//'`"
+  display_info "cpu info: `grep '^model name' /proc/cpuinfo | awk '!a[$0]++'| sed -e 's/.*: //'` (`grep -c ^processor /proc/cpuinfo`)"
   display_info " "
 
   echo -e $BOLD$GREEN"Kafka Details:"$RESET
@@ -200,10 +201,10 @@ function show_cluster_state() {
 
   echo -e $BOLD$GREEN"Kafka Logs:"$RESET
   display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
-  [[ -f $zookeeper_logs_dir ]] \
+  [[ -d $zookeeper_logs_dir ]] \
   && display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir" \
   || display_warn "kafka cluster zookeeper logs location: $zookeeper_logs_dir *Does not exist"
-  [[ -f $kafka_runtime_console_logs_dir ]] \
+  [[ -d $kafka_runtime_console_logs_dir ]] \
   && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
   || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Does not exist"
   [[ -f $broker_runtime_console_log_file ]] \
