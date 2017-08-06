@@ -41,5 +41,5 @@ prompt=$BOLD$YELLOW"About to start Create Topics as shown, continue? (y/n): $RES
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
 if [ "$response" == 'y' ]; then
-  eval "$cmd" &
+  eval "$cmd" 
 fi

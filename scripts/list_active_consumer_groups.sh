@@ -20,5 +20,5 @@ prompt=$BOLD$YELLOW"About to start List Active Consumer Groups shown, continue? 
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
 if [ "$response" == 'y' ]; then
-  eval "$cmd" &
+  eval "$cmd" 
 fi
