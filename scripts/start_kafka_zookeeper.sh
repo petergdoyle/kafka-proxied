@@ -2,13 +2,9 @@
 cd $(dirname $0)
 . ./build_kafka_configuration.sh
 
-if [ -z $KAFKA_HOME ]; then
-  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
-  exit 1
-fi
+ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
-PIDS=`ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
-if [ ! -z $PIDS ]; then\
+if [ ! -z $ZK_PIDS ]; then\
   display_error "zookeeper is already running ! stop the cluster first !"
   exit 1
 fi

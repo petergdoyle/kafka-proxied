@@ -126,7 +126,7 @@ function check_env() {
 
 function check_zookeper_status() {
 
-  ZK_PIDS=`ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
+  ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
   [[ ! -z $ZK_PIDS ]] \
     && display_info "Zookeeper process(es) running: $ZK_PIDS" \

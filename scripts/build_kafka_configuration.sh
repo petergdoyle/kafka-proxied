@@ -1,24 +1,30 @@
 #!/bin/sh
 . ./common.sh
 
-function create_zookeeper_config() {
+if [ -z $KAFKA_HOME ]; then
+  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
+  exit 1
+fi
 
-  show_cluster_state
-  
-  configure_zookeeper
+function create_zookeeper_config() {
 
   if [ ! -d $kafka_runtime_config_dir ]; then
     mkdir -pv $kafka_runtime_config_dir
   fi
+
   if [ ! -d $kafka_runtime_console_logs_dir ]; then
     mkdir -pv $kafka_runtime_console_logs_dir
   fi
+
   if [ ! -f $zookeeper_config_template_file ]; then
-    "cannot continue. no file named $zookeeper_config_template_file : $zookeeper_config_template_file"
+    "cannot continue. no template file named $zookeeper_config_template_file exists"
     exit 1
   fi
 
-  sed "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_template_file >$zookeeper_config_file
+  cp -vf $zookeeper_config_template_file  $zookeeper_config_file
+  configure_zookeeper
+
+  sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
 }
 
 function configure_zookeeper() {
@@ -30,12 +36,27 @@ function configure_zookeeper() {
 }
 
 function create_broker_config() {
+
+  if [ ! -d $kafka_runtime_config_dir ]; then
+    mkdir -pv $kafka_runtime_config_dir
+  fi
+
+  if [ ! -d $kafka_runtime_console_logs_dir ]; then
+    mkdir -pv $kafka_runtime_console_logs_dir
+  fi
+
+  if [ ! -f $broker_config_template_file ]; then
+    "cannot continue. no template file named $broker_config_template_file exists"
+    exit 1
+  fi
+
+  cp -vf $broker_config_template_file  $broker_config_file
   configure_broker
+
 }
 
 function configure_broker() {
 
-  cat $broker_config_template_file> $broker_config_file
   broker_id=`echo $node_name |grep -o '[0-9:]*'`
   number_regex='^[0-9]+$'
   if ! [[ "$broker_id" =~ $number_regex ]]; then
@@ -77,10 +98,21 @@ function configure_broker() {
   kafka_log_retention_size=$((1024*1024*$kafka_log_retention_size_mb))
   sed -i "s/log.retention.hours=.*/log.retention.hours=$kafka_log_retention_hrs/g" $broker_config_file
   sed -i "s/log.retention.bytes=.*/log.retention.bytes=$kafka_log_retention_size/g" $broker_config_file
-                 s
+
 }
 
 function create_mirror_maker_config() {
+  if [ ! -d $kafka_runtime_config_dir ]; then
+    mkdir -pv $kafka_runtime_config_dir
+  fi
+
+  if [ ! -d $kafka_runtime_console_logs_dir ]; then
+    mkdir -pv $kafka_runtime_console_logs_dir
+  fi
+    if [ ! -f $mm_producer_config_template_file ]; then
+      "cannot continue. no template file named $mm_producer_config_template_file exists"
+      exit 1
+    fi
   cp -vf $mm_producer_config_template_file $mm_producer_config_file
   cp -vf $mm_consumer_config_template_file $mm_consumer_config_file
   configure_mirror_maker

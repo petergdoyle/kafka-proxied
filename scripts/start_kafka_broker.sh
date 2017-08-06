@@ -2,16 +2,15 @@
 cd $(dirname $0)
 . ./build_kafka_configuration.sh
 
-if [ -z $KAFKA_HOME ]; then
-  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
+BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
+
+if [ ! -z $BKR_PIDS ]; then\
+  display_error "broker is already running ! stop the broker first !"
   exit 1
 fi
 
 create_broker_config
 
-if [ ! -d $kafka_runtime_console_logs_dir ]; then
-  mkdir -pv $kafka_runtime_console_logs_dir
-fi
 cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_runtime_console_log_file 2>&1"
 echo "$cmd"
 prompt=$BOLD$YELLOW"About to start Kafka Broker, continue? (y/n): $RESET"
