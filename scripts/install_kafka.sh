@@ -1,5 +1,5 @@
 #!/bin/sh
-. ./common.sh
+. ./build_kafka_configuration.sh
 
 if [ -d $kafka_installation_dir ]; then
   install_anyway="n"
@@ -42,10 +42,17 @@ fi
 
 cleanup_kafka
 
+if [ ! -d $kafka_runtime_config_dir ]; then
+  mkdir -pv $kafka_runtime_config_dir
+fi
+if [ ! -d $kafka_runtime_console_logs_dir ]; then
+  mkdir -pv $kafka_runtime_console_logs_dir
+fi
+
 display_info "Kafka $kafka_version is now installed at $kafka_installation_dir and symlinked at $kafka_base_location/default"
 
-display_info "Kafka configuration files are located at $kafka_base_location/config"
+display_info "Kafka configuration files are located at $kafka_runtime_config_dir"
 
-display_info "Kafka console logs are located at $kafka_base_location/logs"
+display_info "Kafka console logs are located at $kafka_runtime_console_logs_dir"
 
 display_info "Log out and log back in to set the KAFKA_HOME env variable for running other scripts OR source your ~/.bash_profile now."

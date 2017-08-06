@@ -15,18 +15,16 @@ fi
 
 create_zookeeper_config
 
-if [ ! -d $kafka_runtime_console_logs_dir ]; then
-  mkdir -pv $kafka_runtime_console_logs_dir
-fi
 cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zookeeper_runtime_console_log_file 2>&1"
 echo "$cmd"
 prompt=$BOLD$YELLOW"About to start Zookeeper, continue? (y/n): $RESET"
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
-if [ "$response" == 'y' ]; then
-  eval "$cmd" &
+if [ "$response" != 'y' ]; then
+    exit 0
 fi
 
+eval "$cmd" &
 sleep 2
 PIDS=`ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 if [ ! -z $PIDS ]; then

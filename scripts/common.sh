@@ -198,12 +198,14 @@ function show_cluster_state() {
   display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
   display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
   display_info " "
-  
+
   echo -e $BOLD$GREEN"Kafka Logs:"$RESET
-  display_info "kafka cluster broker logs location: $kafka_broker_logs_dir"
+  [[ -d $kafka_broker_logs_dir ]] \
+  && display_info "kafka broker logs location: $kafka_broker_logs_dir" \
+  || display_warn "kafka broker logs location: $kafka_broker_logs_dir *Does not exist"
   [[ -d $zookeeper_logs_dir ]] \
-  && display_info "kafka cluster zookeeper logs location: $zookeeper_logs_dir" \
-  || display_warn "kafka cluster zookeeper logs location: $zookeeper_logs_dir *Does not exist"
+  && display_info "kafka zookeeper logs location: $zookeeper_logs_dir" \
+  || display_warn "kafka zookeeper logs location: $zookeeper_logs_dir *Does not exist"
   [[ -d $kafka_runtime_console_logs_dir ]] \
   && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
   || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Does not exist"

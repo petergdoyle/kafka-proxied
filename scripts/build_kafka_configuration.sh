@@ -2,7 +2,22 @@
 . ./common.sh
 
 function create_zookeeper_config() {
+
+  show_cluster_state
+  
   configure_zookeeper
+
+  if [ ! -d $kafka_runtime_config_dir ]; then
+    mkdir -pv $kafka_runtime_config_dir
+  fi
+  if [ ! -d $kafka_runtime_console_logs_dir ]; then
+    mkdir -pv $kafka_runtime_console_logs_dir
+  fi
+  if [ ! -f $zookeeper_config_template_file ]; then
+    "cannot continue. no file named $zookeeper_config_template_file : $zookeeper_config_template_file"
+    exit 1
+  fi
+
   sed "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_template_file >$zookeeper_config_file
 }
 
@@ -149,6 +164,5 @@ else
     echo "Zookeper will create this on his own"
   fi
 fi
-
 
 }
