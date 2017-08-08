@@ -1,4 +1,4 @@
-l#!/bin/sh
+#!/bin/sh
 cd $(dirname $0)
 . ./common.sh
 
