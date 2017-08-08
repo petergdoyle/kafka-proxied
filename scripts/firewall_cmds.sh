@@ -25,21 +25,36 @@ function add_rich_rules() {
   # firewall-cmd --permanent --zone=azure --add-source=216.113.139.2
   # #40.112.255.211 (HospitalityHertzPocNode1-ip)
   # firewall-cmd --permanent --zone=azure --add-source=40.112.255.211
-  # firewall-cmd --permanent --zone=azue --add-rich-rule='rule family=ipv4 source address=40.78.64.141 port port=12181 protocol=tcp accept'
-  # firewall-cmd --permanent --zone=azue --add-rich-rule='rule family=ipv4 source address=40.78.64.141 port port=19091-19093 protocol=tcp accept'
-  # firewall-cmd --permanent --zone=azue --add-rich-rule='rule family=ipv4 source address=40.112.255.211 port port=12181 protocol=tcp accept'
-  # firewall-cmd --permanent --zone=azue --add-rich-rule='rule family=ipv4 source address=40.112.255.211 port port=19091-19093 protocol=tcp accept'
-
+  firewall-cmd --list-all |grep 'rule family'
+  local ip="192.168.1.80/90"
   while true; do
-    local ip="192.168.1.82"
     read -e -p "Enter the inbound IP number: " -i "$ip" ip
-    local port="19091"
+    local port="9091"
     read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
     cmd="firewall-cmd --zone=public --add-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
     echo "about to run command: $cmd"
     eval "$cmd"
     local response="y"
-    read -e -p "Enter another firewall rule? (y/n): " -i "$response" response
+    read -e -p "Enter another firewall rich-rule? (y/n): " -i "$response" response
+    if [ $response != "y" ]; then
+      break
+    fi
+  done
+
+}
+
+function remove_rich_rules() {
+  firewall-cmd --list-all |grep 'rule family'
+  local ip="192.168.1.80/90"
+  while true; do
+    read -e -p "Enter the inbound IP number: " -i "$ip" ip
+    local port="9091"
+    read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
+    cmd="firewall-cmd --zone=public --remove-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
+    echo "about to run command: $cmd"
+    eval "$cmd"
+    local response="y"
+    read -e -p "Remove another firewall rich-rule? (y/n): " -i "$response" response
     if [ $response != "y" ]; then
       break
     fi
