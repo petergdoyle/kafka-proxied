@@ -43,7 +43,8 @@ function add_rich_rules() {
 
 }
 
-function remove_rich_rules() {
+function remove_rich_rules()
+
   firewall-cmd --list-all |grep 'rule family'
   local ip="192.168.1.80/90"
   while true; do
