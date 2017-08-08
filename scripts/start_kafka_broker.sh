@@ -23,7 +23,7 @@ if [ ! -f $broker_config_template_file ]; then
 fi
 
 no_instances="1"
-read -e -p "Enter the number of zookeeper instances: " -i "$no_instances" no_instances
+read -e -p "Enter the number of broker instances: " -i "$no_instances" no_instances
 for i in $(eval echo "{1..$no_instances}"); do
 
   broker_config_file="$kafka_runtime_config_dir/$node_name-broker-$i.properties"
