@@ -47,7 +47,7 @@ for i in $(eval echo "{1..$no_instances}"); do
     default_value="y"
     read -e -p "$prompt" -i $default_value response
     if [ "$response" == 'y' ]; then
-      timeout 5s tail "$broker_runtime_console_log_file"
+      timeout 5s tail -f "$broker_runtime_console_log_file"
     fi
   else
     display_error "broker does not appear to be running"

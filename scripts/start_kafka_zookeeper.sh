@@ -48,7 +48,7 @@ for i in $(eval echo "{1..$no_instances}"); do
     default_value="y"
     read -e -p "$prompt" -i $default_value response
     if [ "$response" == 'y' ]; then
-      timeout 5s tail "$zookeeper_runtime_console_log_file"
+      timeout 5s tail -f "$zookeeper_runtime_console_log_file"
     fi
   else
     display_error "zookeeper does not appear to be running"
