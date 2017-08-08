@@ -34,7 +34,7 @@ function add_rich_rules() {
     local ip="192.168.1.82"
     read -e -p "Enter the inbound IP number: " -i "$ip" ip
     local port="19091"
-    read -e -p "Enter the inbound port to open (range allowed - 19091-19093): " -i "$port" port
+    read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
     cmd="firewall-cmd --zone=public --add-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
     echo "about to run command: $cmd"
     eval "$cmd"
