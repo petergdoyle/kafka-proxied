@@ -9,10 +9,11 @@ if [[ -z $BKR_PIDS ]]; then\
   exit 1
 fi
 
-
 number_of_brokers=`find $kafka_runtime_console_logs_dir -type f -name '*broker*' |wc -l`
 selected_broker='1'
-read -e -p "A total of $number_of_brokers found. Which broker (number)?: " -i "$selected_broker" selected_broker
+if [ $number_of_brokers -gt 1 ]; then
+  read -e -p "A total of $number_of_brokers broker log file(s) found. Which broker (number)?: " -i "$selected_broker" selected_broker
+fi
 broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$selected_broker-console.log"
 
 tail -f "$broker_runtime_console_log_file"
