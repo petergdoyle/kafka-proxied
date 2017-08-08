@@ -6,27 +6,6 @@ if [ -z $KAFKA_HOME ]; then
   exit 1
 fi
 
-function create_zookeeper_config() {
-
-  if [ ! -d $kafka_runtime_config_dir ]; then
-    mkdir -pv $kafka_runtime_config_dir
-  fi
-
-  if [ ! -d $kafka_runtime_console_logs_dir ]; then
-    mkdir -pv $kafka_runtime_console_logs_dir
-  fi
-
-  if [ ! -f $zookeeper_config_template_file ]; then
-    "cannot continue. no template file named $zookeeper_config_template_file exists"
-    exit 1
-  fi
-
-  cp -vf $zookeeper_config_template_file  $zookeeper_config_file
-  configure_zookeeper
-
-  sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
-}
-
 function configure_zookeeper() {
   zk_host='localhost'
   read -e -p "Enter the zookeeper host: " -i "$zk_host" zk_host
@@ -35,36 +14,18 @@ function configure_zookeeper() {
   zk_host_port=$zk_host:$zk_port
 }
 
-function create_broker_config() {
-
-  if [ ! -d $kafka_runtime_config_dir ]; then
-    mkdir -pv $kafka_runtime_config_dir
-  fi
-
-  if [ ! -d $kafka_runtime_console_logs_dir ]; then
-    mkdir -pv $kafka_runtime_console_logs_dir
-  fi
-
-  if [ ! -f $broker_config_template_file ]; then
-    "cannot continue. no template file named $broker_config_template_file exists"
-    exit 1
-  fi
-
-  cp -vf $broker_config_template_file  $broker_config_file
-  configure_broker
-
-}
-
 function configure_broker() {
 
-  broker_id=`echo $node_name |grep -o '[0-9:]*'`
-  number_regex='^[0-9]+$'
-  if ! [[ "$broker_id" =~ $number_regex ]]; then
-    read -e -p "Enter an appropriate broker id (must be numeric and unique per server): " -i "1" broker_id
-  fi
+  # broker_id=`echo $node_name |grep -o '[0-9:]*'`
+  # number_regex='^[0-9]+$'
+  # if ! [[ "$broker_id" =~ $number_regex ]]; then
+  #   read -e -p "Enter an appropriate broker id (must be numeric and unique per server): " -i "1" broker_id
+  # fi
+  broker_id=$1
   sed -i "s/broker.id=.*/broker.id=$broker_id/g" $broker_config_file
+  sed -i "s#log.dirs=.*#log.dirs=/tmp/kafka-logs/$broker_id#g" $broker_config_file
 
-  broker_port="9091"
+  broker_port="909$i"
   read -e -p "Enter the broker port: " -i "$broker_port" broker_port
   listeners="PLAINTEXT://:$broker_port"
   read -e -p "Enter the the address the socket server listens on (locally): " -i "$listeners" listeners
