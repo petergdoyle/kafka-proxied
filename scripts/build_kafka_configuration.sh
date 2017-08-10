@@ -96,6 +96,23 @@ function configure_mirror_maker() {
 
 function cleanup_kafka() {
 
+
+  local dir=$kafka_runtime_logs_dir
+  local name="kafka runtime logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Destroy old console logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv $kafka_runtime_logs_dir/*
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+    if [ -d $dir ]; then
+      mkdir -pv $kafka_runtime_logs_dir \
+      && chmod 1777 $kafka_runtime_logs_dir
+    fi
+  fi
+
   local dir=$kafka_runtime_console_logs_dir
   local name="kafka runtime console logs dir"
   if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then

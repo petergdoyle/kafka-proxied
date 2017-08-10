@@ -37,6 +37,8 @@ else
 fi
 kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
 
+kafka_runtime_logs_dir="$kafka_base_location/default/logs"
+
 kafka_runtime_console_logs_dir="$kafka_base_location/logs"
 broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
 zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-console.log"
@@ -173,6 +175,9 @@ function show_cluster_state() {
   [[ ! -z $KAFKA_HOME ]] \
   && display_info "KAFKA_HOME: $KAFKA_HOME" \
   || display_warn "KAFKA_HOME: Not set"
+  [[ -f $kafka_runtime_logs_dir ]] \
+  && display_info "kafka runtime logs dir: $kafka_runtime_logs_dir" \
+  || display_warn "kafka runtime logs dir: $kafka_runtime_logs_dir *Does not exist"
   display_info " "
 
   echo -e $BOLD$GREEN"Kafka Configuration:"$RESET
