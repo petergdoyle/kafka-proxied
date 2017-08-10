@@ -1,5 +1,5 @@
 #!/bin/sh
-. ./build_kafka_configuration.sh
+. ./common.sh
 
 if [ -d $kafka_installation_dir ]; then
   install_anyway="n"
