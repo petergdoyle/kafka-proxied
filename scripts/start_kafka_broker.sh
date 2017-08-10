@@ -3,10 +3,13 @@ cd $(dirname $0)
 . ./build_kafka_configuration.sh
 
 BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
+BKR_PID_CNT=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'| wc -l`
 
-if [ ! -z $BKR_PIDS ]; then\
-  display_error "broker is already running ! stop the broker first !"
-  exit 1
+if [ $BKR_PID_CNT -gt 0 ]; then
+  echo -e -p "$BKR_PID_CNT broker processes already running. Do you want to continue (y/n)? " -i "y" confirm
+  if [ "$confirm" != "y" ]; then
+    exit 1
+  fi
 fi
 
 if [ ! -d $kafka_runtime_config_dir ]; then
@@ -29,6 +32,14 @@ for i in $(eval echo "{1..$no_instances}"); do
   read -e -p "Confirm the Broker Id (must be unique INT within the cluster): " -i "$broker_id" broker_id
   broker_config_file="$kafka_runtime_config_dir/$node_name-broker-$broker_id-config.properties"
   broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$broker_id-console.log"
+
+# start==(( BKR_PID_CNT + 1 ))
+# end=(( start + 1 ))
+# read -e -p "Enter the number of broker instances: " -i "$end" end
+# for i in $(eval echo "{$start..$end}"); do
+
+  broker_config_file="$kafka_runtime_config_dir/$node_name-broker-$i.properties"
+  broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$i-console.log"
   cp -vf $broker_config_template_file  $broker_config_file
   configure_broker "$broker_id"
 
