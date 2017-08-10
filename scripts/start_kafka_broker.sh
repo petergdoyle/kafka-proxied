@@ -43,7 +43,7 @@ for i in $(eval echo "{1..$no_instances}"); do
   sleep 2
   PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
   if [[ ! -z $PIDS ]]; then
-    prompt="Tail on log file? (y/n): "
+    prompt="Tail on log file ($broker_runtime_console_log_file)? (y/n): "
     default_value="y"
     read -e -p "$prompt" -i $default_value response
     if [ "$response" == 'y' ]; then
