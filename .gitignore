@@ -5,3 +5,4 @@ local
 *-mm_consumer.properties
 *-mm_producer.properties
 *-zookeeper.properties
+kafka-src/kafka 
