@@ -51,7 +51,7 @@ function remove_rich_rules() {
       read -e -p "Enter the inbound IP number: " -i "$ip" ip
       local port="9091"
       read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
-      cmd="firewall-cmd --zone=public --remove-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
+      cmd="firewall-cmd --zone=public --remove-rich-rule='rule family=ipv4 source address=$ip port port=\"$port\" protocol=tcp accept'"
       echo "about to run command: $cmd"
       eval "$cmd"
       local response="y"
