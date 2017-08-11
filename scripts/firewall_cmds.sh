@@ -43,22 +43,22 @@ function add_rich_rules() {
 
 }
 
-function remove_rich_rules()
+function remove_rich_rules() {
 
-  firewall-cmd --list-all |grep 'rule family'
-  local ip="192.168.1.80/90"
-  while true; do
-    read -e -p "Enter the inbound IP number: " -i "$ip" ip
-    local port="9091"
-    read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
-    cmd="firewall-cmd --zone=public --remove-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
-    echo "about to run command: $cmd"
-    eval "$cmd"
-    local response="y"
-    read -e -p "Remove another firewall rich-rule? (y/n): " -i "$response" response
-    if [ $response != "y" ]; then
-      break
-    fi
-  done
+    firewall-cmd --list-all |grep 'rule family'
+    local ip="192.168.1.80/90"
+    while true; do
+      read -e -p "Enter the inbound IP number: " -i "$ip" ip
+      local port="9091"
+      read -e -p "Enter the inbound port to open (range allowed - 9091-9093): " -i "$port" port
+      cmd="firewall-cmd --zone=public --remove-rich-rule='rule family=ipv4 source address=$ip port port=$port protocol=tcp accept'"
+      echo "about to run command: $cmd"
+      eval "$cmd"
+      local response="y"
+      read -e -p "Remove another firewall rich-rule? (y/n): " -i "$response" response
+      if [ $response != "y" ]; then
+        break
+      fi
+    done
 
 }
