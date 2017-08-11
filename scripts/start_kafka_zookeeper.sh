@@ -31,7 +31,7 @@ for i in $(eval echo "{1..$no_instances}"); do
   zookeeper_config_file="$kafka_runtime_config_dir/$zookeeper_id-zk-config.properties"
   cp -vf $zookeeper_config_template_file  $zookeeper_config_file
   sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
-  zookeeper_runtime_console_log_file="$kafka_base_location/logs/$zookeeper_id-console.log"
+  zookeeper_runtime_console_log_file="$kafka_base_location/logs/$zookeeper_id-zk-console.log"
 
   cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zookeeper_runtime_console_log_file 2>&1"
   echo "$cmd"
