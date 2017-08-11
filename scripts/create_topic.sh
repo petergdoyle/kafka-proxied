@@ -10,7 +10,7 @@ fi
 zk_host_port='localhost:2181'
 read -e -p "Enter the zk host/port: " -i "$zk_host_port" zk_host_port
 
-topic='hertz-edifact'
+topic='kafka-simple-topic-1'
 read -e -p "Enter the topic name: " -i "$topic" topic
 
 partitions='1'
@@ -41,5 +41,5 @@ prompt=$BOLD$YELLOW"About to start Create Topics as shown, continue? (y/n): $RES
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
 if [ "$response" == 'y' ]; then
-  eval "$cmd" 
+  eval "$cmd"
 fi

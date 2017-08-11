@@ -8,7 +8,7 @@ if [ -z $KAFKA_HOME ]; then
 fi
 
 read -e -p "Enter the zk host/port: " -i "localhost:2181" zk_host_port
-read -e -p "Enter the topic name: " -i "hertz-edifact" topic
+read -e -p "Enter the topic name: " -i "kafka-simple-topic-1" topic
 
 
 cmd="$KAFKA_HOME/bin/kafka-topics.sh \
@@ -21,5 +21,5 @@ prompt=$BOLD$YELLOW"About to start List Partitions on Topic as shown, continue? 
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
 if [ "$response" == 'y' ]; then
-  eval "$cmd" 
+  eval "$cmd"
 fi

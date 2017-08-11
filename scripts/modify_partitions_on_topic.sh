@@ -10,7 +10,7 @@ fi
 zk_host_port='localhost:2181'
 read -e -p "Enter the zk host/port: " -i "$zk_host_port" zk_host_port
 
-topic='hertz-edifact'
+topic='kafka-simple-topic-1'
 read -e -p "Enter the topic name: " -i "$topic" topic
 partitions=`$KAFKA_HOME/bin/kafka-topics.sh --describe --zookeeper $zk_host_port --topic $topic |grep 'PartitionCount:' | awk '{print $2}'| grep -Eo '[0-9]'`
 if [ "$partitions" -ne "$partitions" ]; then #check for a numeric response
@@ -32,5 +32,5 @@ prompt=$BOLD$YELLOW"About to start Modify Partions on Topic as shown, continue? 
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response
 if [ "$response" == 'y' ]; then
-  eval "$cmd" 
+  eval "$cmd"
 fi

@@ -10,7 +10,7 @@ fi
 bootstrap_server='localhost:9092'
 read -e -p "Enter a kafka broker server: " -i "$bootstrap_server" bootstrap_server
 
-topic='hertz-edifact'
+topic='kafka-simple-topic-1'
 read -e -p "Enter the topic name: " -i "$topic" topic
 
 cmd="$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic"
