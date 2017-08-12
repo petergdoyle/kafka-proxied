@@ -42,6 +42,11 @@ fi
 
 cleanup_kafka
 
+if [ ! -d $kafka_templates_config_dir ]; then #take a copy of the distribution configs
+  mkdir -pv $kafka_templates_config_dir
+  cp -v $kafka_base_location/kafka_$scala_version-$kafka_version/config/* $kafka_templates_config_dir
+fi
+
 if [ ! -d $kafka_runtime_config_dir ]; then
   mkdir -pv $kafka_runtime_config_dir
 fi
