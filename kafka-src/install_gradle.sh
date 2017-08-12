@@ -4,8 +4,10 @@ parent_dir="$(dirname "$(pwd)")"
 gradle_version='4.0.1'
 if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install gradle
   gradle_base_location="/usr/gradle"
+  profile_d="/etc/profile.d/gradle.sh"
 else
-  gradle_base_location=$parent_dir/local/gradle
+  gradle_base_location="$parent_dir/local/gradle"
+  profile_d="/etc/profile.d/gradle.sh"
 fi
 if [ ! -d "$gradle_base_location/gradle-$gradle_version" ]; then
   mkdir -pv $gradle_base_location \
@@ -17,7 +19,7 @@ if [ ! -d "$gradle_base_location/gradle-$gradle_version" ]; then
   && ln -s $gradle_base_location/gradle-$gradle_version $gradle_base_location/default
 
   export GRADLE_HOME=$gradle_base_location/default
-  cat >/etc/profile.d/gradle.sh <<-EOF
+  cat >$profile_d <<-EOF
 export GRADLE_HOME=$GRADLE_HOME
 EOF
 

@@ -5,5 +5,9 @@ local
 *-mm_consumer.properties
 *-mm_producer.properties
 *-zookeeper.properties
-kafka.git
+kafka-src/kafka
+kafka-src/kafka-sources
+kafka-src/kafka-binaries
+kafka-src/*.tar.gz
 .gradle
+/kafka-src/KafkaClientAPI/target/
