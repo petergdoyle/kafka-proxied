@@ -22,12 +22,12 @@ new_consumer='y'
 read -e -p "Use new kafka consumer: " -i "$new_consumer" new_consumer
 if [ "$new_consumer" == "y" ]; then
   bootstrap_server='localhost:9091'
-  read -e -p "Enter the bootstrap server: " -i "$bootstrap_server" bootstrap_server
+  read -e -p "Enter the broker host:port : " -i "$bootstrap_server" bootstrap_server
   connect_uri="--new-consumer --bootstrap-server $bootstrap_server"
 else
   new_consumer_param='--new-consumer '
   zk_host_port='localhost:2181'
-  read -e -p "Enter the bootstrap server: " -i "$bootstrap_server" bootstrap_server
+  read -e -p "Enter the zookeeper host:port : " -i "$bootstrap_server" bootstrap_server
   connect_uri="--zookeeper $bootstrap_server"
 fi
 
