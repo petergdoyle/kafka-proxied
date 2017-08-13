@@ -20,9 +20,9 @@ Vagrant.configure("2") do |config|
       grep ^192.168.60 /etc/hosts> /dev/null 2>&1
       if [ $? -ne 0 ]; then
     cat >>/etc/hosts <<-EOF
-192.168.60.100  kafka-cluster-zookeeper1.vbx zookeeper1
-192.168.60.101  kafka-cluster-broker1.vbx broker1
-192.168.60.102  kafka-cluster-broker2.vbx broker2
+192.168.1.301 kafka-cluster-node1.vbx
+192.168.1.302 kafka-cluster-node3.vbx
+192.168.1.303 kafka-cluster-node3.vbx
 EOF
     fi
 
@@ -63,47 +63,24 @@ EOF
       echo -e "\e[7;44;96m*java already appears to be installed. skipping.\e[0m"
     fi
 
-    # install kafka on all nodes
-#    kafka_version='kafka_2.11-0.10.1.1/'
-#    kafka_base_location="/usr/kafka"
-#     if [ ! -d "$kafka_base_location/$kafka_version" ]; then
-#       mkdir -pv $kafka_base_location \
-#       && echo "downloading $kafka_version..."
-#
-#       curl -O http://www-us.apache.org/dist/kafka/0.10.0.1/kafka_2.11-0.10.0.1.tgz \
-#       && tar -xvf kafka_2.11-0.10.0.1.tgz -C $kafka_base_location \
-#       && rm -f kafka_2.11-0.10.0.1.tgz \
-#       && ln -s $kafka_base_location/kafka_2.11-0.10.0.1 $kafka_base_location/default
-#
-#       export KAFKA_HOME=$kafka_base_location/default
-#       cat >/etc/profile.d/kafka.sh <<-EOF
-# export KAFKA_HOME=$KAFKA_HOME
-# EOF
-#       mkdir -pv $kafka_base_location/kafka_2.11-0.10.0.1/logs \
-#       && chmod 1777 $kafka_base_location/kafka_2.11-0.10.0.1/logs
-#
-#     else
-#       echo -e "\e[7;44;96m*$kafka_version already appears to be installed. skipping.\e[0m"
-#     fi
-
 SHELL
 
 
-  config.vm.define "node1" do |node1|
-    node1.vm.hostname = "kafka-cluster-node1.vbx"
-    node1.vm.network "public_network", ip: "192.168.1.301"
-    node1.vm.network "forwarded_port", guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "kfka_zkp_1", auto_correct: true
-    node1.vm.network "forwarded_port", guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "kfka_bkr_1", auto_correct: true
+  config.vm.define "node1" do |app|
+    app.vm.hostname = "kafka-cluster-node1.vbx"
+    app.vm.network "public_network", ip: "192.168.1.301"
+    app.vm.network "forwarded_port", guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "kfka_zkp_1", auto_correct: true
+    app.vm.network "forwarded_port", guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "kfka_bkr_1", auto_correct: true
   end
-  config.vm.define "node2" do |node2|
-    node2.vm.hostname = "kafka-cluster-node2.vbx"
-    node2.vm.network "public_network", ip: "192.168.1.302"
-    node2.vm.network "forwarded_port", guest: 9092, host: 9092, host_ip: "0.0.0.0", id: "kfka_bkr_2", auto_correct: true
+  config.vm.define "node2" do |app|
+    app.vm.hostname = "kafka-cluster-node2.vbx"
+    app.vm.network "public_network", ip: "192.168.1.302"
+    app.vm.network "forwarded_port", guest: 9092, host: 9092, host_ip: "0.0.0.0", id: "kfka_bkr_2", auto_correct: true
   end
-  config.vm.define "node3" do |node3|
-    node3.vm.hostname = "kafka-cluster-node3.vbx"
-    node3.vm.network "public_network", ip: "192.168.1.303"
-    node3.vm.network "forwarded_port", guest: 9093, host: 9093, host_ip: "0.0.0.0", id: "kfka_bkr_3", auto_correct: true
+  config.vm.define "node3" do |app|
+    app.vm.hostname = "kafka-cluster-node3.vbx"
+    app.vm.network "public_network", ip: "192.168.1.303"
+    app.vm.network "forwarded_port", guest: 9093, host: 9093, host_ip: "0.0.0.0", id: "kfka_bkr_3", auto_correct: true
   end
 
 
