@@ -64,8 +64,8 @@ EOF
     fi
 
     # install kafka on all nodes
-    kafka_version='kafka_2.11-0.10.1.1/'
-    kafka_base_location="/usr/kafka"
+#    kafka_version='kafka_2.11-0.10.1.1/'
+#    kafka_base_location="/usr/kafka"
 #     if [ ! -d "$kafka_base_location/$kafka_version" ]; then
 #       mkdir -pv $kafka_base_location \
 #       && echo "downloading $kafka_version..."
@@ -89,21 +89,24 @@ EOF
 SHELL
 
 
-  config.vm.define "zookeeper1" do |zookeeper1|
-    zookeeper1.vm.hostname = "kafka-cluster-zookeeper1.vbx"
-    zookeeper1.vm.network "private_network", ip: "192.168.60.100"
-    zookeeper1.vm.network "forwarded_port", guest: 2181, host: 12181, host_ip: "0.0.0.0", id: "zookeeper1 node", auto_correct: true
+  config.vm.define "node1" do |node1|
+    node1.vm.hostname = "kafka-cluster-node1.vbx"
+    node1.vm.network "public_network", ip: "192.168.1.301"
+    node1.vm.network "forwarded_port", guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "kfka_zkp_1", auto_correct: true
+    node1.vm.network "forwarded_port", guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "kfka_bkr_1", auto_correct: true
   end
-  config.vm.define "broker1" do |broker1|
-    broker1.vm.hostname = "kafka-cluster-broker1.vbx"
-    broker1.vm.network "private_network", ip: "192.168.60.101"
-    broker1.vm.network "forwarded_port", guest: 9091, host: 19091, host_ip: "0.0.0.0", id: "broker1 node", auto_correct: true
+  config.vm.define "node2" do |node2|
+    node2.vm.hostname = "kafka-cluster-node2.vbx"
+    node2.vm.network "public_network", ip: "192.168.1.302"
+    node2.vm.network "forwarded_port", guest: 9092, host: 9092, host_ip: "0.0.0.0", id: "kfka_bkr_2", auto_correct: true
   end
-  config.vm.define "broker2" do |broker2|
-    broker2.vm.hostname = "kafka-cluster-broker2.vbx"
-    broker2.vm.network "private_network", ip: "192.168.60.102"
-    broker2.vm.network "forwarded_port", guest: 9092, host: 19092, host_ip: "0.0.0.0", id: "broker2 node", auto_correct: true
+  config.vm.define "node3" do |node3|
+    node3.vm.hostname = "kafka-cluster-node3.vbx"
+    node3.vm.network "public_network", ip: "192.168.1.303"
+    node3.vm.network "forwarded_port", guest: 9093, host: 9093, host_ip: "0.0.0.0", id: "kfka_bkr_3", auto_correct: true
   end
+
+
 
 
 end
