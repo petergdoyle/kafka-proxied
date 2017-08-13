@@ -2,10 +2,19 @@
 . ./common.sh
 
 if [ -d $kafka_installation_dir ]; then
+  if [ ! "`readlink $kafka_home`" -ef "$kafka_installation_dir" ]; then
+    prompt="It appears kafka is already installed at $kafka_installation_dir but it is not linked correctly `readlink $kafka_home`. Do you want to just relink it (y/n)? "
+    default_value="y"
+    read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" relink_only
+    if [ "$relink_only" == "y" ]; then
+      rm -v $kafka_home
+      ln -s $kafka_installation_dir $kafka_home
+    fi
+  fi
   install_anyway="n"
   prompt="It appears kafka is already installed at $kafka_installation_dir, Install it again (y/n)? "
   default_value="$install_anyway"
-  read -e -p "$prompt" -i "$default_value" install_anyway
+  read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" install_anyway
   if [ "$install_anyway" != "y" ]; then
     exit 0
   fi
@@ -15,19 +24,18 @@ if [ ! -d "$kafka_base_location" ]; then
  mkdir -pv $kafka_base_location
 fi
 
-downloadable="kafka_$scala_version-$kafka_version.tgz"
-download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
-display_info "downloading $download_url to $kafka_base_location..."
-kafka_home="$kafka_base_location/default"
-
 if [ -d $kafka_home ]; then
   rm -v $kafka_home
 fi
 
+downloadable="kafka_$scala_version-$kafka_version.tgz"
+download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
+display_info "downloading $download_url to $kafka_base_location..."
+
 curl -O $download_url \
 && tar -xvf $downloadable -C $kafka_base_location \
 && rm -f $downloadable \
-&& ln -s $kafka_base_location/kafka_$scala_version-$kafka_version $kafka_home
+&& ln -s $kafka_installation_dir $kafka_home
 
 if `grep KAFKA_HOME ~/.bash_profile` ; then
   # replace
@@ -44,7 +52,7 @@ cleanup_kafka
 
 if [ ! -d $kafka_templates_config_dir ]; then #take a copy of the distribution configs
   mkdir -pv $kafka_templates_config_dir
-  cp -v $kafka_base_location/kafka_$scala_version-$kafka_version/config/* $kafka_templates_config_dir
+  cp -v $kafka_installation_dir/config/* $kafka_templates_config_dir
 fi
 
 if [ ! -d $kafka_runtime_config_dir ]; then

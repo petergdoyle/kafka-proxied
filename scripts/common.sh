@@ -18,6 +18,21 @@ RED="\033[1;31m"
 ORANGE="\033[0,33m"
 # ORANGE=$'\e[33;40m'
 
+function display_info() {
+  local msg="$1"
+  echo -e $BLUE"[info] $msg"$RESET
+}
+
+function display_error() {
+  local msg="$1"
+  echo -e $BOLD$RED"[error] $msg"$RESET
+}
+
+function display_warn() {
+  local msg="$1"
+  echo -e $BOLD$ORANGE"[warn] $msg"$RESET
+}
+
 
 host_name=`hostname| cut -d"." -f1`
 node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`
@@ -36,7 +51,9 @@ if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install k
 else
   kafka_base_location=$parent_dir/local/kafka
 fi
+
 kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
+kafka_home="$kafka_base_location/default"
 
 kafka_runtime_logs_dir="$kafka_base_location/default/logs"
 
@@ -82,21 +99,6 @@ function prompt() {
   read -e -p "$prompt" -i "$d_default_value" value
   echo -e "$RESET"
   echo $value
-}
-
-function display_info() {
-  local msg="$1"
-  echo -e $BLUE"[info] $msg"$RESET
-}
-
-function display_error() {
-  local msg="$1"
-  echo -e $BOLD$RED"[error] $msg"$RESET
-}
-
-function display_warn() {
-  local msg="$1"
-  echo -e $BOLD$ORANGE"[warn] $msg"$RESET
 }
 
 function check_kafka_installed() {
@@ -175,7 +177,16 @@ function show_cluster_state() {
   || display_warn "kafka installation location: Not installed"
   [[ ! -z $KAFKA_HOME ]] \
   && display_info "KAFKA_HOME: $KAFKA_HOME" \
-  || display_warn "KAFKA_HOME: Not set"
+  || display_warn "KAFKA_HOME: Not set ==> Please run install_kafka.sh or source ~/.bash_profile if installed kafka and did not do so."
+
+  if [ -d $kafka_home ]; then #kafka is installed
+    if [ "`readlink $kafka_base_location/default`" -ef "$kafka_installation_dir" ]; then
+      display_error "The kafka version $kafka_version matches what is linked at $kafka_home "
+    else
+      display_error "The kafka version $kafka_version does not match with what is linked at `readlink $kafka_home` ==> Please run install_kafka.sh or change the kafka_version in common.sh";
+    fi
+  fi
+
   [[ -f $kafka_runtime_logs_dir ]] \
   && display_info "kafka runtime logs dir: $kafka_runtime_logs_dir" \
   || display_warn "kafka runtime logs dir: $kafka_runtime_logs_dir *Does not exist"
