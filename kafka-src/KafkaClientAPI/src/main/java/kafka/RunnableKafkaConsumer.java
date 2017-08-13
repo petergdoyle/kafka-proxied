@@ -24,7 +24,7 @@ class RunnableKafkaConsumer implements Runnable {
     private final List<String> topics;
     private final String consumerGroup;
     private final String consumerId;
-    private final long sleep;
+    private final long sleep=0;
     private final boolean noisy;
     final AtomicInteger count = new AtomicInteger();
 
@@ -37,7 +37,7 @@ class RunnableKafkaConsumer implements Runnable {
         this.consumerGroup = consumerGroup;
         this.consumerId = consumerId;
         this.consumer = new KafkaConsumer<>(props);
-        this.sleep = sleep;
+//        this.sleep = sleep;
         this.noisy = noisy;
     }
 

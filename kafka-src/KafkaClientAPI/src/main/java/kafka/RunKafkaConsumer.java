@@ -20,16 +20,18 @@ public class RunKafkaConsumer {
         String consumerGroup = args[1];
         String consumerId = args[2];
         List<String> topics = Arrays.asList(args[3].split(","));
-        long sleep = Long.parseLong(args[4]);
-        String argValue = args[5];
+//        long sleep = Long.parseLong(args[4]);
+        long sleep = 0L;
+//        String argValue = args[5];
         boolean noisy = false;
 //        if (isTrue(argValue)) {
-//            noisy = true;
+            noisy = true;
 //        }
 
         Properties kafkaProperties = new Properties();
         kafkaProperties.put("bootstrap.servers", bootstrapServers);
         kafkaProperties.put("group.id", consumerGroup);
+        kafkaProperties.put("client.id", consumerId);
         kafkaProperties.put("enable.auto.commit", "true");
         kafkaProperties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaProperties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
