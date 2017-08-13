@@ -64,6 +64,10 @@ for i in $(eval echo "{1..$no_instances}"); do
     fi
   else
     display_error "broker does not appear to be running"
+    sleep 2
+    if [ -f $broker_runtime_console_log_file ]; then
+      less -f $broker_runtime_console_log_file
+    fi
   fi
 
 done

@@ -7,7 +7,7 @@ if [ -z $KAFKA_HOME ]; then
   exit 1
 fi
 
-bootstrap_server='localhost:9092'
+bootstrap_server='localhost:9091'
 read -e -p "Enter a kafka broker server: " -i "$bootstrap_server" bootstrap_server
 
 topic='kafka-simple-topic-1'

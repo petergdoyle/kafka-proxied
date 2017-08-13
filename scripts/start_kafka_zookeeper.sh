@@ -54,6 +54,10 @@ for i in $(eval echo "{1..$no_instances}"); do
     fi
   else
     display_error "zookeeper does not appear to be running"
+    sleep 2
+    if [ -f $zookeeper_runtime_console_log_file ]; then
+      less -f $zookeeper_runtime_console_log_file
+    fi
   fi
 
 done

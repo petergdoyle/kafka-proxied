@@ -62,3 +62,28 @@ function remove_rich_rules() {
     done
 
 }
+
+function list_rich_rules() {
+  OLD_IFS=$IFS
+  IFS=$'\n'
+  for each in `firewall-cmd --list-all |grep 'rule family'| sed -e 's/^[ \t]*//'`; do
+    echo firewall-cmd --add-rich-rule=\'"$each"\'
+  done
+  IFS=$OLD_IFS
+}
+
+
+# engine1
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.82" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.83" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="40.112.255.211" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="40.78.64.141" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.81" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.81" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.82" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.83" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.141" port port="2181" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.141" port port="9091-9093" protocol="tcp" accept'
+# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.81" port port="19091-19093" protocol="tcp" accept'
