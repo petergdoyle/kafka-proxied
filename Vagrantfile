@@ -68,7 +68,7 @@ SHELL
 
   config.vm.define "node1" do |app|
     app.vm.hostname = "kafka-cluster-node1.vbx"
-    app.vm.network "public_network", ip: "192.168.1.301"
+    app.vm.network :public_network, ip: "192.168.1.301"
     app.vm.network "forwarded_port", guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "kfka_zkp_1", auto_correct: true
     app.vm.network "forwarded_port", guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "kfka_bkr_1", auto_correct: true
   end
