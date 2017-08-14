@@ -17,6 +17,7 @@ dataDir=/tmp/zookeeper
 clientPort=2181
 maxClientCnxns=0
 ```
+
 #####kafka-broker-1-config.properties (required to expose public cluster details)
 ```
 broker.id=1
@@ -38,7 +39,9 @@ log.retention.check.interval.ms=300000
 zookeeper.connect=cleverfishsoftware.com:2181
 zookeeper.connection.timeout.ms=16000
 ```
+
 #####/etc/hosts (required dns resolution to the public cluster nodes)
+
 ```
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
@@ -48,9 +51,10 @@ zookeeper.connection.timeout.ms=16000
 192.168.1.83 engine3 engine3.cleverfishsoftware.com
 192.168.1.85 Peters-iMac iMac Peters-iMac.hsd1.co.comcast.net
 192.168.1.88 Peters-MBP MBP Peters-MBP.hsd1.co.comcast.net
-
 ```
+
 #####firewall config (inbound rules need to allow for external/internal connections)
+
 ```
 public (active)
   target: default
@@ -79,10 +83,10 @@ public (active)
 	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.78.64.141" port port="2181" protocol="tcp" accept
 ```
-- - -
 
 ####kafka_node_2 (runs Kafka-Broker-2 process)
 #####kafka-broker-1-config.properties (required to expose public cluster details)
+
 ```
 broker.id=2
 listeners=PLAINTEXT://:9092
@@ -104,17 +108,18 @@ zookeeper.connect=cleverfishsoftware.com:2181
 zookeeper.connection.timeout.ms=16000
 
 ```
-#####/etc/hosts (required dns resolution to the public cluster nodes)
-```
 
+#####/etc/hosts (required dns resolution to the public cluster nodes)
+
+```
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-##nextgen
 192.168.1.81 engine1 engine1.cleverfishsoftware.com 
 192.168.1.82 engine2 engine2.cleverfishsoftware.com cleverfishsoftware.com
 192.168.1.83 engine3 engine3.cleverfishsoftware.com
 ```
+
 #####firewall config (inbound rules need to allow for external/internal connections)
 ```
 public (active)
@@ -141,9 +146,10 @@ public (active)
 	rule family="ipv4" source address="192.168.1.141" port port="9091-9093" protocol="tcp" accept
 
 ```
-- - -
+
 ####kafka_node_3 (runs Kafka-Broker-3 process)
 #####kafka-broker-1-config.properties (required to expose public cluster details)
+
 ```
 broker.id=3
 listeners=PLAINTEXT://:9093
@@ -164,15 +170,19 @@ log.retention.check.interval.ms=300000
 zookeeper.connect=cleverfishsoftware.com:2181
 zookeeper.connection.timeout.ms=16000
 ```
+
 #####/etc/hosts (required dns resolution to the public cluster nodes)
+```
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-##nextgen
 192.168.1.81 engine1 engine1.cleverfishsoftware.com 
 192.168.1.82 engine2 engine2.cleverfishsoftware.com
 192.168.1.83 engine3 engine3.cleverfishsoftware.com cleverfishsoftware.com
+```
+
 #####firewall config (inbound rules need to allow for external/internal connections)
+
 ```
 public (active)
   target: default
@@ -198,16 +208,11 @@ public (active)
 	rule family="ipv4" source address="192.168.1.83" port port="2181" protocol="tcp" accept
 	rule family="ipv4" source address="192.168.1.83" port port="9091-9093" protocol="tcp" accept
 ```
-- - -
+
 ####Peters-iMac
 - ip must be allow to connect on each node
-- - -
-- - -
-
-
 
 ###External Network Kafka Clients (consumer and producer)
-- - -
 
 ####hospitalityhertzpocnode1 (run the kafka console producer)
 ```bash
@@ -343,8 +348,7 @@ message11
 message12
 
 ```
-- - -
-- - -
+
 
 ##Notes:
 
