@@ -2,7 +2,7 @@
 ## Exposing Kafka Cluster through Public Network Gateway
 
 
-![kafka_cluster_topology](kafka_cluster_topology.png)
+![kafka_cluster_topology](kafka_cluster_topology.PNG)
 
 
 ###Internal Network Kafka Cluster Configuration
