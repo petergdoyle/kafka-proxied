@@ -7,7 +7,7 @@
 
 ### Internal Network Kafka Cluster Configuration
 
-#### kafka_node_1 (runs Kafka-Zookeeper and Kafka-Broker-1 processes)
+#### engine1 (runs Kafka-Zookeeper and Kafka-Broker-1 processes)
 This node in the cluster will run a Zookeper instance and a Broker instance. 
 This shows the configurations for each process
 
@@ -86,7 +86,7 @@ public (active)
 
 - - -
 
-#### kafka_node_2 (runs Kafka-Broker-2 process)
+#### engine2 (runs Kafka-Broker-2 process)
 ##### kafka-broker-1-config.properties (required to expose public cluster details)
 
 ```
@@ -151,7 +151,7 @@ public (active)
 
 - - -
 
-#### kafka_node_3 (runs Kafka-Broker-3 process)
+#### engine3 (runs Kafka-Broker-3 process)
 
 ##### kafka-broker-1-config.properties (required to expose public cluster details)
 
