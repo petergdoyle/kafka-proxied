@@ -160,19 +160,89 @@ function cleanup_kafka() {
     fi
   fi
 
-local dir=$zookeeper_logs_dir
-local name="zookeeper logs dir"
-if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
-  echo "$name($dir) Exists and is not Empty";
-  read -e -p "Destroy old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
-  if [ "$response" == 'y' ]; then
-    rm -frv $zookeeper_logs_dir
+  local dir=$zookeeper_logs_dir
+  local name="zookeeper logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Destroy old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      rm -frv $zookeeper_logs_dir
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+    if [ -d $dir ]; then
+      echo "Zookeper will create this on his own"
+    fi
   fi
-else
-  display_info "$name($dir) Doesn't Exist or is Empty"
-  if [ -d $dir ]; then
-    echo "Zookeper will create this on his own"
+
+}
+
+function capture_kafka() {
+
+  kafka_archive_name='kafka-capture.tar.gz'
+  read -e -p "Name of the kafka state capture file? (y/n): " -i "$kafka_archive_name" kafka_archive_name
+  kafka_archive_src=""
+
+  local dir=$kafka_runtime_logs_dir
+  local name="kafka runtime logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Capture old console logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      kafka_archive_src="$kafka_archive_src $kafka_runtime_logs_dir"
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
   fi
-fi
+
+  local dir=$kafka_runtime_console_logs_dir
+  local name="kafka runtime console logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Capture old console logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      kafka_archive_src="$kafka_archive_src $kafka_runtime_console_logs_dir"
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+  fi
+
+  local dir=$kafka_runtime_config_dir
+  local name="kafka runtime config dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Capture old kafka configuration files? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      kafka_archive_src="$kafka_archive_src $kafka_runtime_config_dir"
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+  fi
+
+  local dir=$kafka_broker_logs_dir
+  local name="kafka broker logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Capture old persistent Kafka Broker logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      kafka_archive_src="$kafka_archive_src $kafka_broker_logs_dir"
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+  fi
+
+  local dir=$zookeeper_logs_dir
+  local name="zookeeper logs dir"
+  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+    echo "$name($dir) Exists and is not Empty";
+    read -e -p "Capture old persistent Kafka Zookeeper logs? (y/n): " -i "y" response
+    if [ "$response" == 'y' ]; then
+      kafka_archive_src="$kafka_archive_src $zookeeper_logs_dir"
+    fi
+  else
+    display_info "$name($dir) Doesn't Exist or is Empty"
+  fi
+
+  tar -czvf $kafka_archive_name $kafka_archive_src
 
 }
