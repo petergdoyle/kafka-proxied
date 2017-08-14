@@ -152,7 +152,7 @@ public (active)
 - - -
 
 #### kafka_node_3 (runs Kafka-Broker-3 process)
-- - -
+
 ##### kafka-broker-1-config.properties (required to expose public cluster details)
 
 ```
@@ -176,7 +176,6 @@ zookeeper.connect=cleverfishsoftware.com:2181
 zookeeper.connection.timeout.ms=16000
 ```
 
-- - -
 ##### /etc/hosts (required dns resolution to the public cluster nodes)
 
 ```
