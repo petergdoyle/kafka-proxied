@@ -85,8 +85,8 @@ public (active)
 ```
 
 - - -
-- - -
-### #kafka_node_2 (runs Kafka-Broker-2 process)
+
+#### kafka_node_2 (runs Kafka-Broker-2 process)
 ##### kafka-broker-1-config.properties (required to expose public cluster details)
 
 ```
@@ -149,7 +149,6 @@ public (active)
 
 ```
 
-- - -
 - - -
 
 #### kafka_node_3 (runs Kafka-Broker-3 process)
@@ -360,8 +359,6 @@ message12
 ```
 
 - - -
-- - -
-
 
 
 ## Notes:
