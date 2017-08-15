@@ -30,14 +30,7 @@ read -e -p "Enter the number of broker instances: " -i "$no_instances" no_instan
 for i in $(eval echo "{1..$no_instances}"); do
   broker_id=$i
   read -e -p "Confirm the Broker Id (must be unique INT within the cluster): " -i "$broker_id" broker_id
-  broker_config_file="$kafka_runtime_config_dir/$node_name-broker-$broker_id-config.properties"
   broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$broker_id-console.log"
-
-# start==(( BKR_PID_CNT + 1 ))
-# end=(( start + 1 ))
-# read -e -p "Enter the number of broker instances: " -i "$end" end
-# for i in $(eval echo "{$start..$end}"); do
-
   broker_config_file="$kafka_runtime_config_dir/$node_name-broker-$i.properties"
   broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$i-console.log"
   cp -vf $broker_config_template_file  $broker_config_file

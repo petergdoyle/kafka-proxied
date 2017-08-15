@@ -26,7 +26,7 @@ no_instances="1"
 read -e -p "Enter the number of zookeeper instances: " -i "$no_instances" no_instances
 for i in $(eval echo "{1..$no_instances}"); do
   configure_zookeeper
-  zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper-config-$i.properties"
+  zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper-$i-config.properties"
   cp -vf $zookeeper_config_template_file  $zookeeper_config_file
   sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
   zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-$i-console.log"

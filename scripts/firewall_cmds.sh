@@ -67,7 +67,7 @@ function list_rich_rules() {
   OLD_IFS=$IFS
   IFS=$'\n'
   for each in `firewall-cmd --list-all |grep 'rule family'| sed -e 's/^[ \t]*//'`; do
-    echo firewall-cmd --add-rich-rule=\'"$each"\'
+    echo firewall-cmd --zone=public --permanent --add-rich-rule=\'"$each"\'
   done
   IFS=$OLD_IFS
 }
@@ -95,7 +95,6 @@ firewall-cmd --zone=public --add-masquerade --permanent
 # engine1
 firewall-cmd --zone=public --permanent --add-forward-port=port=12181:proto=tcp:toport=2181
 firewall-cmd --zone=public --permanent --add-forward-port=port=19091:proto=tcp:toport=9091
-firewall-cmd --zone=public --permanent --add-rich-rule 'rule family="ipv4" source address=192.168.0.14 accept'
 firewall-cmd --zone=public --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.81" port port="2181" protocol="tcp" accept'
 firewall-cmd --zone=public --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.82" port port="2181" protocol="tcp" accept'
 firewall-cmd --zone=public --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.83" port port="2181" protocol="tcp" accept'
