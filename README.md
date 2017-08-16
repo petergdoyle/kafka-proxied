@@ -22,7 +22,7 @@ maxClientCnxns=0
 ```
 broker.id=1
 listeners=PLAINTEXT://:9091
-advertised.listeners=PLAINTEXT://cleverfishsoftware.com:9091
+advertised.listeners=PLAINTEXT://my-public-domain.com:9091
 num.network.threads=3
 num.io.threads=8
 socket.send.buffer.bytes=102400
@@ -36,7 +36,7 @@ num.recovery.threads.per.data.dir=1
 log.retention.hours=1
 log.retention.bytes=26214400
 log.retention.check.interval.ms=300000
-zookeeper.connect=cleverfishsoftware.com:2181
+zookeeper.connect=my-public-domain.com:2181
 zookeeper.connection.timeout.ms=16000
 ```
 
@@ -46,11 +46,11 @@ zookeeper.connection.timeout.ms=16000
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-192.168.1.81 engine1 engine1.cleverfishsoftware.com cleverfishsoftware.com
-192.168.1.82 engine2 engine2.cleverfishsoftware.com
-192.168.1.83 engine3 engine3.cleverfishsoftware.com
-192.168.1.85 Peters-iMac iMac Peters-iMac.hsd1.co.comcast.net
-192.168.1.88 Peters-MBP MBP Peters-MBP.hsd1.co.comcast.net
+197.48.1.81 engine1 engine1.my-public-domain.com my-public-domain.com
+197.48.1.82 engine2 engine2.my-public-domain.com
+197.48.1.83 engine3 engine3.my-public-domain.com
+197.48.1.85 Peters-iMac iMac Peters-iMac.hsd1.co.comcast.net
+197.48.1.88 Peters-MBP MBP Peters-MBP.hsd1.co.comcast.net
 ```
 
 ##### firewall config (inbound rules need to allow for external/internal connections)
@@ -69,15 +69,15 @@ public (active)
   sourceports: 
   icmp-blocks: 
   rich rules: 
-	rule family="ipv4" source address="192.168.1.82" port port="5001" protocol="udp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="5001" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.81" port port="19091-19093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.81" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.81" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.83" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.83" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="5001" protocol="udp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="5001" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="19091-19093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.83" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.112.255.211" port port="2181" protocol="tcp" accept
 	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
@@ -92,7 +92,7 @@ public (active)
 ```
 broker.id=2
 listeners=PLAINTEXT://:9092
-advertised.listeners=PLAINTEXT://cleverfishsoftware.com:9092
+advertised.listeners=PLAINTEXT://my-public-domain.com:9092
 num.network.threads=3
 num.io.threads=8
 socket.send.buffer.bytes=102400
@@ -106,7 +106,7 @@ num.recovery.threads.per.data.dir=1
 log.retention.hours=1
 log.retention.bytes=26214400
 log.retention.check.interval.ms=300000
-zookeeper.connect=cleverfishsoftware.com:2181
+zookeeper.connect=my-public-domain.com:2181
 zookeeper.connection.timeout.ms=16000
 
 ```
@@ -117,9 +117,9 @@ zookeeper.connection.timeout.ms=16000
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-192.168.1.81 engine1 engine1.cleverfishsoftware.com 
-192.168.1.82 engine2 engine2.cleverfishsoftware.com cleverfishsoftware.com
-192.168.1.83 engine3 engine3.cleverfishsoftware.com
+197.48.1.81 engine1 engine1.my-public-domain.com 
+197.48.1.82 engine2 engine2.my-public-domain.com my-public-domain.com
+197.48.1.83 engine3 engine3.my-public-domain.com
 ```
 
 ##### firewall config (inbound rules need to allow for external/internal connections)
@@ -137,15 +137,15 @@ public (active)
   sourceports: 
   icmp-blocks: 
   rich rules: 
-	rule family="ipv4" source address="192.168.1.81" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.83" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.85" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.85" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.141" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.141" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.85" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.85" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.141" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.141" port port="9091-9093" protocol="tcp" accept
 
 ```
 
@@ -158,7 +158,7 @@ public (active)
 ```
 broker.id=3
 listeners=PLAINTEXT://:9093
-advertised.listeners=PLAINTEXT://cleverfishsoftware.com:9093
+advertised.listeners=PLAINTEXT://my-public-domain.com:9093
 num.network.threads=3
 num.io.threads=8
 socket.send.buffer.bytes=102400
@@ -172,7 +172,7 @@ num.recovery.threads.per.data.dir=1
 log.retention.hours=1
 log.retention.bytes=26214400
 log.retention.check.interval.ms=300000
-zookeeper.connect=cleverfishsoftware.com:2181
+zookeeper.connect=my-public-domain.com:2181
 zookeeper.connection.timeout.ms=16000
 ```
 
@@ -182,9 +182,9 @@ zookeeper.connection.timeout.ms=16000
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-192.168.1.81 engine1 engine1.cleverfishsoftware.com 
-192.168.1.82 engine2 engine2.cleverfishsoftware.com
-192.168.1.83 engine3 engine3.cleverfishsoftware.com cleverfishsoftware.com
+197.48.1.81 engine1 engine1.my-public-domain.com 
+197.48.1.82 engine2 engine2.my-public-domain.com
+197.48.1.83 engine3 engine3.my-public-domain.com my-public-domain.com
 ```
 
 ##### firewall config (inbound rules need to allow for external/internal connections)
@@ -207,12 +207,12 @@ public (active)
 	rule family="ipv4" source address="40.112.255.211" port port="2181" protocol="tcp" accept
 	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
 	rule family="ipv4" source address="40.78.64.141" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.81" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.81" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.83" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="192.168.1.83" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.81" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.83" port port="2181" protocol="tcp" accept
+	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
 ```
 
 - - -
@@ -224,9 +224,9 @@ public (active)
 #### hospitalityhertzpocnode1 (run the kafka console producer)
 ```bash
 [petergdoyle@hospitalityhertzpocnode1 scripts]$ ./start_kafka_console_producer.sh 
-Enter a kafka broker server: cleverfishsoftware.com:9091
+Enter a kafka broker server: my-public-domain.com:9091
 Enter the topic name: kafka-simple-topic-1
-/usr/kafka/default/bin/kafka-console-producer.sh --broker-list cleverfishsoftware.com:9091 --topic kafka-simple-topic-1
+/usr/kafka/default/bin/kafka-console-producer.sh --broker-list my-public-domain.com:9091 --topic kafka-simple-topic-1
 message10
 message11
 message12
@@ -235,11 +235,11 @@ message12
 - - -
 #### hospitalityhertzpocnode0 (run the kafka console consumer)
 ```bash
-[petergdoyle@hospitalityhertzpocnode0 ~]$ /usr/kafka/default/bin/kafka-console-consumer.sh --new-consumer --bootstrap-server cleverfishsoftware.com:9091 --topic kafka-simple-topic-1 --from-beginning
+[petergdoyle@hospitalityhertzpocnode0 ~]$ /usr/kafka/default/bin/kafka-console-consumer.sh --new-consumer --bootstrap-server my-public-domain.com:9091 --topic kafka-simple-topic-1 --from-beginning
 [2017-08-14 15:28:30,260] INFO ConsumerConfig values: 
 	auto.commit.interval.ms = 5000
 	auto.offset.reset = earliest
-	bootstrap.servers = [cleverfishsoftware.com:9091]
+	bootstrap.servers = [my-public-domain.com:9091]
 	check.crcs = true
 	client.id = 
 	connections.max.idle.ms = 540000
@@ -293,7 +293,7 @@ message12
 [2017-08-14 15:28:30,265] INFO ConsumerConfig values: 
 	auto.commit.interval.ms = 5000
 	auto.offset.reset = earliest
-	bootstrap.servers = [cleverfishsoftware.com:9091]
+	bootstrap.servers = [my-public-domain.com:9091]
 	check.crcs = true
 	client.id = consumer-1
 	connections.max.idle.ms = 540000
@@ -346,7 +346,7 @@ message12
  (org.apache.kafka.clients.consumer.ConsumerConfig)
 [2017-08-14 15:28:30,476] INFO Kafka version : 0.10.1.1 (org.apache.kafka.common.utils.AppInfoParser)
 [2017-08-14 15:28:30,476] INFO Kafka commitId : f10ef2720b03b247 (org.apache.kafka.common.utils.AppInfoParser)
-[2017-08-14 15:28:30,661] INFO Discovered coordinator cleverfishsoftware.com:9091 (id: 2147483646 rack: null) for group console-consumer-63744. (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2017-08-14 15:28:30,661] INFO Discovered coordinator my-public-domain.com:9091 (id: 2147483646 rack: null) for group console-consumer-63744. (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
 [2017-08-14 15:28:30,662] INFO Revoking previously assigned partitions [] for group console-consumer-63744 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
 [2017-08-14 15:28:30,662] INFO (Re-)joining group console-consumer-63744 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
 [2017-08-14 15:28:30,786] INFO Successfully joined group console-consumer-63744 with generation 1 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
