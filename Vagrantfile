@@ -13,77 +13,65 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
   end
 
+  config.vm.define "engine1" do |engine1|
+    engine1.vm.network :private_network, ip: "192.48.1.81"
+    engine1.vm.network :forwarded_port, guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "zookeeper 1", auto_correct: true
+    engine1.vm.network :forwarded_port, guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "broker 1", auto_correct: true
+    engine1.vm.hostname = "kafka-cluster-engine1.vbx"
+  end
+  config.vm.define "engine2" do |engine2|
+    engine2.vm.network :private_network, ip: "192.48.1.82"
+    engine2.vm.network :forwarded_port, guest: 9092, host: 9092, host_ip: "0.0.0.0", id: "broker 2", auto_correct: true
+    engine2.vm.hostname = "kafka-cluster-engine2.vbx"
+  end
+  config.vm.define "engine3" do |engine3|
+    engine3.vm.network :private_network, ip: "192.48.1.83"
+    engine3.vm.network :forwarded_port, guest: 9093, host: 9093, host_ip: "0.0.0.0", id: "broker 3", auto_correct: true
+    engine3.vm.hostname = "kafka-cluster-engine3.vbx"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
 
-      yum -y install net-tools telnet htop bash-completion
+    yum -y install net-tools telnet wireshark htop bash-completion
 
-      grep ^192.168.60 /etc/hosts> /dev/null 2>&1
-      if [ $? -ne 0 ]; then
+    grep ^192.48.1 /etc/hosts> /dev/null 2>&1
+    if [ $? -ne 0 ]; then
     cat >>/etc/hosts <<-EOF
-192.168.1.301 kafka-cluster-node1.vbx
-192.168.1.302 kafka-cluster-node3.vbx
-192.168.1.303 kafka-cluster-node3.vbx
+192.48.1.81 kafka-cluster-engine1.vbx
+192.48.1.81 kafka-cluster-engine2.vbx
+192.48.1.81 kafka-cluster-engine3.vbx
 EOF
     fi
 
-    # install java on all nodes
-    java -version > /dev/null 2>&1
-    if [ $? -eq 127 ]; then
-      mkdir -pv /usr/java \
-      && echo "downloading java..."
-      #install java jdk 8 from oracle
-      # curl -O -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" \
-      # "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz" \
-      #   && tar -xvf jdk-8u101-linux-x64.tar.gz -C /usr/java \
-      #   && ln -s /usr/java/jdk1.8.0_101/ /usr/java/default \
-      #   && rm -f jdk-8u101-linux-x64.tar.gz
-
-      yum install -y java-1.8.0-openjdk*
-
-      java_home=`alternatives --list |grep jre_1.8.0_openjdk| awk '{print $3}'`
-      ln -s "$java_home" /usr/java/default
-      export JAVA_HOME=/usr/java/default
-      cat >/etc/profile.d/java.sh <<-EOF
+  java -version > /dev/null 2>&1
+  if [ $? -eq 127 ]; then
+    echo "installing java-jdk-8..."
+    mkdir -pv /usr/java
+    yum install -y java-1.8.0-openjdk*
+    java_home=`alternatives --list |grep jre_1.8.0_openjdk| awk '{print $3}'`
+    ln -s "$java_home" /usr/java/default
+    export JAVA_HOME=/usr/java/default
+    cat >/etc/profile.d/java.sh <<-EOF
 export JAVA_HOME=$JAVA_HOME
 EOF
 
-      export JAVA_HOME='/usr/java/default'
-      cat >/etc/profile.d/java.sh <<-EOF
+    export JAVA_HOME='/usr/java/default'
+    cat >/etc/profile.d/java.sh <<-EOF
 export JAVA_HOME=$JAVA_HOME
 EOF
 
-      # register all the java tools and executables to the OS as executables
-      install_dir="$JAVA_HOME/bin"
-      for each in $(find $install_dir -executable -type f) ; do
-        name=$(basename $each)
-        alternatives --install "/usr/bin/$name" "$name" "$each" 99999
-      done
+    # register all the java tools and executables to the OS as executables
+    install_dir="$JAVA_HOME/bin"
+    for each in $(find $install_dir -executable -type f) ; do
+      name=$(basename $each)
+      alternatives --install "/usr/bin/$name" "$name" "$each" 99999
+    done
 
-    else
-      echo -e "\e[7;44;96m*java already appears to be installed. skipping.\e[0m"
-    fi
+  else
+    echo -e "\e[7;44;96m*java-jdk-8 already appears to be installed. skipping.\e[0m"
+  fi
 
 SHELL
-
-
-  config.vm.define "node1" do |node1|
-    node1.vm.hostname = "kafka-cluster-node1.vbx"
-    node1.vm.network :public_network, ip: "192.168.1.301"
-    node1.vm.network :forwarded_port, guest: 2181, host: 2181, host_ip: "0.0.0.0", id: "kfka_zkp_1", auto_correct: true
-    node1.vm.network :forwarded_port, guest: 9091, host: 9091, host_ip: "0.0.0.0", id: "kfka_bkr_1", auto_correct: true
-  end
-  config.vm.define "node2" do |node2|
-    node2.vm.hostname = "kafka-cluster-node2.vbx"
-    node2.vm.network :public_network, ip: "192.168.1.302"
-    node2.vm.network :forwarded_port, guest: 9092, host: 9092, host_ip: "0.0.0.0", id: "kfka_bkr_2", auto_correct: true
-  end
-  config.vm.define "node3" do |node3|
-    node3.vm.hostname = "kafka-cluster-node3.vbx"
-    node3.vm.network :public_network, ip: "192.168.1.303"
-    node3.vm.network :forwarded_port, guest: 9093, host: 9093, host_ip: "0.0.0.0", id: "kfka_bkr_3", auto_correct: true
-  end
-
-
 
 
 end
