@@ -1,24 +1,32 @@
-# kafka-proxied
+# Kafka-proxied
+This project provides scripts and configuration details required to get a multi-node Kafka Cluster running and make it available over a public dns to producers and consumers and using Kafka MirrorMaker to replicate topic data to a remote Kafka Cluster. 
+
 ## Exposing Kafka Cluster through Public Network Gateway
+So let's design a Kafka system topology... 
+Pictured below is a typical Kafka setup sitting on an internal network with Kafka running over a multi-node cluster distributed across three machines. The first machine `engine1` will be running both Zookeeper and a Kafka broker with broker id `1`. The second and third machines `engine2` and `engine3` are running Kafka brokers identified with broker ids `2` and `3`. All machines are running on the sub-net in the `197.48.1.*` group and are port-mapped from a firewall sitting at the lan gateway. The lan gateway has the domain name `my-public-domain` and is resolveable by Internet dns to ip `75.70.33.98`.
+Outside the lan are two machines sitting in the cloud that have reliable internet accessible ip addreses and domain names as well. The one machine `Kafkaclientmachine1` will also be running a small single-node Kafka cluster that has Kafka topic data being replicated to it through Kafka MirrorMaker. Both cloud machines `Kafkaclientmachine1` and `Kafkaclientmachine2` are capapble of acting as Kafka consumers, producers or can run MirrorMaker processes. 
 
+For more information on Kafka MirorMaker please refer to the documentation. You can get some of that here https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330 and here https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-apache-Kafka-mirroring if you are interested in mirroring Kafka data up to azure 
 
-![kafka_cluster_topology](kafka_cluster_topology.PNG)
+![Kafka_cluster_topology](Kafka_cluster_topology.PNG)
 
 
 ### Internal Network Kafka Cluster Configuration
+So let's step through the proces of setting this all up and making it work correctly. While Kafka is fairly well documented on the [Apache Kafka website](https://kafka.apache.org), and on the major Hadoop distributions like [Cloudera](https://www.cloudera.com/documentation/kafka/latest/topics/kafka.html) and [Hortonworks](https://hortonworks.com/apache/kafka/) it can be a lot to take in all once and more importantly to set up consistently when you want to repeat the process over and over. The intent of this project is to provide a consistent set of scripts (bash) to configure, stand up and tear down Kafka. This can be quite helpful as first steps to setting up production Kafka clusters until things are working. Rather than use other DevOps provisioning tools like Ansible, or perhaps Chef or Puppet, the choice was made to do this using bash scripts as that is available on any linux machine and in many cases for what we are setting up there would be more work to make those tools do the job completely as we are doing more than just install things. **Currently all bash scripts assume an RPM linux distro is being used so if you want to use a Debian distro like Ubunto, you will have to modify appropriately**.
+
 
 #### engine1 (runs Kafka-Zookeeper and Kafka-Broker-1 processes)
 This node in the cluster will run a Zookeper instance and a Broker instance. 
 This shows the configurations for each process
 
-##### kafka-zookeeper-1-config.properties (no special requirements)
+##### Kafka-zookeeper-1-config.properties (no special requirements)
 ```
 dataDir=/tmp/zookeeper
 clientPort=2181
 maxClientCnxns=0
 ```
 
-##### kafka-broker-1-config.properties (required to expose public cluster details)
+##### Kafka-broker-1-config.properties (required to expose public cluster details)
 ```
 broker.id=1
 listeners=PLAINTEXT://:9091
@@ -30,7 +38,7 @@ socket.receive.buffer.bytes=102400
 socket.request.max.bytes=104857600
 message.max.bytes=1048576
 log.segment.bytes=1073741824
-log.dirs=/tmp/kafka-logs/1
+log.dirs=/tmp/Kafka-logs/1
 num.partitions=1
 num.recovery.threads.per.data.dir=1
 log.retention.hours=1
@@ -87,7 +95,7 @@ public (active)
 - - -
 
 #### engine2 (runs Kafka-Broker-2 process)
-##### kafka-broker-1-config.properties (required to expose public cluster details)
+##### Kafka-broker-1-config.properties (required to expose public cluster details)
 
 ```
 broker.id=2
@@ -100,7 +108,7 @@ socket.receive.buffer.bytes=102400
 socket.request.max.bytes=104857600
 message.max.bytes=1048576
 log.segment.bytes=1073741824
-log.dirs=/tmp/kafka-logs/2
+log.dirs=/tmp/Kafka-logs/2
 num.partitions=1
 num.recovery.threads.per.data.dir=1
 log.retention.hours=1
@@ -153,7 +161,7 @@ public (active)
 
 #### engine3 (runs Kafka-Broker-3 process)
 
-##### kafka-broker-1-config.properties (required to expose public cluster details)
+##### Kafka-broker-1-config.properties (required to expose public cluster details)
 
 ```
 broker.id=3
@@ -166,7 +174,7 @@ socket.receive.buffer.bytes=102400
 socket.request.max.bytes=104857600
 message.max.bytes=1048576
 log.segment.bytes=1073741824
-log.dirs=/tmp/kafka-logs/3
+log.dirs=/tmp/Kafka-logs/3
 num.partitions=1
 num.recovery.threads.per.data.dir=1
 log.retention.hours=1
@@ -221,21 +229,21 @@ public (active)
 
 ### External Network Kafka Clients (consumer and producer)
 
-#### hospitalityhertzpocnode1 (run the kafka console producer)
+#### hospitalityhertzpocnode1 (run the Kafka console producer)
 ```bash
-[petergdoyle@hospitalityhertzpocnode1 scripts]$ ./start_kafka_console_producer.sh 
-Enter a kafka broker server: my-public-domain.com:9091
-Enter the topic name: kafka-simple-topic-1
-/usr/kafka/default/bin/kafka-console-producer.sh --broker-list my-public-domain.com:9091 --topic kafka-simple-topic-1
+[petergdoyle@hospitalityhertzpocnode1 scripts]$ ./start_Kafka_console_producer.sh 
+Enter a Kafka broker server: my-public-domain.com:9091
+Enter the topic name: Kafka-simple-topic-1
+/usr/Kafka/default/bin/Kafka-console-producer.sh --broker-list my-public-domain.com:9091 --topic Kafka-simple-topic-1
 message10
 message11
 message12
 ```
 
 - - -
-#### hospitalityhertzpocnode0 (run the kafka console consumer)
+#### hospitalityhertzpocnode0 (run the Kafka console consumer)
 ```bash
-[petergdoyle@hospitalityhertzpocnode0 ~]$ /usr/kafka/default/bin/kafka-console-consumer.sh --new-consumer --bootstrap-server my-public-domain.com:9091 --topic kafka-simple-topic-1 --from-beginning
+[petergdoyle@hospitalityhertzpocnode0 ~]$ /usr/Kafka/default/bin/Kafka-console-consumer.sh --new-consumer --bootstrap-server my-public-domain.com:9091 --topic Kafka-simple-topic-1 --from-beginning
 [2017-08-14 15:28:30,260] INFO ConsumerConfig values: 
 	auto.commit.interval.ms = 5000
 	auto.offset.reset = earliest
@@ -251,7 +259,7 @@ message12
 	group.id = console-consumer-63744
 	heartbeat.interval.ms = 3000
 	interceptor.classes = null
-	key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+	key.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
 	max.partition.fetch.bytes = 1048576
 	max.poll.interval.ms = 300000
 	max.poll.records = 500
@@ -259,7 +267,7 @@ message12
 	metric.reporters = []
 	metrics.num.samples = 2
 	metrics.sample.window.ms = 30000
-	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+	partition.assignment.strategy = [class org.apache.Kafka.clients.consumer.RangeAssignor]
 	receive.buffer.bytes = 65536
 	reconnect.backoff.ms = 50
 	request.timeout.ms = 305000
@@ -288,8 +296,8 @@ message12
 	ssl.truststore.location = null
 	ssl.truststore.password = null
 	ssl.truststore.type = JKS
-	value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
- (org.apache.kafka.clients.consumer.ConsumerConfig)
+	value.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
+ (org.apache.Kafka.clients.consumer.ConsumerConfig)
 [2017-08-14 15:28:30,265] INFO ConsumerConfig values: 
 	auto.commit.interval.ms = 5000
 	auto.offset.reset = earliest
@@ -305,7 +313,7 @@ message12
 	group.id = console-consumer-63744
 	heartbeat.interval.ms = 3000
 	interceptor.classes = null
-	key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+	key.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
 	max.partition.fetch.bytes = 1048576
 	max.poll.interval.ms = 300000
 	max.poll.records = 500
@@ -313,7 +321,7 @@ message12
 	metric.reporters = []
 	metrics.num.samples = 2
 	metrics.sample.window.ms = 30000
-	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+	partition.assignment.strategy = [class org.apache.Kafka.clients.consumer.RangeAssignor]
 	receive.buffer.bytes = 65536
 	reconnect.backoff.ms = 50
 	request.timeout.ms = 305000
@@ -342,15 +350,15 @@ message12
 	ssl.truststore.location = null
 	ssl.truststore.password = null
 	ssl.truststore.type = JKS
-	value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
- (org.apache.kafka.clients.consumer.ConsumerConfig)
-[2017-08-14 15:28:30,476] INFO Kafka version : 0.10.1.1 (org.apache.kafka.common.utils.AppInfoParser)
-[2017-08-14 15:28:30,476] INFO Kafka commitId : f10ef2720b03b247 (org.apache.kafka.common.utils.AppInfoParser)
-[2017-08-14 15:28:30,661] INFO Discovered coordinator my-public-domain.com:9091 (id: 2147483646 rack: null) for group console-consumer-63744. (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,662] INFO Revoking previously assigned partitions [] for group console-consumer-63744 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
-[2017-08-14 15:28:30,662] INFO (Re-)joining group console-consumer-63744 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,786] INFO Successfully joined group console-consumer-63744 with generation 1 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,786] INFO Setting newly assigned partitions [kafka-simple-topic-1-0] for group console-consumer-63744 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+	value.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
+ (org.apache.Kafka.clients.consumer.ConsumerConfig)
+[2017-08-14 15:28:30,476] INFO Kafka version : 0.10.1.1 (org.apache.Kafka.common.utils.AppInfoParser)
+[2017-08-14 15:28:30,476] INFO Kafka commitId : f10ef2720b03b247 (org.apache.Kafka.common.utils.AppInfoParser)
+[2017-08-14 15:28:30,661] INFO Discovered coordinator my-public-domain.com:9091 (id: 2147483646 rack: null) for group console-consumer-63744. (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
+[2017-08-14 15:28:30,662] INFO Revoking previously assigned partitions [] for group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.ConsumerCoordinator)
+[2017-08-14 15:28:30,662] INFO (Re-)joining group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
+[2017-08-14 15:28:30,786] INFO Successfully joined group console-consumer-63744 with generation 1 (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
+[2017-08-14 15:28:30,786] INFO Setting newly assigned partitions [Kafka-simple-topic-1-0] for group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.ConsumerCoordinator)
 message10
 message11
 message12
