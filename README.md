@@ -8,7 +8,7 @@ Outside the lan are two machines sitting in the cloud that have reliable interne
 
 For more information on Kafka MirorMaker please refer to the documentation. You can get some of that here https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330 and here https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-apache-Kafka-mirroring if you are interested in mirroring Kafka data up to azure 
 
-![Kafka_cluster_topology](Kafka_cluster_topology.PNG)
+![Kafka_cluster_topology](Kafka_cluster_topology.png)
 
 
 ### Internal Network Kafka Cluster Configuration
