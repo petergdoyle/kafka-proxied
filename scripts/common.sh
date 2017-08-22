@@ -56,6 +56,7 @@ kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version
 kafka_home="$kafka_base_location/default"
 
 kafka_runtime_logs_dir="$kafka_base_location/default/logs"
+kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
 
 kafka_runtime_console_logs_dir="$kafka_base_location/logs"
 broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
