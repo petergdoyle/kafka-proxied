@@ -14,8 +14,10 @@ from_beggining_response='y'
 read -e -p "Read topic from beginning (all messages retained) (y/n): " -i "$from_beggining_response" from_beggining_response
 if [ "$from_beggining_response" == "y" ]; then
   from_beggining='--from-beginning'
+  delete_consumer_offsets='--delete-consumer-offsets'
 else
   from_beggining=''
+  delete_consumer_offsets=''
 fi
 
 new_consumer='y'
@@ -34,7 +36,8 @@ fi
 cmd="$KAFKA_HOME/bin/kafka-console-consumer.sh \
 $connect_uri \
 --topic $topic \
-$from_beggining"
+$from_beggining \
+$delete_consumer_offsets"
 
 echo "$cmd"
 eval "$cmd"
