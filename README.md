@@ -1,16 +1,16 @@
 # Kafka-proxied
-This project provides scripts and configuration details required to get a multi-node Kafka Cluster running and make it available over a public dns to producers and consumers and using Kafka MirrorMaker to replicate topic data to a remote Kafka Cluster. 
+This project provides scripts and configuration details required to get a multi-node Kafka Cluster running and make it available to producers and consumers both to an internal andwork and over a public dns finally to configure using Kafka MirrorMaker to replicate topic data to a remote Kafka Cluster. 
 
 ## Exposing Kafka Cluster through Public Network Gateway
 So let's design a Kafka system topology... 
 
-Pictured below is a typical Kafka setup sitting on an internal network with Kafka running over a multi-node cluster distributed across three machines. The first machine `engine1` will be running both Zookeeper and a Kafka broker with broker id `1`. The second and third machines `engine2` and `engine3` are running Kafka brokers identified with broker ids `2` and `3`. This cluster will be referred to as `cluster 1`. All machines are running on the sub-net in the `197.48.1.*` group and are port-mapped from a firewall sitting at the LAN gateway. The LAN gateway has the domain name `my-public-domain` and is resolveable by Internet dns to ip `75.70.33.98`. Notice that the external ports are different than the internal ones, that is those that kafka will be running on based on their machine ip. 
+Pictured below is a typical Kafka setup sitting on an internal network with Kafka running over a multi-node cluster distributed across three machines. The first machine `engine1` will be running both Zookeeper and a Kafka broker with broker id `1`. The second and third machines `engine2` and `engine3` are running Kafka brokers identified with broker ids `2` and `3`. This cluster will be referred to as `cluster 1`. All machines are running on the sub-net in the `197.48.1.*` group and are port-mapped from a firewall sitting at the LAN gateway. The port mapping between the gateway firewall and the internal machine:port is show in the diagrm. The LAN gateway has the domain name `my-public-domain` and is resolveable by Internet dns to ip `75.70.33.98`. Notice that the external ports are different than the internal ones, that is those that kafka will be running on based on their machine ip. 
 
 Outside the LAN are two machines sitting in the cloud that have reliable internet accessible ip addreses and domain names as well. These don't have to be cloud machines in fact they could be any machines sitting outside the LAN but the cloud scenario is a likely one. The one machine `Kafkaclientmachine1` will also be running a small single-node Kafka cluster that has Kafka topic data being replicated to it through Kafka MirrorMaker. Both cloud machines `Kafkaclientmachine1` and `Kafkaclientmachine2` are capable of acting as Kafka consumers, producers or can run MirrorMaker processes and in fact can run a small kafka cluster between them or a a single node cluster on one. So `Kafkaclientmachine1` will be running a single-node kafka cluster referred to as `cluster 2` and the `Kafkaclientmachine2` will be running MirrorMaker to pull specific topic data from `cluster 1` and put it onto `cluster 2`. 
 
 For security the kafka machines `engine1` `engine2` and `engine3` will also be running their own firewall and only allow communication to kafka brokers and zookeeper from the internal network and from the specific ip of `Kafkaclientmachine2`. No kafka service ports shall be accesible into `Kafkaclientmachine1` and `Kafkaclientmachine2` and only port 22 will be open for secure shell access.
 
-**While this setup may seem typical, there are a few special considerations and some not so well known nor well  documented configuration settings and OS network configuration decisions to be made in order to make the internal Kafka cluster work both inside and outside the LAN**. By the time you get through this you will understand what has to be considered and how to configure Kafka and even the host machines themselves in order to make it all work. We are trying to avoid the frustration "LEADER NOT AVAILABLE" flying around and not knowing what the problems are or how to fix them. 
+**While this setup may seem typical, there are a few special considerations and some not so well known nor well  documented configuration settings and OS network configuration decisions to be made in order to make the internal Kafka cluster work both inside and outside the LAN**. By the time you get through this you will understand what has to be considered and how to configure Kafka and even the host machines themselves in order to make it all work. We are trying to avoid the frustration of "***LEADER NOT AVAILABLE***" and not knowing what the problems are or how to fix them. 
 
 While this configuration is about setting up and configuration kafka on hardware machines, it is applicable for VMs and for Dockerized Kafka process as well. Dockerization of Kafka has some additional considerations so that will sit outside the scope of this effort for now but will be added in later. A Vagrantfile is provided in the source code here and available to you to stand up three Vagrant managed VirtualBox VMs if you don't have access to three physical machines. The only special consideration there are some special Vagrant/VirtualBox network settings which again, may be outside the scope of this effort right now should you try this route and run into problems. 
 
@@ -23,359 +23,159 @@ Just a **warning** that you must be somewhat comfortable with Linux, Linux Netwo
 ### Internal Network Kafka Cluster Configuration
 So let's step through the proces of setting this all up and making it work correctly. While Kafka is fairly well documented on the [Apache Kafka website](https://kafka.apache.org), and on the major Hadoop distributions like [Cloudera](https://www.cloudera.com/documentation/kafka/latest/topics/kafka.html) and [Hortonworks](https://hortonworks.com/apache/kafka/) it can be a lot to take in all once and more importantly to set up consistently when you want to repeat the process over and over. The intent of this project is to provide a consistent set of scripts (bash) to configure, stand up and tear down Kafka. This can be quite helpful as first steps towards  setting up production Kafka clusters until things are working. Rather than use other DevOps provisioning tools like Ansible, or perhaps Chef or Puppet, the choice was made to do this using bash scripts as that is available on any linux machine and in many cases for what we are setting up there would be more work to make those tools do the job completely as we are doing more than just install things. **Currently all bash scripts assume an RPM linux distro is being used so if you want to use a Debian distro like Ubunto, you will have to modify appropriately**.
 
+### Step By Step
 
-#### engine1 (runs Kafka-Zookeeper and Kafka-Broker-1 processes)
-This node in the cluster will run a Zookeper instance and a Broker instance. 
-This shows the configurations for each process
+Let's walk through this step by step starting with the simplest configuration with the least amount of considerations and challenges and go from there... 
 
-##### Kafka-zookeeper-1-config.properties (no special requirements)
-```
-dataDir=/tmp/zookeeper
-clientPort=2181
-maxClientCnxns=0
-```
-
-##### Kafka-broker-1-config.properties (required to expose public cluster details)
-```
-broker.id=1
-listeners=PLAINTEXT://:9091
-advertised.listeners=PLAINTEXT://my-public-domain.com:9091
-num.network.threads=3
-num.io.threads=8
-socket.send.buffer.bytes=102400
-socket.receive.buffer.bytes=102400
-socket.request.max.bytes=104857600
-message.max.bytes=1048576
-log.segment.bytes=1073741824
-log.dirs=/tmp/Kafka-logs/1
-num.partitions=1
-num.recovery.threads.per.data.dir=1
-log.retention.hours=1
-log.retention.bytes=26214400
-log.retention.check.interval.ms=300000
-zookeeper.connect=my-public-domain.com:2181
-zookeeper.connection.timeout.ms=16000
-```
-
-##### /etc/hosts (required dns resolution to the public cluster nodes)
-
-```
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-
-197.48.1.81 engine1 engine1.my-public-domain.com my-public-domain.com
-197.48.1.82 engine2 engine2.my-public-domain.com
-197.48.1.83 engine3 engine3.my-public-domain.com
-197.48.1.85 Peters-iMac iMac Peters-iMac.hsd1.co.comcast.net
-197.48.1.88 Peters-MBP MBP Peters-MBP.hsd1.co.comcast.net
-```
-
-##### firewall config (inbound rules need to allow for external/internal connections)
-
-```
-public (active)
-  target: default
-  icmp-block-inversion: no
-  interfaces: eno1
-  sources: 
-  services: dhcpv6-client nfs ssh
-  ports: 2222/tcp 5800/tcp 9889/tcp 9393/tcp 38080/tcp 8443/tcp 8000/tcp 5080/tcp 3389/tcp
-  protocols: 
-  masquerade: no
-  forward-ports: 
-  sourceports: 
-  icmp-blocks: 
-  rich rules: 
-	rule family="ipv4" source address="197.48.1.82" port port="5001" protocol="udp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="5001" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.81" port port="19091-19093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.81" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.83" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.112.255.211" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.78.64.141" port port="2181" protocol="tcp" accept
-```
-
-- - -
-
-#### engine2 (runs Kafka-Broker-2 process)
-##### Kafka-broker-1-config.properties (required to expose public cluster details)
-
-```
-broker.id=2
-listeners=PLAINTEXT://:9092
-advertised.listeners=PLAINTEXT://my-public-domain.com:9092
-num.network.threads=3
-num.io.threads=8
-socket.send.buffer.bytes=102400
-socket.receive.buffer.bytes=102400
-socket.request.max.bytes=104857600
-message.max.bytes=1048576
-log.segment.bytes=1073741824
-log.dirs=/tmp/Kafka-logs/2
-num.partitions=1
-num.recovery.threads.per.data.dir=1
-log.retention.hours=1
-log.retention.bytes=26214400
-log.retention.check.interval.ms=300000
-zookeeper.connect=my-public-domain.com:2181
-zookeeper.connection.timeout.ms=16000
-
-```
-
-##### /etc/hosts (required dns resolution to the public cluster nodes)
-
-```
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-
-197.48.1.81 engine1 engine1.my-public-domain.com 
-197.48.1.82 engine2 engine2.my-public-domain.com my-public-domain.com
-197.48.1.83 engine3 engine3.my-public-domain.com
-```
-
-##### firewall config (inbound rules need to allow for external/internal connections)
-```
-public (active)
-  target: default
-  icmp-block-inversion: no
-  interfaces: eno1
-  sources: 
-  services: dhcpv6-client ssh
-  ports: 9000/tcp
-  protocols: 
-  masquerade: no
-  forward-ports: 
-  sourceports: 
-  icmp-blocks: 
-  rich rules: 
-	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.85" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.85" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.141" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.141" port port="9091-9093" protocol="tcp" accept
-
-```
-
-- - -
-
-#### engine3 (runs Kafka-Broker-3 process)
-
-##### Kafka-broker-1-config.properties (required to expose public cluster details)
-
-```
-broker.id=3
-listeners=PLAINTEXT://:9093
-advertised.listeners=PLAINTEXT://my-public-domain.com:9093
-num.network.threads=3
-num.io.threads=8
-socket.send.buffer.bytes=102400
-socket.receive.buffer.bytes=102400
-socket.request.max.bytes=104857600
-message.max.bytes=1048576
-log.segment.bytes=1073741824
-log.dirs=/tmp/Kafka-logs/3
-num.partitions=1
-num.recovery.threads.per.data.dir=1
-log.retention.hours=1
-log.retention.bytes=26214400
-log.retention.check.interval.ms=300000
-zookeeper.connect=my-public-domain.com:2181
-zookeeper.connection.timeout.ms=16000
-```
-
-##### /etc/hosts (required dns resolution to the public cluster nodes)
-
-```
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-
-197.48.1.81 engine1 engine1.my-public-domain.com 
-197.48.1.82 engine2 engine2.my-public-domain.com
-197.48.1.83 engine3 engine3.my-public-domain.com my-public-domain.com
-```
-
-##### firewall config (inbound rules need to allow for external/internal connections)
-
-```
-public (active)
-  target: default
-  icmp-block-inversion: no
-  interfaces: wlo1
-  sources: 
-  services: dhcpv6-client ssh
-  ports: 
-  protocols: 
-  masquerade: no
-  forward-ports: 
-  sourceports: 
-  icmp-blocks: 
-  rich rules: 
-	rule family="ipv4" source address="40.112.255.211" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.112.255.211" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="40.78.64.141" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="40.78.64.141" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.81" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.81" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.82" port port="9091-9093" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.83" port port="2181" protocol="tcp" accept
-	rule family="ipv4" source address="197.48.1.83" port port="9091-9093" protocol="tcp" accept
-```
-
-- - -
-#### Peters-iMac
-- ip must be allow to connect on each node
-
-### External Network Kafka Clients (consumer and producer)
-
-#### hospitalityhertzpocnode1 (run the Kafka console producer)
+#### Setup a Multi-node Kafka Cluster on a Single Machine
+##### Create The Kafka Cluster
+This is the simplest setup of all. If you refer to the diagram above, this is the setup required to get ```cluster 2``` running. This is eventually to be used to be the target of the replication of topic data from ```cluster 1``` but in order to do that it needs to be a fully operational free-standing kafka cluster. Unlike ```cluster 1``` it does not need to expose brokers through an external domain and combination of external ports. 
+**Start the Zookeeper Node**
+cd into the location where you cloned this repository and find the scripts/ directory and run the script that will start a zookeeper instance on this ```kafkaclientmachine1``` machine. If everything is okay you should see output from zookeeper look like the following. **Note: ** The scripts are there to help you build paramaterized kafka commands, the same ones that are in the kafka distribution. The scripts rely on a $KAFKA_HOME environment variable being set. If you haven't installed kafka, run ```./install_kafka.sh``` first and either log out and log back into your machine or source the ```~/.bash_profile``` that is modified to set a $KAFKA_HOME for your local installation. 
 ```bash
-[petergdoyle@hospitalityhertzpocnode1 scripts]$ ./start_Kafka_console_producer.sh 
-Enter a Kafka broker server: my-public-domain.com:9091
-Enter the topic name: Kafka-simple-topic-1
-/usr/Kafka/default/bin/Kafka-console-producer.sh --broker-list my-public-domain.com:9091 --topic Kafka-simple-topic-1
-message10
-message11
-message12
+[peter@kafkaclientmachine1 ~]$ cd kafka-proxied/scripts/
+[peter@kafkaclientmachine1 scripts]$ ./start_kafka_zookeeper.sh
+Enter the number of zookeeper instances: 1
+Enter the zookeeper host: localhost
+Enter the zookeeper host port: 2181
+‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/zookeeper-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-zookeeper-1-config.properties’
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/zookeeper-server-start.sh /home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-zookeeper-1-config.properties> /home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-zookeeper-1-console.log 2>&1
+About to start Zookeeper instance 1, continue? (y/n): y
+Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-zookeeper-1-console.log)? (y/n): y
+[2017-08-25 06:21:58,294] INFO Server environment:os.name=Linux (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:os.arch=amd64 (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:os.version=3.10.0-514.26.2.el7.x86_64 (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:user.name=peter (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:user.home=/home/peter (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:user.dir=/home/peter/vagrant/kafka-proxied/scripts (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,299] INFO tickTime set to 3000 (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,299] INFO minSessionTimeout set to -1 (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,299] INFO maxSessionTimeout set to -1 (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,305] INFO binding to port 0.0.0.0/0.0.0.0:2181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 ```
+**Start the Broker Nodes**
+This installation will (arbitrarily) have 2 brokers running in the cluster. So let's set those up. **Note** You need to specify 2 instances, the correct broker ports, and zookeeper information appropriately. Look through next section carefully and follow as shown.
 
-- - -
-#### hospitalityhertzpocnode0 (run the Kafka console consumer)
 ```bash
-[petergdoyle@hospitalityhertzpocnode0 ~]$ /usr/Kafka/default/bin/Kafka-console-consumer.sh --new-consumer --bootstrap-server my-public-domain.com:9091 --topic Kafka-simple-topic-1 --from-beginning
-[2017-08-14 15:28:30,260] INFO ConsumerConfig values: 
-	auto.commit.interval.ms = 5000
-	auto.offset.reset = earliest
-	bootstrap.servers = [my-public-domain.com:9091]
-	check.crcs = true
-	client.id = 
-	connections.max.idle.ms = 540000
-	enable.auto.commit = true
-	exclude.internal.topics = true
-	fetch.max.bytes = 52428800
-	fetch.max.wait.ms = 500
-	fetch.min.bytes = 1
-	group.id = console-consumer-63744
-	heartbeat.interval.ms = 3000
-	interceptor.classes = null
-	key.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
-	max.partition.fetch.bytes = 1048576
-	max.poll.interval.ms = 300000
-	max.poll.records = 500
-	metadata.max.age.ms = 300000
-	metric.reporters = []
-	metrics.num.samples = 2
-	metrics.sample.window.ms = 30000
-	partition.assignment.strategy = [class org.apache.Kafka.clients.consumer.RangeAssignor]
-	receive.buffer.bytes = 65536
-	reconnect.backoff.ms = 50
-	request.timeout.ms = 305000
-	retry.backoff.ms = 100
-	sasl.kerberos.kinit.cmd = /usr/bin/kinit
-	sasl.kerberos.min.time.before.relogin = 60000
-	sasl.kerberos.service.name = null
-	sasl.kerberos.ticket.renew.jitter = 0.05
-	sasl.kerberos.ticket.renew.window.factor = 0.8
-	sasl.mechanism = GSSAPI
-	security.protocol = PLAINTEXT
-	send.buffer.bytes = 131072
-	session.timeout.ms = 10000
-	ssl.cipher.suites = null
-	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
-	ssl.endpoint.identification.algorithm = null
-	ssl.key.password = null
-	ssl.keymanager.algorithm = SunX509
-	ssl.keystore.location = null
-	ssl.keystore.password = null
-	ssl.keystore.type = JKS
-	ssl.protocol = TLS
-	ssl.provider = null
-	ssl.secure.random.implementation = null
-	ssl.trustmanager.algorithm = PKIX
-	ssl.truststore.location = null
-	ssl.truststore.password = null
-	ssl.truststore.type = JKS
-	value.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
- (org.apache.Kafka.clients.consumer.ConsumerConfig)
-[2017-08-14 15:28:30,265] INFO ConsumerConfig values: 
-	auto.commit.interval.ms = 5000
-	auto.offset.reset = earliest
-	bootstrap.servers = [my-public-domain.com:9091]
-	check.crcs = true
-	client.id = consumer-1
-	connections.max.idle.ms = 540000
-	enable.auto.commit = true
-	exclude.internal.topics = true
-	fetch.max.bytes = 52428800
-	fetch.max.wait.ms = 500
-	fetch.min.bytes = 1
-	group.id = console-consumer-63744
-	heartbeat.interval.ms = 3000
-	interceptor.classes = null
-	key.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
-	max.partition.fetch.bytes = 1048576
-	max.poll.interval.ms = 300000
-	max.poll.records = 500
-	metadata.max.age.ms = 300000
-	metric.reporters = []
-	metrics.num.samples = 2
-	metrics.sample.window.ms = 30000
-	partition.assignment.strategy = [class org.apache.Kafka.clients.consumer.RangeAssignor]
-	receive.buffer.bytes = 65536
-	reconnect.backoff.ms = 50
-	request.timeout.ms = 305000
-	retry.backoff.ms = 100
-	sasl.kerberos.kinit.cmd = /usr/bin/kinit
-	sasl.kerberos.min.time.before.relogin = 60000
-	sasl.kerberos.service.name = null
-	sasl.kerberos.ticket.renew.jitter = 0.05
-	sasl.kerberos.ticket.renew.window.factor = 0.8
-	sasl.mechanism = GSSAPI
-	security.protocol = PLAINTEXT
-	send.buffer.bytes = 131072
-	session.timeout.ms = 10000
-	ssl.cipher.suites = null
-	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
-	ssl.endpoint.identification.algorithm = null
-	ssl.key.password = null
-	ssl.keymanager.algorithm = SunX509
-	ssl.keystore.location = null
-	ssl.keystore.password = null
-	ssl.keystore.type = JKS
-	ssl.protocol = TLS
-	ssl.provider = null
-	ssl.secure.random.implementation = null
-	ssl.trustmanager.algorithm = PKIX
-	ssl.truststore.location = null
-	ssl.truststore.password = null
-	ssl.truststore.type = JKS
-	value.deserializer = class org.apache.Kafka.common.serialization.ByteArrayDeserializer
- (org.apache.Kafka.clients.consumer.ConsumerConfig)
-[2017-08-14 15:28:30,476] INFO Kafka version : 0.10.1.1 (org.apache.Kafka.common.utils.AppInfoParser)
-[2017-08-14 15:28:30,476] INFO Kafka commitId : f10ef2720b03b247 (org.apache.Kafka.common.utils.AppInfoParser)
-[2017-08-14 15:28:30,661] INFO Discovered coordinator my-public-domain.com:9091 (id: 2147483646 rack: null) for group console-consumer-63744. (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,662] INFO Revoking previously assigned partitions [] for group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.ConsumerCoordinator)
-[2017-08-14 15:28:30,662] INFO (Re-)joining group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,786] INFO Successfully joined group console-consumer-63744 with generation 1 (org.apache.Kafka.clients.consumer.internals.AbstractCoordinator)
-[2017-08-14 15:28:30,786] INFO Setting newly assigned partitions [Kafka-simple-topic-1-0] for group console-consumer-63744 (org.apache.Kafka.clients.consumer.internals.ConsumerCoordinator)
-message10
-message11
-message12
+[peter@kafkaclientmachine1 scripts]$ ./start_kafka_broker.sh 
+Enter the number of broker instances: 2
+Confirm the Broker Id (must be unique INT within the cluster): 1
+‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-1.properties’
+Enter the broker port: 9091
+Enter the the address the socket server listens on (locally): PLAINTEXT://:9091
+Will the broker be accessed by a proxy or external public server (y/n)?: n
+Enter the zookeeper host: localhost
+Enter the zookeeper host port: 2181
+Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): 1
+You must make sure that the Kafka consumer configuration parameter fetch.message.max.bytes is specified as at least 1048576!
+Specify Size of a Kafka data file (log.segment.bytes) in GiB. Must be larger than any single message. Default value: (1 GiB): 1
+Enter Kafka Log default Retention Hours: 1
+Enter Kafka Log default Retention Size (Mb): 25
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/kafka-server-start.sh /home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-1.properties > /home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-broker-1-console.log 2>&1
+About to start Kafka Broker, continue? (y/n): y
+Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-broker-1-console.log)? (y/n): y
+[2017-08-25 06:34:05,627] INFO [Group Metadata Manager on Broker 1]: Removed 0 expired offsets in 0 milliseconds. (kafka.coordinator.GroupMetadataManager)
+[2017-08-25 06:34:05,638] INFO Will not load MX4J, mx4j-tools.jar is not in the classpath (kafka.utils.Mx4jLoader$)
+[2017-08-25 06:34:05,651] INFO New leader is 1 (kafka.server.ZookeeperLeaderElector$LeaderChangeListener)
+[2017-08-25 06:34:05,657] INFO Creating /brokers/ids/1 (is it secure? false) (kafka.utils.ZKCheckedEphemeral)
+[2017-08-25 06:34:05,668] INFO Result of znode creation is: OK (kafka.utils.ZKCheckedEphemeral)
+[2017-08-25 06:34:05,669] INFO Registered broker 1 at path /brokers/ids/1 with addresses: PLAINTEXT -> EndPoint(engine1,9091,PLAINTEXT) (kafka.utils.ZkUtils)
+[2017-08-25 06:34:05,669] WARN No meta.properties file under dir /tmp/kafka-logs/1/meta.properties (kafka.server.BrokerMetadataCheckpoint)
+[2017-08-25 06:34:05,683] INFO Kafka version : 0.10.1.1 (org.apache.kafka.common.utils.AppInfoParser)
+[2017-08-25 06:34:05,683] INFO Kafka commitId : f10ef2720b03b247 (org.apache.kafka.common.utils.AppInfoParser)
+[2017-08-25 06:34:05,686] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
+Confirm the Broker Id (must be unique INT within the cluster): 2
+‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-2.properties’
+Enter the broker port: 9092
+Enter the the address the socket server listens on (locally): PLAINTEXT://:9092
+Will the broker be accessed by a proxy or external public server (y/n)?: n
+Enter the zookeeper host: localhost
+Enter the zookeeper host port: 2181
+Specify maximum message size the broker will accept (message.max.bytes) in MB. Default value (1 MB): 1
+You must make sure that the Kafka consumer configuration parameter fetch.message.max.bytes is specified as at least 1048576!
+Specify Size of a Kafka data file (log.segment.bytes) in GiB. Must be larger than any single message. Default value: (1 GiB): 1
+Enter Kafka Log default Retention Hours: 1
+Enter Kafka Log default Retention Size (Mb): 25
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/kafka-server-start.sh /home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-2.properties > /home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-broker-2-console.log 2>&1
+About to start Kafka Broker, continue? (y/n): y
+Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-broker-2-console.log)? (y/n): y
+[2017-08-25 06:34:24,424] INFO [GroupCoordinator 2]: Startup complete. (kafka.coordinator.GroupCoordinator)
+[2017-08-25 06:34:24,424] INFO [Group Metadata Manager on Broker 2]: Removed 0 expired offsets in 1 milliseconds. (kafka.coordinator.GroupMetadataManager)
+[2017-08-25 06:34:24,435] INFO Will not load MX4J, mx4j-tools.jar is not in the classpath (kafka.utils.Mx4jLoader$)
+[2017-08-25 06:34:24,452] INFO Creating /brokers/ids/2 (is it secure? false) (kafka.utils.ZKCheckedEphemeral)
+[2017-08-25 06:34:24,463] INFO Result of znode creation is: OK (kafka.utils.ZKCheckedEphemeral)
+[2017-08-25 06:34:24,465] INFO Registered broker 2 at path /brokers/ids/2 with addresses: PLAINTEXT -> EndPoint(engine1,9092,PLAINTEXT) (kafka.utils.ZkUtils)
+[2017-08-25 06:34:24,466] WARN No meta.properties file under dir /tmp/kafka-logs/2/meta.properties (kafka.server.BrokerMetadataCheckpoint)
+[2017-08-25 06:34:24,492] INFO Kafka version : 0.10.1.1 (org.apache.kafka.common.utils.AppInfoParser)
+[2017-08-25 06:34:24,492] INFO Kafka commitId : f10ef2720b03b247 (org.apache.kafka.common.utils.AppInfoParser)
+[2017-08-25 06:34:24,492] INFO [Kafka Server 2], started (kafka.server.KafkaServer)
+```
+##### Test The Kafka Cluster
+**Create Topics**
+Let's create a simple topic with the script parameters as shown. 
+```bash
+[peter@kafkaclientmachine1 scripts]$ ./create_topic.sh 
+Enter the zk host/port: localhost:2181
+Enter the topic name: kafka-simple-topic-1
+Enter the number of partitions: 1
+Enter the replication factor: 1
+Enter topic retention time (hrs): 1
+Enter topic retention size (Mb): 25
+Enter topic max message size (Kb): 256
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafka-simple-topic-1 --config max.message.bytes=262144 --config retention.bytes=26214400 --config retention.ms=3600000
+About to start Create Topics as shown, continue? (y/n): y
+Created topic "kafka-simple-topic-1".
 
 ```
 
-- - -
+**Produce Messages**
+Let's create some messages to put on the topic that we can identify later came from the local machine running the kafka cluster. Run the script as shown to start the kafka console producer and enter messages. Hit ```ctl-c``` to stop.
+[peter@kafkaclientmachine1 scripts]$ ./start_kafka_console_producer.sh 
+Enter a kafka broker server: localhost:9091
+Enter the topic name: kafka-simple-topic-1
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/kafka-console-producer.sh --broker-list localhost:9091 --topic kafka-simple-topic-1
+message-from-localhost-1
+message-from-localhost-2          
+message-from-localhost-3
 
+**Consume Messages**
+Now let's consume those messages to verify things are working okay. Once you run the script to parameteriz the kafka console consumer command for you, it should return the same three messages created previously. 
+```bash
+[peter@engine1 scripts]$ ./start_kafka_console_consumer.sh 
+Enter the topic name: kafka-simple-topic-1
+Read topic from beginning (all messages retained) (y/n): y
+Use new kafka consumer: y
+Enter the broker host:port : localhost:9091
+/home/peter/vagrant/kafka-proxied/local/kafka/default/bin/kafka-console-consumer.sh --new-consumer --bootstrap-server localhost:9091 --topic kafka-simple-topic-1 --from-beginning --delete-consumer-offsets
+message-from-localhost-1
+message-from-localhost-2
+message-from-localhost-3
+
+```
+
+
+
+#### Setup a Multi-node Kafka Cluster on Separate Machines Within The Same LAN
+#### Setup a Multi-node Kafka Cluster on Separate Machines Within The Same LAN And Expose Through Public Internet
+
+
+
+
+
+
+
+
+
+``` advertised.listener ``` address
+
+2017-08-21 19:42:54,401] WARN [Controller-1-to-broker-1-send-thread], Controller 1's connection to broker cleverfishsoftware.com:19091 (id: 1 rack: null) was unsuccessful (kafka.controller.RequestSendThread)
+java.io.IOException: Connection to cleverfishsoftware.com:19091 (id: 1 rack: null) failed
+	at kafka.utils.NetworkClientBlockingOps$.awaitReady$1(NetworkClientBlockingOps.scala:83)
+	at kafka.utils.NetworkClientBlockingOps$.blockingReady$extension(NetworkClientBlockingOps.scala:93)
+	at kafka.controller.RequestSendThread.brokerReady(ControllerChannelManager.scala:230)
+	at kafka.controller.RequestSendThread.liftedTree1$1(ControllerChannelManager.scala:182)
+	at kafka.controller.RequestSendThread.doWork(ControllerChannelManager.scala:181)
+- - -
 
 ## Notes:
 
