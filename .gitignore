@@ -12,3 +12,4 @@ kafka-src/*.tar.gz
 .gradle
 /kafka-src/KafkaClientAPI/target/
 firewall.priv
+messages
