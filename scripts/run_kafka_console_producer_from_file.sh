@@ -9,7 +9,7 @@ fi
 bootstrap_server='localhost:9092'
 read -e -p "Enter the bootstrap server: " -i "$bootstrap_server" bootstrap_server
 
-topic_name='localhost:9092'
+topic_name='kafka-simple-topic-1'
 read -e -p "Enter the topic name: " -i "$topic_name" topic_name
 
 id_range_lo='0'
