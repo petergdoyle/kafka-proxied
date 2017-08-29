@@ -182,7 +182,7 @@ function show_cluster_state() {
 
   if [ -d $kafka_home ]; then #kafka is installed
     if [ "`readlink $kafka_base_location/default`" -ef "$kafka_installation_dir" ]; then
-      display_error "The kafka version $kafka_version matches what is linked at $kafka_home "
+      display_info "The kafka version $kafka_version matches what is linked at $kafka_home "
     else
       display_error "The kafka version $kafka_version does not match with what is linked at `readlink $kafka_home` ==> Please run install_kafka.sh or change the kafka_version in common.sh";
     fi
