@@ -45,7 +45,7 @@ function display_break() {
 
 function display_command() {
   local cmd="$1"
-  display_command "$cmd"
+  echo -e $BOLD$VIOLET"[info] $cmd"$RESET
 }
 
 

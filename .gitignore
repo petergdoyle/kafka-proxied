@@ -13,3 +13,4 @@ kafka-src/*.tar.gz
 /kafka-src/KafkaClientAPI/target/
 firewall.priv
 messages
+*.jks

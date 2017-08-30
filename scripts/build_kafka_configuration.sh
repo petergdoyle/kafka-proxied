@@ -81,16 +81,64 @@ function create_mirror_maker_config() {
 
 function configure_mirror_maker() {
 
-  configure_zookeeper
-  mirror_maker_zookeeper_connect=$zk_host_port
-  read -e -p "Enter Kafka zookeeper_connect for kafka_mirror_maker (consumers): " -i "$mirror_maker_zookeeper_connect" mirror_maker_zookeeper_connect
-  sed -i "s/zookeeper.connect=.*/zookeeper.connect=$mirror_maker_zookeeper_connect/g" $mm_consumer_config_file
-  sed -i "s/group.id=.*/group.id=$host_name-mirrormaker-group-1/g" $mm_consumer_config_file
+# modified to use the new kafka api with broker specification rather than zookeeper
+
+  # mirror_maker_zookeeper_connect="localhost:2181"
+  # read -e -p "Enter Kafka zookeeper host:port for kafka_mirror_maker (consumer): " -i "$mirror_maker_zookeeper_connect" mirror_maker_zookeeper_connect
+  # sed -i "s/zookeeper.connect=.*/zookeeper.connect=$mirror_maker_zookeeper_connect/g" $mm_consumer_config_file
+  # sed -i "s/group.id=.*/group.id=$host_name-mirrormaker-group-1/g" $mm_consumer_config_file
+
+  mirror_maker_bootstrap_server="remotehost:9091"
+  read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker to take data from (consumer config): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
+  sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_consumer_config_file
+
+  response='n'
+  read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
+  if [ "$response" == "y" ]; then
+    truststore_location=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
+    while true; do
+      read -e -p "Specify the location of the truststore location: " -i "$truststore_location" truststore_location
+      if [ -f $truststore_location ]; then
+        break
+      else
+        display_error "Specified file $truststore_location does not exist"
+      fi
+    done
+
+    truststore_password="majiic"
+    read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
+    sed -i "s/#security.protocol/security.protocol/g" $mm_consumer_config_file
+    sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.password=$truststore_location?g" $mm_consumer_config_file
+    sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_consumer_config_file
+
+  fi
 
   # mirror_maker_bootstrap_servers=`echo $advertised_listeners |sed 's#PLAINTEXT://##g'`
   mirror_maker_bootstrap_server="localhost:9091"
-  read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker (producer): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
+  read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker to put data to (producer config): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
   sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_producer_config_file
+
+  response='n'
+  read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
+  if [ "$response" == "y" ]; then
+    truststore_location=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
+    while true; do
+      read -e -p "Specify the location of the truststore location: " -i "$truststore_location" truststore_location
+      if [ -f $truststore_location ]; then
+        break
+      else
+        display_error "Specified file $truststore_location does not exist"
+      fi
+    done
+
+    truststore_password="majiic"
+    read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
+    sed -i "s/#security.protocol/security.protocol/g" $mm_producer_config_file
+    sed -i "s/#ssl.truststore.location=#REPLACE#/ssl.truststore.location=$truststore_location/g" $mm_producer_config_file
+    sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_producer_config_file
+
+  fi
+
 
 }
 
