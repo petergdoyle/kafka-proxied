@@ -56,7 +56,7 @@ for i in $(eval echo "{1..$no_instances}"); do
       timeout 5s tail -f "$broker_runtime_console_log_file"
     fi
   else
-    display_error "broker does not appear to be running"
+    display_error "Somthing went wrong. Kafka Broker ($broker_id) does not appear to be running. Checking the log file..."
     sleep 2
     if [ -f $broker_runtime_console_log_file ]; then
       less -f $broker_runtime_console_log_file

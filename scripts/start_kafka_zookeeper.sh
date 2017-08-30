@@ -51,7 +51,7 @@ for i in $(eval echo "{1..$no_instances}"); do
       timeout 5s tail -f "$zookeeper_runtime_console_log_file"
     fi
   else
-    display_error "zookeeper does not appear to be running"
+    display_error "Something went wrong. Zookeeper ($i) does not appear to be running. Checking the log file..."
     sleep 2
     if [ -f $zookeeper_runtime_console_log_file ]; then
       less -f $zookeeper_runtime_console_log_file
