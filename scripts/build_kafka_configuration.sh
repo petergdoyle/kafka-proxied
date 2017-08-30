@@ -111,7 +111,7 @@ function configure_mirror_maker() {
     done
 
     truststore_password="majiic"
-    read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
+    read -e -p "Specify the truststore password: " -i "$truststore_password" truststore_password
     sed -i "s/#security.protocol/security.protocol/g" $mm_consumer_config_file
     sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.location=$truststore_location?g" $mm_consumer_config_file
     sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_consumer_config_file
@@ -137,7 +137,7 @@ function configure_mirror_maker() {
     done
 
     truststore_password="majiic"
-    read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
+    read -e -p "Specify the truststore password: " -i "$truststore_password" truststore_password
     sed -i "s/#security.protocol/security.protocol/g" $mm_producer_config_file
     sed -i "s/#ssl.truststore.location=#REPLACE#/ssl.truststore.location=$truststore_location/g" $mm_producer_config_file
     sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_producer_config_file
