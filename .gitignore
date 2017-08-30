@@ -14,3 +14,4 @@ kafka-src/*.tar.gz
 firewall.priv
 messages
 *.jks
+ssl/*
