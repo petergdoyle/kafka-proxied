@@ -214,12 +214,23 @@ function show_cluster_state() {
 
   display_H1 "Kafka Configuration:"
   display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
-  [[ -f $broker_config_file ]] \
-  && display_info "kafka runtime configuration location: $broker_config_file" \
-  || display_warn "kafka runtime configuration location: $broker_config_file *Has not been created yet!"
-  [[ -f $zookeeper_config_file ]] \
-  && display_info "kafka zookeeper config file: $zookeeper_config_file" \
-  || display_warn "kafka zookeeper config file: $zookeeper_config_file *Has not been created yet!"
+
+  if [ `find $kafka_runtime_config_dir -name '*broker*'| wc -l` -gt 0 ]; then
+    for each in `find $kafka_runtime_config_dir -name '*broker*'`; do
+      display_info "kafka broker config file found : $each"
+    done
+  else
+    display_warn "No kafka broker config files found. *Has not been created yet!"
+  fi
+
+  if [ `find $kafka_runtime_config_dir -name '*zookeeper*'| wc -l` -gt 0 ]; then
+    for each in `find $kafka_runtime_config_dir -name '*zookeeper*'`; do
+      display_info "kafka zookeeper config file found: $each"
+    done
+  else
+    display_warn "No kafka zookeeper config files found. *Has not been created yet!"
+  fi
+
   [[ -f $mm_producer_config_file ]] \
   && display_info "kafka mirror-maker producer config file: $mm_producer_config_file" \
   || display_warn "kafka mirror-maker producer config file: $mm_producer_config_file *Has not been created yet!"
@@ -254,12 +265,29 @@ function show_cluster_state() {
   [[ -d $kafka_runtime_console_logs_dir ]] \
   && display_info "kafka persistent runtime logs directory: $kafka_runtime_console_logs_dir" \
   || display_warn "kafka persistent logs directory: $kafka_runtime_console_logs_dir *Has not been created yet!"
-  [[ -f $broker_runtime_console_log_file ]] \
-  && display_info "kafka broker runtime console log: $broker_runtime_console_log_file" \
-  || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Has not been created yet!"
-  [[ -f $zookeeper_runtime_console_log_file ]] \
-  && display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file" \
-  || display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Has not been created yet!"
+
+  # display_info "kafka broker runtime console log: $broker_runtime_console_log_file"
+  # display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Has not been created yet!"
+  #
+  # display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file"
+  # display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Has not been created yet!"
+
+  if [ `find $kafka_runtime_console_logs_dir -name '*broker*'| wc -l` -gt 0 ]; then
+    for each in `find $kafka_runtime_console_logs_dir -name '*broker*'`; do
+      display_info "kafka broker console log file found : $each"
+    done
+  else
+    display_warn "No kafka broker console log files found. *Has not been created yet!"
+  fi
+
+  if [ `find $kafka_runtime_console_logs_dir -name '*zookeeper*'| wc -l` -gt 0 ]; then
+    for each in `find $kafka_runtime_console_logs_dir -name '*zookeeper*'`; do
+      display_info "kafka zookeeper console log file found: $each"
+    done
+  else
+    display_warn "No kafka zookeeper console log files found. *Has not been created yet!"
+  fi
+
   [[ -f $mm_runtime_console_log_file ]] \
   && display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file" \
   || display_warn "kafka mirror-maker runtime console log: $mm_runtime_console_log_file *Has not been created yet!"
