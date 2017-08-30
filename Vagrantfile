@@ -5,8 +5,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
-    vb.memory = "512"
-    vb.cpus = 1
+    vb.memory = "1024"
+    vb.cpus = 2
   end
 
   config.vm.hostname = "kafka-proxied.cleverfishsoftware.com"
