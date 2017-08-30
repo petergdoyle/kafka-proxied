@@ -83,12 +83,16 @@ broker_config_template_file="$kafka_templates_config_dir/broker-template.propert
 zookeeper_config_template_file="$kafka_templates_config_dir/zookeeper-template.properties"
 mm_producer_config_template_file="$kafka_templates_config_dir/mm_producer-template.properties"
 mm_consumer_config_template_file="$kafka_templates_config_dir/mm_consumer-template.properties"
+consumer_ssl_config_template_file="$kafka_templates_config_dir/console-consumer-ssl-template.properties"
+producer_ssl_config_template_file="$kafka_templates_config_dir/console-producer-ssl-template.properties"
 
 kafka_runtime_config_dir="$kafka_base_location/config"
 broker_config_file="$kafka_runtime_config_dir/$node_name-broker.properties"
 zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper.properties"
 mm_producer_config_file="$kafka_runtime_config_dir/$node_name-mm_producer.properties"
 mm_consumer_config_file="$kafka_runtime_config_dir/$node_name-mm_consumer.properties"
+consumer_ssl_config_file="$kafka_runtime_config_dir/console-consumer-ssl.properties"
+producer_ssl_config_file="$kafka_runtime_config_dir/console-producer-ssl.properties"
 
 zookeeper_process_running_cmd="ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'"
 
@@ -222,6 +226,12 @@ function show_cluster_state() {
   [[ -f $mm_consumer_config_file ]] \
   && display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file" \
   || display_warn "kafka mirror-maker consumer config file: $mm_consumer_config_file *Has not been created yet!"
+  [[ -f $consumer_ssl_config_file ]] \
+  && display_info "kafka mirror-maker consumer config file: $consumer_ssl_config_file" \
+  || display_warn "kafka mirror-maker consumer config file: $consumer_ssl_config_file *Has not been created yet!"
+  [[ -f $producer_ssl_config_file ]] \
+  && display_info "kafka mirror-maker consumer config file: $producer_ssl_config_file" \
+  || display_warn "kafka mirror-maker consumer config file: $producer_ssl_config_file *Has not been created yet!"
   display_break
 
   display_H1 "Kafka Configuration Templates:"
@@ -230,6 +240,8 @@ function show_cluster_state() {
   display_info "kafka zookeeper config template file: $zookeeper_config_template_file"
   display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
   display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
+  display_info "kafka console-consumer ssl config template file: $consumer_ssl_config_template_file"
+  display_info "kafka console-producer ssl config template file: $producer_ssl_config_template_file"
   display_break
 
   display_H1 "Kafka Logs:"

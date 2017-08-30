@@ -33,9 +33,39 @@ else
   connect_uri="--zookeeper $bootstrap_server"
 fi
 
+consumer_ssl_config=""
+
+response='n'
+read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
+if [ "$response" == "y" ]; then
+
+  truststore_location=$PWD/$(echo $bootstrap_server |cut -d: -f1).truststore.jks
+  while true; do
+    read -e -p "Specify the location of the truststore location: " -i "$truststore_location" truststore_location
+    if [ -f $truststore_location ]; then
+      break
+    else
+      display_error "Specified file $truststore_location does not exist"
+    fi
+  done
+
+  cp -vf $consumer_ssl_config_template_file $consumer_ssl_config_file
+
+  truststore_password="majiic"
+  read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
+  sed -i "s?ssl.truststore.location=#REPLACE#?ssl.truststore.password=$truststore_location?g" $consumer_ssl_config_file
+  sed -i "s/ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $consumer_ssl_config_file
+
+  consumer_ssl_config="--consumer.config $consumer_ssl_config_file"
+
+fi
+
+
+
 cmd="$KAFKA_HOME/bin/kafka-console-consumer.sh \
 $connect_uri \
 --topic $topic \
+$consumer_ssl_config \
 $from_beggining \
 $delete_consumer_offsets"
 
