@@ -15,5 +15,5 @@ read -e -p "Enter the topic name: " -i "$topic" topic
 
 cmd="$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic"
 
-echo "$cmd"
+display_command "$cmd"
 eval "$cmd"

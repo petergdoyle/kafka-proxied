@@ -7,6 +7,13 @@ if [ -z $KAFKA_HOME ]; then
   exit 1
 fi
 
+prompt=$BOLD$YELLOW"About to create new Kafka Topic? (y/n): $RESET"
+default_value="y"
+read -e -p "$(echo -e $prompt)" -i $default_value response
+if [ "$response" != 'y' ]; then
+  exit 0
+fi
+
 zk_host_port='localhost:2181'
 read -e -p "Enter the zk host/port: " -i "$zk_host_port" zk_host_port
 
@@ -36,7 +43,8 @@ cmd="$KAFKA_HOME/bin/kafka-topics.sh --create \
 --config retention.bytes=$kafka_topic_log_retention_size_bytes \
 --config retention.ms=$kafka_topic_log_retention_ms"
 
-echo "$cmd"
+display_command "$cmd"
+
 prompt=$BOLD$YELLOW"About to start Create Topics as shown, continue? (y/n): $RESET"
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response

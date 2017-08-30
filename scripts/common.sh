@@ -43,6 +43,11 @@ function display_break() {
   echo -e ""
 }
 
+function display_command() {
+  local cmd="$1"
+  display_command "$cmd"
+}
+
 
 host_name=`hostname| cut -d"." -f1`
 node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`

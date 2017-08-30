@@ -37,7 +37,7 @@ for i in $(eval echo "{1..$no_instances}"); do
   configure_broker "$broker_id"
 
   cmd="$KAFKA_HOME/bin/kafka-server-start.sh $broker_config_file > $broker_runtime_console_log_file 2>&1"
-  echo "$cmd"
+  display_command "$cmd"
   prompt=$BOLD$YELLOW"About to start Kafka Broker, continue? (y/n): $RESET"
   default_value="y"
   read -e -p "$(echo -e $prompt)" -i $default_value response

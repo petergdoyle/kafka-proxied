@@ -16,7 +16,7 @@ cmd="$KAFKA_HOME/bin/kafka-topics.sh \
 --topic $topic \
 --zookeeper $zk_host_port"
 
-echo "$cmd"
+display_command "$cmd"
 prompt=$BOLD$YELLOW"About to start List Partitions on Topic as shown, continue? (y/n): $RESET"
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response

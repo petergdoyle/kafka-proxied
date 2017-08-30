@@ -21,4 +21,5 @@ read -e -p "Enter message id range hi: " -i "$id_range_hi" id_range_hi
 # for i in {1000...2999}; do echo `hostname`-auto-generated-message-$i; done > messages
 for i in $(eval echo "{$id_range_lo..$id_range_hi}"); do echo `hostname`-auto-generated-message-$i; done > messages
 
-$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic_name< messages
+cmd="$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server --topic $topic_name< messages"
+display_command "$cmd"

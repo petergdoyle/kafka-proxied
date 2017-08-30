@@ -39,5 +39,5 @@ $connect_uri \
 $from_beggining \
 $delete_consumer_offsets"
 
-echo "$cmd"
+display_command "$cmd"
 eval "$cmd"

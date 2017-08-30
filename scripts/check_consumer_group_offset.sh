@@ -21,7 +21,7 @@ cmd="$KAFKA_HOME/bin/kafka-consumer-groups.sh \
 --bootstrap-server $bootstrap_server \
 --describe --group $consumer_group_id"
 
-echo "$cmd"
+display_command "$cmd"
 prompt=$BOLD$YELLOW"About to start List Consumer Groups as shown, continue? (y/n): $RESET"
 default_value="y"
 read -e -p "$(echo -e $prompt)" -i $default_value response

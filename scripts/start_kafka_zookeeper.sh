@@ -32,7 +32,7 @@ for i in $(eval echo "{1..$no_instances}"); do
   zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-$i-console.log"
 
   cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zookeeper_runtime_console_log_file 2>&1"
-  echo "$cmd"
+  display_command "$cmd"
   prompt=$BOLD$YELLOW"About to start Zookeeper instance $i, continue? (y/n): $RESET"
   default_value="y"
   read -e -p "$(echo -e $prompt)" -i $default_value response
