@@ -94,7 +94,7 @@ function configure_mirror_maker() {
 
   consumer_group=$node_name-mirrormaker-group-1
   read -e -p "Enter the consumer group name : " -i "$consumer_group" consumer_group
-  sed -i "s/group.id==.*/group.id==$consumer_group/g" $mm_consumer_config_file
+  sed -i "s/group.id=.*/group.id=$consumer_group/g" $mm_consumer_config_file
 
 
   response='n'
