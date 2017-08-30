@@ -16,4 +16,8 @@ if [ $number_of_brokers -gt 1 ]; then
 fi
 broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-$selected_broker-console.log"
 
+if [ ! -f $broker_runtime_console_log_file ]; then
+  display_error "the file $broker_runtime_console_log_file does not exist."
+  exit 1
+fi
 tail -f "$broker_runtime_console_log_file"

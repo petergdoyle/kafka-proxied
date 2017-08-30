@@ -4,8 +4,8 @@ cd $(dirname $0)
 
 ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
-if [ -z $ZK_PIDS ]; then\
-  display_error "zookeeper is not running ! start the cluster first !"
+if [ -z $ZK_PIDS ]; then
+  display_error "Zookeeper is not running ! start the cluster first !"
   exit 1
 fi
 
@@ -16,5 +16,10 @@ if [ $number_of_zookeepers -gt 1 ]; then
 fi
 
 zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-$selected_zookeper-console.log"
+
+if [ ! -f $zookeeper_runtime_console_log_file ]; then
+  display_error "the file $zookeeper_runtime_console_log_file does not exist."
+  exit 1
+fi
 
 tail -f "$zookeeper_runtime_console_log_file"
