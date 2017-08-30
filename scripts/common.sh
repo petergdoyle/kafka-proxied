@@ -14,13 +14,14 @@ BOLD="\033[1m"
 YELLOW="\033[38;5;11m"
 GREEN="\033[1,32m"
 BLUE="\033[1;36m"
+VIOLET="\033[1;34m"
 RED="\033[1;31m"
 ORANGE="\033[0,33m"
 # ORANGE=$'\e[33;40m'
 
 function display_info() {
   local msg="$1"
-  echo -e $BLUE"[info] $msg"$RESET
+  echo -e $BOLD$BLUE"[info] $msg"$RESET
 }
 
 function display_error() {
@@ -31,6 +32,15 @@ function display_error() {
 function display_warn() {
   local msg="$1"
   echo -e $BOLD$ORANGE"[warn] $msg"$RESET
+}
+
+function display_H1() {
+  local msg="$1"
+  echo -e $BOLD$VIOLET"[info] $msg"$RESET
+}
+
+function display_break() {
+  echo -e ""
 }
 
 
@@ -163,15 +173,15 @@ function check_mirror_maker_status() {
 
 function show_cluster_state() {
 
-  echo -e $BOLD$GREEN"Host Details:"$RESET
+  display_H1 "Host Details:"$RESET
   display_info "full host name: `hostname`"
   display_info "host name: $host_name"
   display_info "kafka cluster node_name: $node_name"
   display_info "network interfaces: `ifconfig |grep 'inet '| awk '{print $2}'| tr '\n' '  '|sed '$s/.$//'`"
   display_info "cpu info: `grep '^model name' /proc/cpuinfo | awk '!a[$0]++'| sed -e 's/.*: //'` (`grep -c ^processor /proc/cpuinfo`)"
-  display_info " "
+  display_break
 
-  echo -e $BOLD$GREEN"Kafka Details:"$RESET
+  display_H1 "Kafka Details:"$RESET
   display_info "kafka version: $kafka_version"
   [[ -d $kafka_installation_dir ]] \
   && display_info "kafka installation location: $kafka_installation_dir" \
@@ -190,55 +200,55 @@ function show_cluster_state() {
 
   [[ -f $kafka_runtime_logs_dir ]] \
   && display_info "kafka runtime logs dir: $kafka_runtime_logs_dir" \
-  || display_warn "kafka runtime logs dir: $kafka_runtime_logs_dir *Does not exist"
-  display_info " "
+  || display_warn "kafka runtime logs dir: $kafka_runtime_logs_dir *Has not been created yet!"
+  display_break
 
-  echo -e $BOLD$GREEN"Kafka Configuration:"$RESET
+  display_H1 "Kafka Configuration:"
   display_info "kafka runtime configuration location: $kafka_runtime_config_dir"
   [[ -f $broker_config_file ]] \
   && display_info "kafka runtime configuration location: $broker_config_file" \
-  || display_warn "kafka runtime configuration location: $broker_config_file *Does not exist"
+  || display_warn "kafka runtime configuration location: $broker_config_file *Has not been created yet!"
   [[ -f $zookeeper_config_file ]] \
   && display_info "kafka zookeeper config file: $zookeeper_config_file" \
-  || display_warn "kafka zookeeper config file: $zookeeper_config_file *Does not exist"
+  || display_warn "kafka zookeeper config file: $zookeeper_config_file *Has not been created yet!"
   [[ -f $mm_producer_config_file ]] \
   && display_info "kafka mirror-maker producer config file: $mm_producer_config_file" \
-  || display_warn "kafka mirror-maker producer config file: $mm_producer_config_file *Does not exist"
+  || display_warn "kafka mirror-maker producer config file: $mm_producer_config_file *Has not been created yet!"
   [[ -f $mm_consumer_config_file ]] \
   && display_info "kafka mirror-maker consumer config file: $mm_consumer_config_file" \
-  || display_warn "kafka mirror-maker consumer config file: $mm_consumer_config_file *Does not exist"
-  display_info " "
+  || display_warn "kafka mirror-maker consumer config file: $mm_consumer_config_file *Has not been created yet!"
+  display_break
 
-  echo -e $BOLD$GREEN"Kafka Configuration Templates:"$RESET
+  display_H1 "Kafka Configuration Templates:"
   display_info "kafka configuration templates location: $kafka_templates_config_dir"
   display_info "kafka broker config template file: $broker_config_template_file"
   display_info "kafka zookeeper config template file: $zookeeper_config_template_file"
   display_info "kafka mirror-maker producer config template file: $mm_producer_config_template_file"
   display_info "kafka mirror-maker consumer config template file: $mm_consumer_config_template_file"
-  display_info " "
+  display_break
 
-  echo -e $BOLD$GREEN"Kafka Logs:"$RESET
+  display_H1 "Kafka Logs:"
   [[ -d $kafka_broker_logs_dir ]] \
   && display_info "kafka broker logs location: $kafka_broker_logs_dir" \
-  || display_warn "kafka broker logs location: $kafka_broker_logs_dir *Does not exist"
+  || display_warn "kafka broker logs location: $kafka_broker_logs_dir *Has not been created yet!"
   [[ -d $zookeeper_logs_dir ]] \
   && display_info "kafka zookeeper logs location: $zookeeper_logs_dir" \
-  || display_warn "kafka zookeeper logs location: $zookeeper_logs_dir *Does not exist"
+  || display_warn "kafka zookeeper logs location: $zookeeper_logs_dir *Has not been created yet!"
   [[ -d $kafka_runtime_console_logs_dir ]] \
   && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
-  || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Does not exist"
+  || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Has not been created yet!"
   [[ -f $broker_runtime_console_log_file ]] \
   && display_info "kafka broker runtime console log: $broker_runtime_console_log_file" \
-  || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Does not exist"
+  || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Has not been created yet!"
   [[ -f $zookeeper_runtime_console_log_file ]] \
   && display_info "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file" \
-  || display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Does not exist"
+  || display_warn "kafka zookeeper runtime console log: $zookeeper_runtime_console_log_file *Has not been created yet!"
   [[ -f $mm_runtime_console_log_file ]] \
   && display_info "kafka mirror-maker runtime console log: $mm_runtime_console_log_file" \
-  || display_warn "kafka mirror-maker runtime console log: $mm_runtime_console_log_file *Does not exist"
-  display_info " "
+  || display_warn "kafka mirror-maker runtime console log: $mm_runtime_console_log_file *Has not been created yet!"
+  display_break
 
-  echo -e $BOLD$GREEN"Kafka Cluster Status:"$RESET
+  display_H1 "Kafka Cluster Status:"
   check_zookeper_status
   check_broker_status
   check_mirror_maker_status
