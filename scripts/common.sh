@@ -207,7 +207,7 @@ function show_cluster_state() {
     fi
   fi
 
-  [[ -f $kafka_runtime_logs_dir ]] \
+  [[ -d $kafka_runtime_logs_dir ]] \
   && display_info "kafka runtime logs dir: $kafka_runtime_logs_dir" \
   || display_warn "kafka runtime logs dir: $kafka_runtime_logs_dir *Has not been created yet!"
   display_break
