@@ -246,14 +246,14 @@ function show_cluster_state() {
 
   display_H1 "Kafka Logs:"
   [[ -d $kafka_broker_logs_dir ]] \
-  && display_info "kafka broker logs location: $kafka_broker_logs_dir" \
-  || display_warn "kafka broker logs location: $kafka_broker_logs_dir *Has not been created yet!"
+  && display_info "kafka persistent broker logs location: $kafka_broker_logs_dir" \
+  || display_warn "kafka persistent broker logs location: $kafka_broker_logs_dir *Has not been created yet!"
   [[ -d $zookeeper_logs_dir ]] \
-  && display_info "kafka zookeeper logs location: $zookeeper_logs_dir" \
-  || display_warn "kafka zookeeper logs location: $zookeeper_logs_dir *Has not been created yet!"
+  && display_info "kafka persistent zookeeper logs location: $zookeeper_logs_dir" \
+  || display_warn "kafka persistent zookeeper logs location: $zookeeper_logs_dir *Has not been created yet!"
   [[ -d $kafka_runtime_console_logs_dir ]] \
-  && display_info "kafka runtime logs directory: $kafka_runtime_console_logs_dir" \
-  || display_warn "kafka runtime logs directory: $kafka_runtime_console_logs_dir *Has not been created yet!"
+  && display_info "kafka persistent runtime logs directory: $kafka_runtime_console_logs_dir" \
+  || display_warn "kafka persistent logs directory: $kafka_runtime_console_logs_dir *Has not been created yet!"
   [[ -f $broker_runtime_console_log_file ]] \
   && display_info "kafka broker runtime console log: $broker_runtime_console_log_file" \
   || display_warn "kafka broker runtime console log: $broker_runtime_console_log_file *Has not been created yet!"
