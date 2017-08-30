@@ -1,6 +1,20 @@
-#!/bin/sh
+ #!/bin/sh
 . ./common.sh
 
+function set_kafka_home() {
+
+  if `grep KAFKA_HOME ~/.bash_profile` ; then
+    # replace
+    sed -i "s@export KAFKA_HOME=.*@export KAFKA_HOME="$kafka_home"@g" ~/.bash_profile
+  else
+    # insert
+ export KAFKA_HOME=$kafka_base_location/default
+ cat >>~/.bash_profile <<-EOF
+export KAFKA_HOME=$KAFKA_HOME
+EOF
+  fi
+
+}
 
 java -version > /dev/null 2>&1
 if [ $? -eq 127 ]; then
@@ -48,6 +62,13 @@ if [ -d $kafka_installation_dir ]; then
       ln -s $kafka_installation_dir $kafka_home
     fi
   fi
+
+  if [ -z $KAFKA_HOME ]; then
+    set_kafka_home
+    prompt="It appears KAFKA_HOME was not set. It is now set. You will need to source your ~/.bash_profile to continue running scripts."
+    echo -e $BOLD$YELLOW$prompt$RESET
+  fi
+  
   install_anyway="n"
   prompt="It appears kafka is already installed at $kafka_installation_dir, Install it again (y/n)? "
   default_value="$install_anyway"
@@ -55,7 +76,9 @@ if [ -d $kafka_installation_dir ]; then
   if [ "$install_anyway" != "y" ]; then
     exit 0
   fi
+
 fi
+
 
 if [ ! -d "$kafka_base_location" ]; then
  mkdir -pv $kafka_base_location
@@ -74,17 +97,7 @@ curl -O $download_url \
 && rm -f $downloadable \
 && ln -s $kafka_installation_dir $kafka_home
 
-if `grep KAFKA_HOME ~/.bash_profile` ; then
-  # replace
-  sed -i "s@export KAFKA_HOME=.*@export KAFKA_HOME="$kafka_home"@g" ~/.bash_profile
-else
-  # insert
- export KAFKA_HOME=$kafka_base_location/default
- cat >>~/.bash_profile <<-EOF
-export KAFKA_HOME=$KAFKA_HOME
-EOF
-fi
-
+set_kafka_home
 cleanup_kafka
 
 if [ ! -d $kafka_templates_config_dir ]; then #take a copy of the distribution configs
