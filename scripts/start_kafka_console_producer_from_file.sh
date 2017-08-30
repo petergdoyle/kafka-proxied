@@ -27,7 +27,7 @@ read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): 
 if [ "$response" == "y" ]; then
   truststore_location=$PWD/$(echo $bootstrap_server |cut -d: -f1).truststore.jks
   while true; do
-    read -e -p "Specify the location of the truststore location: " -i "$truststore_location" truststore_location
+    read -e -p "Specify the truststore location: " -i "$truststore_location" truststore_location
     if [ -f $truststore_location ]; then
       break
     else
