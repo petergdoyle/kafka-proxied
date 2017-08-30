@@ -12,7 +12,6 @@ create_mirror_maker_config
 topic='kafka-simple-topic-1'
 read -e -p "Enter the topic name: " -i "$topic" topic
 
-consumer_group='".*”'
 cmd=$KAFKA_HOME'/bin/kafka-mirror-maker.sh --consumer.config '$mm_consumer_config_file' --producer.config '$mm_producer_config_file' --whitelist="'$topic'"> '$mm_runtime_console_log_file' 2>&1'
 display_command "$cmd"
 prompt=$BOLD$YELLOW"About to start Mirror-Maker, continue? (y/n): $RESET"

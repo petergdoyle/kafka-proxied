@@ -92,7 +92,7 @@ function configure_mirror_maker() {
   read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker to take data from (consumer config): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
   sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_consumer_config_file
 
-  consumer_group=$node_name-consumer-group-1
+  consumer_group=$node_name-mirrormaker-group-1
   read -e -p "Enter the consumer group name : " -i "$consumer_group" consumer_group
   sed -i "s/group.id==.*/group.id==$consumer_group/g" $mm_consumer_config_file
 
