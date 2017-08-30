@@ -92,6 +92,11 @@ function configure_mirror_maker() {
   read -e -p "Enter Kafka bootstrap server for kafka_mirror_maker to take data from (consumer config): " -i "$mirror_maker_bootstrap_server" mirror_maker_bootstrap_server
   sed -i "s/bootstrap.servers=.*/bootstrap.servers=$mirror_maker_bootstrap_server/g" $mm_consumer_config_file
 
+  consumer_group=$node_name-consumer-group-1
+  read -e -p "Enter the consumer group name : " -i "$consumer_group" consumer_group
+  sed -i "s/group.id==.*/group.id==$consumer_group/g" $mm_consumer_config_file
+
+
   response='n'
   read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
   if [ "$response" == "y" ]; then
@@ -108,7 +113,7 @@ function configure_mirror_maker() {
     truststore_password="majiic"
     read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
     sed -i "s/#security.protocol/security.protocol/g" $mm_consumer_config_file
-    sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.password=$truststore_location?g" $mm_consumer_config_file
+    sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.location=$truststore_location?g" $mm_consumer_config_file
     sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_consumer_config_file
 
   fi
