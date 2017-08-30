@@ -8,10 +8,13 @@ local
 kafka-src/kafka
 kafka-src/kafka-sources
 kafka-src/kafka-binaries
-kafka-src/*.tar.gz
 .gradle
 /kafka-src/KafkaClientAPI/target/
 firewall.priv
 messages
-*.jks
+
 ssl/*
+*.jks
+
+*.zip
+*.tar.gz
