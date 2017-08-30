@@ -53,7 +53,7 @@ if [ "$response" == "y" ]; then
 
   truststore_password="majiic"
   read -e -p "Specify the location of the truststore password: " -i "$truststore_password" truststore_password
-  sed -i "s?ssl.truststore.location=#REPLACE#?ssl.truststore.password=$truststore_location?g" $consumer_ssl_config_file
+  sed -i "s?ssl.truststore.location=#REPLACE#?ssl.truststore.location=$truststore_location?g" $consumer_ssl_config_file
   sed -i "s/ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $consumer_ssl_config_file
 
   consumer_ssl_config="--consumer.config $consumer_ssl_config_file"
