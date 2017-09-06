@@ -17,3 +17,5 @@ read -e -p "Enter ip number for producer $host_producer: " -i "192.168.1.92" hos
 docker_cmd="docker run -ti --rm --add-host=$host_consumer:$host_consumer_ip --add-host=$host_producer:$host_producer_ip mycompany/kafka $cmd"
 
 echo "$docker_cmd"
+
+eval "$cmd"
