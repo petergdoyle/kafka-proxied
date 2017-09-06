@@ -70,10 +70,11 @@ if [ -z $kafka_version ]; then
   kafka_version=`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| head -1` #select the first one found under config
 fi
 scala_version="2.11"
-kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
 
 function set_kafka_variables() {
 
+  kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
+  
   kafka_runtime_logs_dir="$kafka_base_location/default/logs"
   kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
 

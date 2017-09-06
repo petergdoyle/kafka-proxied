@@ -1,5 +1,5 @@
  #!/bin/sh
-. ./common.sh
+. ./build_kafka_configuration.sh
 
 function set_kafka_home() {
 
@@ -30,11 +30,10 @@ while true; do
   if [ ! -d config/$kafka_version ]; then
     display_error "kafka version $kafka_version is not supported. Please select another version."
   else
-    set_kafka_variables
-    break 
+    break
   fi
 done
-
+set_kafka_variables
 
 if [ -d $kafka_installation_dir ]; then
   if [ ! "`readlink $kafka_home`" -ef "$kafka_installation_dir" ]; then
