@@ -68,37 +68,42 @@ else
   kafka_base_location=$parent_dir/local/kafka
 fi
 
-kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
-kafka_home="$kafka_base_location/default"
+function set_kafka_variables() {
 
-kafka_runtime_logs_dir="$kafka_base_location/default/logs"
-kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
+  kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
+  kafka_home="$kafka_base_location/default"
 
-kafka_runtime_console_logs_dir="$kafka_base_location/logs"
-broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
-zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-console.log"
-mm_runtime_console_log_file="$kafka_base_location/logs/$node_name-mirror-maker-console.log"
+  kafka_runtime_logs_dir="$kafka_base_location/default/logs"
+  kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
 
-kafka_templates_config_dir="$PWD/config/$kafka_version"
-broker_config_template_file="$kafka_templates_config_dir/broker-template.properties"
-zookeeper_config_template_file="$kafka_templates_config_dir/zookeeper-template.properties"
-mm_producer_config_template_file="$kafka_templates_config_dir/mm_producer-template.properties"
-mm_consumer_config_template_file="$kafka_templates_config_dir/mm_consumer-template.properties"
-consumer_ssl_config_template_file="$kafka_templates_config_dir/console-consumer-ssl-template.properties"
-producer_ssl_config_template_file="$kafka_templates_config_dir/console-producer-ssl-template.properties"
+  kafka_runtime_console_logs_dir="$kafka_base_location/logs"
+  broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
+  zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-console.log"
+  mm_runtime_console_log_file="$kafka_base_location/logs/$node_name-mirror-maker-console.log"
 
-kafka_runtime_config_dir="$kafka_base_location/config"
-broker_config_file="$kafka_runtime_config_dir/$node_name-broker.properties"
-zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper.properties"
-mm_producer_config_file="$kafka_runtime_config_dir/$node_name-mm_producer.properties"
-mm_consumer_config_file="$kafka_runtime_config_dir/$node_name-mm_consumer.properties"
-consumer_ssl_config_file="$kafka_runtime_config_dir/console-consumer-ssl.properties"
-producer_ssl_config_file="$kafka_runtime_config_dir/console-producer-ssl.properties"
+  kafka_templates_config_dir="$PWD/config/$kafka_version"
+  broker_config_template_file="$kafka_templates_config_dir/broker-template.properties"
+  zookeeper_config_template_file="$kafka_templates_config_dir/zookeeper-template.properties"
+  mm_producer_config_template_file="$kafka_templates_config_dir/mm_producer-template.properties"
+  mm_consumer_config_template_file="$kafka_templates_config_dir/mm_consumer-template.properties"
+  consumer_ssl_config_template_file="$kafka_templates_config_dir/console-consumer-ssl-template.properties"
+  producer_ssl_config_template_file="$kafka_templates_config_dir/console-producer-ssl-template.properties"
 
-zookeeper_process_running_cmd="ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'"
+  kafka_runtime_config_dir="$kafka_base_location/config"
+  broker_config_file="$kafka_runtime_config_dir/$node_name-broker.properties"
+  zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper.properties"
+  mm_producer_config_file="$kafka_runtime_config_dir/$node_name-mm_producer.properties"
+  mm_consumer_config_file="$kafka_runtime_config_dir/$node_name-mm_consumer.properties"
+  consumer_ssl_config_file="$kafka_runtime_config_dir/console-consumer-ssl.properties"
+  producer_ssl_config_file="$kafka_runtime_config_dir/console-producer-ssl.properties"
 
-kafka_broker_logs_dir='/tmp/kafka-logs'
-zookeeper_logs_dir='/tmp/zookeeper'
+  zookeeper_process_running_cmd="ps ax | grep java | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'"
+
+  kafka_broker_logs_dir='/tmp/kafka-logs'
+  zookeeper_logs_dir='/tmp/zookeeper'
+}
+
+set_kafka_variables
 
 function confirm_execute() {
   local cmd="$1"

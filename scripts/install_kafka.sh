@@ -23,6 +23,19 @@ if [ $? -eq 127 ]; then
 fi
 
 
+prompt="Please confirm kafka version. Current version is $kafka_version. Select one of (`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| sed ':a;N;$!ba;s/\n/, /g'`)? "
+default_value="$kafka_version"
+while true; do
+  read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" kafka_version
+  if [ ! -d config/$kafka_version ]; then
+    display_error "kafka version $kafka_version is not supported. Please select another version."
+  else
+    set_kafka_variables
+    break 
+  fi
+done
+
+
 if [ -d $kafka_installation_dir ]; then
   if [ ! "`readlink $kafka_home`" -ef "$kafka_installation_dir" ]; then
     prompt="It appears kafka is already installed at $kafka_installation_dir but it is not linked correctly `readlink $kafka_home`. Do you want to just relink it (y/n)? "
