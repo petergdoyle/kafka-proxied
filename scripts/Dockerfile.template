@@ -1,0 +1,11 @@
+FROM centos
+
+RUN yum install -y java-1.8.0-openjdk*
+
+RUN mkdir -pv /usr/kafka \
+&& curl -O DOWNLOAD_URL \
+&& tar -xvf DOWNLOADABLE -C /usr/kafka \
+&& rm -f DOWNLOADABLE \
+&& ln -s KAFKA_INSTALLATION_DIR /usr/kafka/default
+
+WORKDIR /usr/kafka/default
