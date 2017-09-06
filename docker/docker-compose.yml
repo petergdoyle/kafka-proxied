@@ -1,9 +1,11 @@
 version: '3'
 services:
-  kafkaMM:
+  kafka-mirror-maker-service:
     image: mycompany/kafka
-    container_name: kafka-mirror-maker
+    extra_hosts:
+    - "vengine1:192.168.1.91"
+    - "vengine2:192.168.1.92"
     command: "bin/kafka-mirror-maker.sh \
-    --consumer.config config/kafka-proxied-mm_consumer.properties \
-    --producer.config config/kafka-proxied-mm_producer.properties \
+    --consumer.config config/mm_consumer.properties \
+    --producer.config config/mm_producer.properties \
     --whitelist=\"kafka-replicated-topic-1\""

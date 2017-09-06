@@ -17,8 +17,8 @@ if [ "$1" == "--clean" ]; then
 fi
 
 
-if [ -d kafka/ ]; then
-  rm -fv kafka/
+if [ -d kafka ]; then
+  rm -frv kafka
 fi
 
 mkdir -pv kafka/
@@ -26,8 +26,8 @@ cp -vr $KAFKA_HOME/* kafka/
 
 mm_consumer_config_template_file="../scripts/config/$kafka_version/mm_consumer-template.properties"
 mm_producer_config_template_file="../scripts/config/$kafka_version/mm_producer-template.properties"
-mm_consumer_config_file="$PWD/kafka/config/$node_name-mm_consumer.properties"
-mm_producer_config_file="$PWD/kafka/config/$node_name-mm_producer.properties"
+mm_consumer_config_file="$PWD/kafka/config/mm_consumer.properties"
+mm_producer_config_file="$PWD/kafka/config/mm_producer.properties"
 
 cp -vf $mm_consumer_config_template_file $mm_consumer_config_file
 cp -vf $mm_producer_config_template_file $mm_producer_config_file
