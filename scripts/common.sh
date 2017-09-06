@@ -58,7 +58,8 @@ fi
 parent_dir="$(dirname "$(pwd)")"
 
 # kafka_version="0.11.0.0"
-kafka_version="0.10.1.1"
+# kafka_version="0.10.1.1"
+kafka_version="0.9.0.1"
 scala_version="2.11"
 
 if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install kafka

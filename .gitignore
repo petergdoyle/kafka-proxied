@@ -18,3 +18,5 @@ ssl/*
 
 *.zip
 *.tar.gz
+
+docker/kafka/
