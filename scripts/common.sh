@@ -57,21 +57,22 @@ fi
 
 parent_dir="$(dirname "$(pwd)")"
 
-# kafka_version="0.11.0.0"
-# kafka_version="0.10.1.1"
-kafka_version="0.9.0.1"
-scala_version="2.11"
 
 if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install kafka
   kafka_base_location="/usr/kafka"
 else
   kafka_base_location=$parent_dir/local/kafka
 fi
+kafka_home="$kafka_base_location/default"
+
+kafka_version=`readlink -f $kafka_home | awk -F- '{print $NF}'`
+if [ -z $kafka_version ]; then
+  kafka_version=`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| head -1` #select the first one found under config
+fi
+scala_version="2.11"
+kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
 
 function set_kafka_variables() {
-
-  kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
-  kafka_home="$kafka_base_location/default"
 
   kafka_runtime_logs_dir="$kafka_base_location/default/logs"
   kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"

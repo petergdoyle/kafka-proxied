@@ -1,5 +1,4 @@
 #!/bin/sh
-cd $(dirname $0)
 . ../scripts/common.sh
 
 if [ -z $KAFKA_HOME ]; then
