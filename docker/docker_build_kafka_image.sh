@@ -34,5 +34,6 @@ cp -vf $mm_producer_config_template_file $mm_producer_config_file
 
 configure_mirror_maker
 
-
 docker build $no_cache -t="mycompany/kafka" .
+
+docker rmi $(docker images -q -f dangling=true)

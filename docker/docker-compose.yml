@@ -1,8 +1,9 @@
 version: '3'
 services:
-  kafkaZk:
+  kafkaMM:
     image: mycompany/kafka
     container_name: kafka-mirror-maker
-    ports:
-     - "2181:2181"
-    command: "bin/zookeeper-server-start.sh config/zookeeper.properties"
+    command: "bin/kafka-mirror-maker.sh \
+    --consumer.config config/kafka-proxied-mm_consumer.properties \
+    --producer.config config/kafka-proxied-mm_producer.properties \
+    --whitelist=\"kafka-replicated-topic-1\""
