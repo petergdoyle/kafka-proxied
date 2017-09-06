@@ -20,5 +20,3 @@ ssl/*
 *.tar.gz
 
 docker/kafka/
-
-Dockerfile
