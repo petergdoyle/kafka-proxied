@@ -2,13 +2,14 @@
 
 ### Step by Step
 
-1. Download Kafka locally
+1. Install Docker and Docker-Compose locally
 ```bash
-$ ./download_kafka.sh
+$ sudo su
+$ ./install_docker.sh
 ```
 2. Build the Docker image
 ```bash
-$ ./build_docker_image.sh
+$ ./docker_build_kafka_image.sh
 ```
 3. Run ```docker-compose``` commands to create the containers
 ```bash

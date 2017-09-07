@@ -4,9 +4,8 @@ cd $(dirname $0)
 
 ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
-if [ ! -z $ZK_PIDS ]; then\
-  display_error "zookeeper is already running ! stop the cluster first !"
-  exit 1
+if [[ -z $ZK_PIDS ]]; then
+  display_info "Warning. No Zookeeper is running"
 fi
 
 if [ ! -d $kafka_runtime_config_dir ]; then
