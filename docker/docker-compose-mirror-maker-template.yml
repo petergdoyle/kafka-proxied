@@ -3,9 +3,9 @@ services:
   kafka-mirror-maker-service:
     image: mycompany/kafka
     extra_hosts:
-    - "vengine1:192.168.1.91"
-    - "vengine2:192.168.1.92"
+    - "${CONSUMER_BROKER_ADDRESS}"
+    - "${PRODUCER_BROKER_ADDRESS}"
     command: "bin/kafka-mirror-maker.sh \
     --consumer.config config/mm_consumer.properties \
     --producer.config config/mm_producer.properties \
-    --whitelist=\"kafka-replicated-topic-1\""
+    --whitelist=\"${TOPIC_WHITELIST}\""

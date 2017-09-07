@@ -46,10 +46,9 @@ else
   display_error "docker and docker-compose already installed"
 fi
 
-# user_count=`ll /home |tail -n +2 |awk '{print $9}' |wc -l`
-# echo "There are $user_count users on the system."
+read -e -p "Users that run docker will now be added to the docker group. Those users must logout/login for group permissions to take effect " -i "" rsp
 while true; do
-  read -e -p "Enter a user to be added to the docker group: " -i "$user" user
+  read -e -p "Enter a user to be added to the docker group (ctl+c to quit): " -i "$user" user
   usermod -aG docker $user
   sleep 1
   echo "user $user added to docker group"

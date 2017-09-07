@@ -20,3 +20,5 @@ ssl/*
 *.tar.gz
 
 docker/kafka/
+
+docker-compose.yml

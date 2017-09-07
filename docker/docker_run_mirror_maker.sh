@@ -1,7 +1,7 @@
 #!/bin/sh
 
 topic='kafka-replicated-topic-1'
-read -e -p "Enter the topic name: " -i "$topic" topic
+read -e -p "Enter the topic to mirror: " -i "$topic" topic
 
 cmd="bin/kafka-mirror-maker.sh \
 --consumer.config config/mm_consumer.properties \
