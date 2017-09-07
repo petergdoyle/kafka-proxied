@@ -4,9 +4,8 @@ cd $(dirname $0)
 
 BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
 
-if [[ -z $BKR_PIDS ]]; then\
-  display_error "broker is not running ! stop the broker first !"
-  exit 1
+if [[ -z $BKR_PIDS ]]; then
+  display_info "Warning. No Kafka Broker is running"
 fi
 
 number_of_brokers=`find $kafka_runtime_console_logs_dir -type f -name '*broker*' |wc -l`
