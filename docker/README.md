@@ -11,7 +11,11 @@ $ ./install_docker.sh
 ```bash
 $ ./docker_build_kafka_image.sh
 ```
-3. Run ```docker-compose``` commands to create the containers
+3. Start ```docker-compose``` interactively specifying startup options for running the  ```kafka-mirror-maker-service```...
 ```bash
-$ docker-compose up...
+$ ./docker_compose_run_mirror_maker_service.sh
+```
+4. Scale the ```kafka-mirror-maker-service```
+```bash
+$ ./docker_compose_scale_mirror_maker_service.sh
 ```

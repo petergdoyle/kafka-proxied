@@ -4,11 +4,11 @@ This project provides scripts and configuration details required to get a multi-
 ## Exposing Kafka Cluster through Public Network Gateway
 So let's design a Kafka system topology... 
 
-Pictured below is a typical Kafka setup sitting on an internal network with Kafka running over a multi-node cluster distributed across three machines. The first machine `engine1` will be running both Zookeeper and a Kafka broker with broker id `1`. The second and third machines `engine2` and `engine3` are running Kafka brokers identified with broker ids `2` and `3`. This cluster will be referred to as `cluster 1`. All machines are running on the sub-net in the `197.48.1.*` group and are port-mapped from a firewall sitting at the LAN gateway. The port mapping between the gateway firewall and the internal machine:port is show in the diagrm. The LAN gateway has the domain name `my-public-domain` and is resolveable by Internet dns to ip `75.70.33.98`. Notice that the external ports are different than the internal ones, that is those that kafka will be running on based on their machine ip. 
+Pictured below is a typical Kafka setup sitting on an internal network with Kafka running over a multi-node cluster distributed across three machines. The first machine `engine1` will be running both Zookeeper and a Kafka broker with broker id `1`. The second and third machines `engine2` and `engine3` are running Kafka brokers identified with broker ids `2` and `3` accordingly. This cluster will be referred to as `cluster 1`. All machines are running on the sub-net in the `197.48.1.*` group and are port-mapped from a firewall sitting at the LAN gateway. The port mapping between the gateway firewall and the internal machine:port is show in the diagrm. The LAN gateway has the domain name `my-public-domain` and is resolveable by Internet dns to ip `75.70.33.98`. Notice that the external ports are different than the internal ones, that is those that kafka will be running on based on their machine ip. 
 
-Outside the LAN are two machines sitting in the cloud that have reliable internet accessible ip addreses and domain names as well. These don't have to be cloud machines in fact they could be any machines sitting outside the LAN but the cloud scenario is a likely one. The one machine `Kafkaclientmachine1` will also be running a small single-node Kafka cluster that has Kafka topic data being replicated to it through Kafka MirrorMaker. Both cloud machines `Kafkaclientmachine1` and `Kafkaclientmachine2` are capable of acting as Kafka consumers, producers or can run MirrorMaker processes and in fact can run a small kafka cluster between them or a a single node cluster on one. So `Kafkaclientmachine1` will be running a single-node kafka cluster referred to as `cluster 2` and the `Kafkaclientmachine2` will be running MirrorMaker to pull specific topic data from `cluster 1` and put it onto `cluster 2`. 
+Outside the LAN are two machines sitting in the cloud that have reliable internet accessible ip addreses and domain names as well. These don't have to be cloud machines in fact they could be any machines sitting outside the LAN but the cloud scenario is a likely one. Both cloud machines `Kafkaclientmachine1` and `Kafkaclientmachine2` are capable of acting as Kafka consumers, producers or can run MirrorMaker processes and in fact could run a small kafka cluster distributed between them or a single host cluster on one. For this setup the one machine `Kafkaclientmachine1` will  be running a single host multi-node Kafka cluster we'll refer to as `cluster 2` that replicate Kafka topic data being put onto `cluster 1` using a Kafka MirrorMaker process running on `Kafkaclientmachine1` as well.  `Kafkaclientmachine2` will be able to interact with both `cluster 1` and `cluster 2` running kakfa producers and consumers to show that topic data is being replicated. 
 
-For security the kafka machines `engine1` `engine2` and `engine3` will also be running their own firewall and only allow communication to kafka brokers and zookeeper from the internal network and from the specific ip of `Kafkaclientmachine2`. No kafka service ports shall be accesible into `Kafkaclientmachine1` and `Kafkaclientmachine2` and only port 22 will be open for secure shell access.
+For security the kafka machines `engine1` `engine2` and `engine3` will also be running their own firewall and only allow communication to kafka brokers and zookeeper from the internal network and from the specific ips of `Kafkaclientmachine1` and `Kafkaclientmachine2`. No kafka service ports shall be accesible into `Kafkaclientmachine1` or `Kafkaclientmachine2` and only port 22 will be open for secure shell access to both.
 
 **While this setup may seem typical, there are a few special considerations and some not so well known nor well  documented configuration settings and OS network configuration decisions to be made in order to make the internal Kafka cluster work both inside and outside the LAN**. By the time you get through this you will understand what has to be considered and how to configure Kafka and even the host machines themselves in order to make it all work. We are trying to avoid the frustration of "***LEADER NOT AVAILABLE***" and not knowing what the problems are or how to fix them. 
 
@@ -130,6 +130,7 @@ Created topic "kafka-simple-topic-1".
 
 **Produce Messages**
 Let's create some messages to put on the topic that we can identify later came from the local machine running the kafka cluster. Run the script as shown to start the kafka console producer and enter messages. Hit ```ctl-c``` to stop.
+```bash
 [peter@kafkaclientmachine1 scripts]$ ./start_kafka_console_producer.sh 
 Enter a kafka broker server: localhost:9091
 Enter the topic name: kafka-simple-topic-1
@@ -137,11 +138,11 @@ Enter the topic name: kafka-simple-topic-1
 message-from-localhost-1
 message-from-localhost-2          
 message-from-localhost-3
-
+```
 **Consume Messages**
 Now let's consume those messages to verify things are working okay. Once you run the script to parameteriz the kafka console consumer command for you, it should return the same three messages created previously. 
 ```bash
-[peter@engine1 scripts]$ ./start_kafka_console_consumer.sh 
+[peter@kafkaclientmachine1 scripts]$ ./start_kafka_console_consumer.sh 
 Enter the topic name: kafka-simple-topic-1
 Read topic from beginning (all messages retained) (y/n): y
 Use new kafka consumer: y
@@ -152,16 +153,35 @@ message-from-localhost-2
 message-from-localhost-3
 
 ```
+Looks good. Let's set up ```cluster 1``` over on the internal LAN...
 
+#### Setup up SSL for Kafka Data Exchange
+```bash 
+[peter@engine4 ~]$ keytool -keystore `hostname`.keystore.jks -alias localhost -genkey -keyalg RSA
+Enter keystore password:  
+Keystore password is too short - must be at least 6 characters
+Enter keystore password:  
+Re-enter new password: 
+What is your first and last name?
+  [Unknown]:  kafka
+What is the name of your organizational unit?
+  [Unknown]:  dev
+What is the name of your organization?
+  [Unknown]:  cleverfishsoftware llc
+What is the name of your City or Locality?
+  [Unknown]:  denver
+What is the name of your State or Province?
+  [Unknown]:  co
+What is the two-letter country code for this unit?
+  [Unknown]:  us
+Is CN=kafka, OU=dev, O=cleverfishsoftware llc, L=denver, ST=co, C=us correct?
+  [no]:  yes
 
-
+Enter key password for <localhost>
+	(RETURN if same as keystore password):  
+```
 #### Setup a Multi-node Kafka Cluster on Separate Machines Within The Same LAN
 #### Setup a Multi-node Kafka Cluster on Separate Machines Within The Same LAN And Expose Through Public Internet
-
-
-
-
-
 
 
 
