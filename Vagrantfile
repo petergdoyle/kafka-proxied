@@ -31,6 +31,11 @@ Vagrant.configure("2") do |config|
 export JAVA_HOME=$JAVA_HOME
 EOF
 
+export GO_HOME=/usr/local/go
+cat >/etc/profile.d/go.sh <<-EOF
+export GO_HOME=$GO_HOME
+EOF
+
     # register all the java tools and executables to the OS as executables
     install_dir="$JAVA_HOME/bin"
     for each in $(find $install_dir -executable -type f) ; do

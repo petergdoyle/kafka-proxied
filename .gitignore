@@ -22,3 +22,5 @@ ssl/*
 docker/kafka/
 
 docker-compose.yml
+
+burrow/Burrow/
