@@ -34,6 +34,10 @@ cp -vf $mm_producer_config_template_file $mm_producer_config_file
 
 configure_mirror_maker
 
+keystore_file='hospitality-streaming-pr.travelport.com.keystore.jks'
+cp -vf ../scripts/$keystore_file $PWD/kafka/config
+sed -i "s/#ssl.truststore.location=*/ssl.truststore.location=config/$keystore_file/g" $mm_consumer_config_file
+
 docker build $no_cache -t="mycompany/kafka" .
 
 docker rmi $(docker images -q -f dangling=true)
