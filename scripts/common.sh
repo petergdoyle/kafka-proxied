@@ -162,7 +162,7 @@ function check_zookeper_status() {
   ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 
   [[ ! -z $ZK_PIDS ]] \
-    && display_info "Zookeeper process(es) running: $ZK_PIDS" \
+    && display_info "Zookeeper process(es) running:\n$ZK_PIDS" \
     || display_warn "Zookeeper process(es) running: No Zookeeper processes running"
 
 }
@@ -172,7 +172,7 @@ function check_broker_status() {
   BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
 
   [[ ! -z $BKR_PIDS ]] \
-    && display_info "Kafka Broker process(es) running: $BKR_PIDS" \
+    && display_info "Kafka Broker process(es) running:\n$BKR_PIDS" \
     || display_warn "Kafka Broker process(es) running: No Kafka Broker processes running"
 
 }
@@ -182,7 +182,7 @@ function check_mirror_maker_status() {
   MM_PIDS=`ps ax | grep -i MirrorMaker | grep -v grep | awk '{print $1}'`
 
   [[ ! -z $MM_PIDS ]] \
-    && display_info "Mirror-Maker process(es) running: $MM_PIDS" \
+    && display_info "Mirror-Maker process(es) running:\n$MM_PIDS" \
     || display_warn "Mirror-Maker process(es) running: No Mirror-Maker processes running"
 
 }
