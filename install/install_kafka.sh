@@ -1,5 +1,5 @@
  #!/bin/sh
-. ./build_kafka_configuration.sh
+ . ../scripts/common.sh
 
 function set_kafka_home() {
 
@@ -22,11 +22,17 @@ if [ $? -eq 127 ]; then
   exit 1
 fi
 
+# prompt="Please confirm kafka version. Current version is $kafka_version.\nSelect one of:\n`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'` "
+kafka_version_default=$kafka_version
+kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
+if [ ! -d $kafka_installation_dir ]; then
+  kafka_version="not set"
+fi
+prompt="Please confirm kafka version. Current version is $kafka_version.\nSelect one of:\n(`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| sed ':a;N;$!ba;s/\n/, /g'`)? "
 
-prompt="Please confirm kafka version. Current version is $kafka_version. Select one of (`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| sed ':a;N;$!ba;s/\n/, /g'`)? "
-default_value="$kafka_version"
+default_value="$kafka_version_default"
 while true; do
-  read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" kafka_version
+  read -e -p "$(echo -e $prompt) " -i "$default_value" kafka_version
   if [ ! -d config/$kafka_version ]; then
     display_error "kafka version $kafka_version is not supported. Please select another version."
   else
@@ -39,7 +45,7 @@ if [ -d $kafka_installation_dir ]; then
   if [ ! "`readlink $kafka_home`" -ef "$kafka_installation_dir" ]; then
     prompt="It appears kafka is already installed at $kafka_installation_dir but it is not linked correctly `readlink $kafka_home`. Do you want to just relink it (y/n)? "
     default_value="y"
-    read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" relink_only
+    read -e -p $prompt -i "$default_value" relink_only
     if [ "$relink_only" == "y" ]; then
       rm -v $kafka_home
       ln -s $kafka_installation_dir $kafka_home
@@ -49,13 +55,13 @@ if [ -d $kafka_installation_dir ]; then
   if [ -z $KAFKA_HOME ]; then
     set_kafka_home
     prompt="It appears KAFKA_HOME was not set. It is now set. You will need to source your ~/.bash_profile to continue running scripts."
-    echo -e $BOLD$YELLOW$prompt$RESET
+    echo -e $prompt
   fi
 
   install_anyway="n"
   prompt="It appears kafka is already installed at $kafka_installation_dir, Install it again (y/n)? "
   default_value="$install_anyway"
-  read -e -p "$(echo -e $BOLD$YELLOW$prompt $cmd $RESET)" -i "$default_value" install_anyway
+  read -e -p "$(echo -e $prompt $cmd )" -i "$default_value" install_anyway
   if [ "$install_anyway" != "y" ]; then
     exit 0
   fi
@@ -75,7 +81,13 @@ downloadable="kafka_$scala_version-$kafka_version.tgz"
 download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
 display_info "downloading $download_url to $kafka_base_location..."
 
-curl -O $download_url \
+# validate_url $download_url
+# response_code="$?"
+# if [ $response_code -ne "0" ]; then
+#   echo "bad url specified as $download_url. server returned $response_code. check server or specify correct url. cannot continue";
+#   exit
+# fi
+curl $download_url -s -f -o /dev/null || echo "Website down." | curl -O $download_url \
 && tar -xvf $downloadable -C $kafka_base_location \
 && rm -f $downloadable \
 && ln -s $kafka_installation_dir $kafka_home
