@@ -100,20 +100,20 @@ function configure_mirror_maker() {
   response='n'
   read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
   if [ "$response" == "y" ]; then
-    truststore_location=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
+    keystore_file=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
     while true; do
-      read -e -p "Specify the truststore location: " -i "$truststore_location" truststore_location
-      if [ -f $truststore_location ]; then
+      read -e -p "Specify the truststore location: " -i "$keystore_file" keystore_file
+      if [ -f $keystore_file ]; then
         break
       else
-        display_error "Specified file $truststore_location does not exist"
+        display_error "Specified file $keystore_file does not exist"
       fi
     done
 
     truststore_password="majiic"
     read -e -p "Specify the truststore password: " -i "$truststore_password" truststore_password
     sed -i "s/#security.protocol/security.protocol/g" $mm_consumer_config_file
-    sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.location=$truststore_location?g" $mm_consumer_config_file
+    sed -i "s?#ssl.truststore.location=#REPLACE#?ssl.truststore.location=$keystore_file?g" $mm_consumer_config_file
     sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_consumer_config_file
 
   fi
@@ -126,20 +126,20 @@ function configure_mirror_maker() {
   response='n'
   read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$response" response
   if [ "$response" == "y" ]; then
-    truststore_location=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
+    keystore_file=$PWD/$(echo $mirror_maker_bootstrap_server |cut -d: -f1).truststore.jks
     while true; do
-      read -e -p "Specify the truststore location: " -i "$truststore_location" truststore_location
-      if [ -f $truststore_location ]; then
+      read -e -p "Specify the truststore location: " -i "$keystore_file" keystore_file
+      if [ -f $keystore_file ]; then
         break
       else
-        display_error "Specified file $truststore_location does not exist"
+        display_error "Specified file $keystore_file does not exist"
       fi
     done
 
     truststore_password="majiic"
     read -e -p "Specify the truststore password: " -i "$truststore_password" truststore_password
     sed -i "s/#security.protocol/security.protocol/g" $mm_producer_config_file
-    sed -i "s/#ssl.truststore.location=#REPLACE#/ssl.truststore.location=$truststore_location/g" $mm_producer_config_file
+    sed -i "s/#ssl.truststore.location=#REPLACE#/ssl.truststore.location=$keystore_file/g" $mm_producer_config_file
     sed -i "s/#ssl.truststore.password=#REPLACE#/ssl.truststore.password=$truststore_password/g" $mm_producer_config_file
 
   fi

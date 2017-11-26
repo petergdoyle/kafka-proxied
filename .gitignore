@@ -24,3 +24,8 @@ docker/kafka/
 docker-compose.yml
 
 burrow/Burrow/
+
+.DS_Store
+
+scratch
+/utils/java/ConsoleConsumerStats/target/

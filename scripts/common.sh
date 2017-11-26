@@ -48,6 +48,20 @@ function display_command() {
   echo -e $BOLD$VIOLET"[info] $cmd"$RESET
 }
 
+validate_url() {
+  local url=$1
+  if [ -e $url ]; then
+    echo "variable url is not set. cannot continue"
+    return 1
+  fi
+  response_code=$(curl --write-out %{http_code} --silent --output /dev/null $url)
+  # echo $response_code
+  # if [ "$response_code" -eq "000" ]; then
+    return $response_code
+  # else
+  #   return 0
+  # fi
+}
 
 host_name=`hostname| cut -d"." -f1`
 node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`
@@ -74,7 +88,7 @@ scala_version="2.11"
 function set_kafka_variables() {
 
   kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
-  
+
   kafka_runtime_logs_dir="$kafka_base_location/default/logs"
   kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
 
