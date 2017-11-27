@@ -1,5 +1,5 @@
 #!/bin/sh
-. ../scripts/build_kafka_configuration.sh
+. ../kafka/build_kafka_configuration.sh
 
 if [ ! -d $kafka_installation_dir ]; then
   display_error "Kafka is not installed. Run install_kafka script."
@@ -24,8 +24,8 @@ fi
 mkdir -pv kafka/
 cp -vr $KAFKA_HOME/* kafka/
 
-mm_consumer_config_template_file="../scripts/config/$kafka_version/mm_consumer-template.properties"
-mm_producer_config_template_file="../scripts/config/$kafka_version/mm_producer-template.properties"
+mm_consumer_config_template_file="$kafka_config_dir/$kafka_version/mm_consumer-template.properties"
+mm_producer_config_template_file="$kafak_config_dir/$kafka_version/mm_producer-template.properties"
 mm_consumer_config_file="$PWD/kafka/config/mm_consumer.properties"
 mm_producer_config_file="$PWD/kafka/config/mm_producer.properties"
 

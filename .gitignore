@@ -28,4 +28,4 @@ burrow/Burrow/
 .DS_Store
 
 scratch
-target 
+target/

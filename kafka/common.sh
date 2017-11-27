@@ -70,20 +70,33 @@ if [ "$node_name" == "" ]; then
 fi
 
 parent_dir="$(dirname "$(pwd)")"
+local_dir=$parent_dir/local
+docker_dir=$parent_dir/docker
+install_dir=$parent_dir/install
+keystore_dir=$parent_dir/keystore
+data_dir=$parent_dir/data
+kafka_dir=$parent_dir/kafka
+kafka_config_dir=$kafka_dir/config
+utils_dir=$parent_dir/utils
+local_kafka_dir=$parent_dir/local/kafka
+local_maven_dir=$parent_dir/local/maven
+local_java_dir=$parent_dir/local/java
 
+  if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install kafka
+    kafka_base_location="/usr/kafka"
+  else
+    kafka_base_location=$parent_dir/local/kafka
+  fi
 
-if [[ $EUID -eq 0 ]]; then #check if run as root to determine where to install kafka
-  kafka_base_location="/usr/kafka"
-else
-  kafka_base_location=$parent_dir/local/kafka
-fi
-kafka_home="$kafka_base_location/default"
+  #first see if there is a symlink to some kafka installation
+  kafka_home="$kafka_base_location/default"
+  kafka_version=`readlink -f $kafka_home | awk -F- '{print $NF}'`
+  if [ -z $kafka_version ]; then
+    kafka_version='unknown'
+    display_warn "Kafka version is unknown. Install kafka now."
+  fi
+  scala_version="2.11"
 
-kafka_version=`readlink -f $kafka_home | awk -F- '{print $NF}'`
-if [ -z $kafka_version ]; then
-  kafka_version=`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'| head -1` #select the first one found under config
-fi
-scala_version="2.11"
 
 function set_kafka_variables() {
 

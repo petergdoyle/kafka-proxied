@@ -33,12 +33,12 @@ This is the simplest setup of all. If you refer to the diagram above, this is th
 **Start the Zookeeper Node**
 cd into the location where you cloned this repository and find the scripts/ directory and run the script that will start a zookeeper instance on this ```kafkaclientmachine1``` machine. If everything is okay you should see output from zookeeper look like the following. **Note: ** The scripts are there to help you build paramaterized kafka commands, the same ones that are in the kafka distribution. The scripts rely on a $KAFKA_HOME environment variable being set. If you haven't installed kafka, run ```./install_kafka.sh``` first and either log out and log back into your machine or source the ```~/.bash_profile``` that is modified to set a $KAFKA_HOME for your local installation. 
 ```bash
-[peter@kafkaclientmachine1 ~]$ cd kafka-proxied/scripts/
+[peter@kafkaclientmachine1 ~]$ cd kafka-proxied/kafka/
 [peter@kafkaclientmachine1 scripts]$ ./start_kafka_zookeeper.sh
 Enter the number of zookeeper instances: 1
 Enter the zookeeper host: localhost
 Enter the zookeeper host port: 2181
-‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/zookeeper-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-zookeeper-1-config.properties’
+‘/home/peter/vagrant/kafka-proxied/kafka/config/0.10.1.1/zookeeper-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-zookeeper-1-config.properties’
 /home/peter/vagrant/kafka-proxied/local/kafka/default/bin/zookeeper-server-start.sh /home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-zookeeper-1-config.properties> /home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-zookeeper-1-console.log 2>&1
 About to start Zookeeper instance 1, continue? (y/n): y
 Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-zookeeper-1-console.log)? (y/n): y
@@ -47,7 +47,7 @@ Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-zoo
 [2017-08-25 06:21:58,294] INFO Server environment:os.version=3.10.0-514.26.2.el7.x86_64 (org.apache.zookeeper.server.ZooKeeperServer)
 [2017-08-25 06:21:58,294] INFO Server environment:user.name=peter (org.apache.zookeeper.server.ZooKeeperServer)
 [2017-08-25 06:21:58,294] INFO Server environment:user.home=/home/peter (org.apache.zookeeper.server.ZooKeeperServer)
-[2017-08-25 06:21:58,294] INFO Server environment:user.dir=/home/peter/vagrant/kafka-proxied/scripts (org.apache.zookeeper.server.ZooKeeperServer)
+[2017-08-25 06:21:58,294] INFO Server environment:user.dir=/home/peter/vagrant/kafka-proxied/kafka (org.apache.zookeeper.server.ZooKeeperServer)
 [2017-08-25 06:21:58,299] INFO tickTime set to 3000 (org.apache.zookeeper.server.ZooKeeperServer)
 [2017-08-25 06:21:58,299] INFO minSessionTimeout set to -1 (org.apache.zookeeper.server.ZooKeeperServer)
 [2017-08-25 06:21:58,299] INFO maxSessionTimeout set to -1 (org.apache.zookeeper.server.ZooKeeperServer)
@@ -60,7 +60,7 @@ This installation will (arbitrarily) have 2 brokers running in the cluster. So l
 [peter@kafkaclientmachine1 scripts]$ ./start_kafka_broker.sh 
 Enter the number of broker instances: 2
 Confirm the Broker Id (must be unique INT within the cluster): 1
-‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-1.properties’
+‘/home/peter/vagrant/kafka-proxied/kafka/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-1.properties’
 Enter the broker port: 9091
 Enter the the address the socket server listens on (locally): PLAINTEXT://:9091
 Will the broker be accessed by a proxy or external public server (y/n)?: n
@@ -85,7 +85,7 @@ Tail on log file (/home/peter/vagrant/kafka-proxied/local/kafka/logs/engine1-bro
 [2017-08-25 06:34:05,683] INFO Kafka commitId : f10ef2720b03b247 (org.apache.kafka.common.utils.AppInfoParser)
 [2017-08-25 06:34:05,686] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 Confirm the Broker Id (must be unique INT within the cluster): 2
-‘/home/peter/vagrant/kafka-proxied/scripts/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-2.properties’
+‘/home/peter/vagrant/kafka-proxied/kafka/config/0.10.1.1/broker-template.properties’ -> ‘/home/peter/vagrant/kafka-proxied/local/kafka/config/engine1-broker-2.properties’
 Enter the broker port: 9092
 Enter the the address the socket server listens on (locally): PLAINTEXT://:9092
 Will the broker be accessed by a proxy or external public server (y/n)?: n
