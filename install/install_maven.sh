@@ -1,5 +1,11 @@
 #!/bin/sh
-. ../kafka/common.sh
+. ../common.sh
+
+java -version > /dev/null 2>&1
+if [ $? -eq 127 ]; then
+  display_error "Jdk8 is not installed. Install Jdk8"
+  exit 1
+fi
 
 maven_version='3.3.9'
 eval 'mvn -version' > /dev/null 2>&1
@@ -21,7 +27,7 @@ if [ $? -eq 127 ]; then
   export MAVEN_HOME=$maven_home
 
   if ! grep -q MAVEN_HOME ~/.bash_profile; then
-  cat >>~/.bash_profile <<-EOF
+    cat >>~/.bash_profile <<-EOF
 export MAVEN_HOME=$MAVEN_HOME
 export PATH=\$PATH:\$MAVEN_HOME/bin
 EOF

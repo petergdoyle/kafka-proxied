@@ -1,31 +1,13 @@
  #!/bin/sh
- . ../kafka/common.sh
-
-function set_kafka_home() {
-
-  if `grep KAFKA_HOME ~/.bash_profile` ; then
-    # replace
-    sed -i "s@export KAFKA_HOME=.*@export KAFKA_HOME="$kafka_home"@g" ~/.bash_profile
-  else
-    # insert
- export KAFKA_HOME=$kafka_base_location/default
- cat >>~/.bash_profile <<-EOF
-export KAFKA_HOME=$KAFKA_HOME
-EOF
-  fi
-
-}
+ . ../kafka/kafka_common.sh
 
 java -version > /dev/null 2>&1
 if [ $? -eq 127 ]; then
-  display_error "Jdk 8 is not installed. Run install_jdk8sh as root."
+  display_error "Jdk8 is not installed. Install Jdk8"
   exit 1
 fi
 
-# prompt="Please confirm kafka version. Current version is $kafka_version.\nSelect one of:\n`find config -type d| awk -F'/' '{print $2}'|sed '/^$/d'` "
-# prompt="Please confirm kafka version. Current version is $kafka_version.\nSelect one of:\n(`find $kafka_config_dir -type d| awk -F'/' '{print $2}'|sed '/^$/d'| sed ':a;N;$!ba;s/\n/, /g'`)?
-
-kafka_available_versions=`find $kafka_config_dir/* -type d| sed 's#.*/##'` #select the first one found under config
+kafka_available_versions=`find $kafka_config_dir/* -type d| sed 's#.*/##'| sed ':a;N;$!ba;s/\n/, /g'`
 kafka_default_version=`find $kafka_config_dir/* -type d| sed 's#.*/##'| head -n 1`
 
 prompt="Please confirm kafka version. Current version is $kafka_version.\nSelect one of:\n($kafka_available_versions):"
@@ -39,7 +21,8 @@ while true; do
   fi
 done
 set_kafka_variables
-show_cluster_state
+
+# show_cluster_state
 
 #
 # if [ -d $kafka_installation_dir ]; then
@@ -70,17 +53,21 @@ show_cluster_state
 # fi
 #
 #
-# if [ ! -d "$kafka_base_location" ]; then
-#  mkdir -pv $kafka_base_location
-# fi
+
+if [ ! -d "$kafka_base_location" ]; then
+ mkdir -pv $kafka_base_location
+fi
+
 #
 # if [ -d $kafka_home ]; then
 #   rm -v $kafka_home
 # fi
 #
-# downloadable="kafka_$scala_version-$kafka_version.tgz"
-# download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
-# display_info "downloading $download_url to $kafka_base_location..."
+
+downloadable="kafka_$scala_version-$kafka_version.tgz"
+download_url="http://www-us.apache.org/dist/kafka/$kafka_version/$downloadable"
+display_info "downloading $download_url to $kafka_base_location..."
+
 #
 # # validate_url $download_url
 # # response_code="$?"
@@ -88,10 +75,23 @@ show_cluster_state
 # #   echo "bad url specified as $download_url. server returned $response_code. check server or specify correct url. cannot continue";
 # #   exit
 # # fi
-# curl $download_url -s -f -o /dev/null || echo "Website down." | curl -O $download_url \
-# && tar -xvf $downloadable -C $kafka_base_location \
-# && rm -f $downloadable \
-# && ln -s $kafka_installation_dir $kafka_home
+
+# curl -O $download_url
+curl -O $download_url \
+&& tar -xvf $downloadable -C $kafka_base_location \
+&& rm -f $downloadable \
+&& ln -s $kafka_installation_dir $kafka_home
+
+
+  export KAFKA_HOME=$kafka_home
+
+  if ! grep -q KAFKA_HOME ~/.bash_profile; then
+    cat >>~/.bash_profile <<-EOF
+export KAFKA_HOME=$KAFKA_HOME
+export PATH=\$PATH:\$KAFKA_HOME/bin
+EOF
+  fi
+
 #
 # set_kafka_home
 # cleanup_kafka

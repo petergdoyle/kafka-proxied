@@ -1,5 +1,5 @@
 #!/bin/sh
-. ../kafka/common.sh
+. ../common.sh
 
 jdk_version='jdk-8u151'
 java -version > /dev/null 2>&1
@@ -17,7 +17,7 @@ if [ $? -eq 127 ]; then
     export JAVA_HOME=$local_java_dir/default
 
     if ! grep -q JAVA_HOME ~/.bash_profile; then
-    cat >>~/.bash_profile <<-EOF
+      cat >>~/.bash_profile <<-EOF
 export JAVA_HOME=$JAVA_HOME
 export PATH=\$PATH:\$JAVA_HOME/bin
 EOF

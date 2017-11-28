@@ -1,5 +1,5 @@
 #!/bin/sh
-. ../kafka/common.sh
+. ../common.sh
 
 if [[ $EUID -ne 0 ]]; then
   display_error "This script must be run as root"
@@ -31,7 +31,7 @@ else
   display_info "docker and docker-compose already installed"
 fi
 
-read -e -p "Users that run docker will now be added to the docker group. Those users must logout/login for group permissions to take effect " -i "" rsp
+display_info "Users that run docker will now be added to the docker group. Those users must logout/login for group permissions to take effect " -i "" rsp
 while true; do
   read -e -p "Enter a user to be added to the docker group (ctl+c to quit): " -i "$user" user
   usermod -aG docker $user
