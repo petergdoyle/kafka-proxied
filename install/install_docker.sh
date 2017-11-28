@@ -10,21 +10,6 @@ eval 'docker --version' > /dev/null 2>&1
 if [ $? -eq 127 ]; then
   display_info "installing docker and docker-compose..."
 
-# deprecated now...
-#   cat >/etc/yum.repos.d/docker.repo <<-EOF
-# [dockerrepo]
-# name=Docker Repository
-# baseurl=https://yum.dockerproject.org/repo/main/centos/7
-# enabled=1
-# gpgcheck=1
-# gpgkey=https://yum.dockerproject.org/gpg
-# EOF
-#
-#   yum -y install docker
-#   systemctl start docker.service
-#   systemctl enable docker.service
-#   groupadd docker
-
   yum -y remove docker docker-common  docker-selinux docker-engine
   yum -y install yum-utils device-mapper-persistent-data lvm2
   yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
@@ -43,7 +28,7 @@ if [ $? -eq 127 ]; then
   pip install -U docker-compose
 
 else
-  display_error "docker and docker-compose already installed"
+  display_info "docker and docker-compose already installed"
 fi
 
 read -e -p "Users that run docker will now be added to the docker group. Those users must logout/login for group permissions to take effect " -i "" rsp
