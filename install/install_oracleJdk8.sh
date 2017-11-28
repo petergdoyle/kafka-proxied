@@ -1,9 +1,9 @@
 #!/bin/sh
 . ../kafka/common.sh
 
+jdk_version='jdk-8u151'
 java -version > /dev/null 2>&1
 if [ $? -eq 127 ]; then
-  jdk_version='jdk-8u151'
   BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/$jdk_version-linux-x64.tar.gz
   wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${BASE_URL_8}${platform}"
   if [ ! -d $local_java_dir ]; then
@@ -25,6 +25,6 @@ EOF
 
 else
 
-    echo -e "\e[7;44;96mapache-maven-$maven_version already appears to be installed. skipping."
+    display_info "$jdk_version already appears to be installed. skipping."
 
 fi
