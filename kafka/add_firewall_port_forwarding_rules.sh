@@ -1,5 +1,6 @@
 #!/bin/sh
-. ./common.sh
+cd $(dirname $0) 
+. ../common.sh
 
 if [[ $EUID -ne 0 ]]; then
   display_error "This script must be run as root"

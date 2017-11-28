@@ -1,9 +1,10 @@
 #!/bin/sh
-. ./common.sh
+cd $(dirname $0) 
+. ../common.sh
 
 if [[ $EUID -ne 0 ]]; then #check if run as root
   display_error "must be run as root"
-  return 1
+  exit    1
 fi
 
 function firewall_on () {

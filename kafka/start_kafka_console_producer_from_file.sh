@@ -1,8 +1,9 @@
 #!/bin/sh
+cd $(dirname $0) 
 . ./common.sh
 
 if [ -z $KAFKA_HOME ]; then
-  echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
+  display_error "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
   exit 1
 fi
 

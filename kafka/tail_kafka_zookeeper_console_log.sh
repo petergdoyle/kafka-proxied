@@ -1,6 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./common.sh
+. ./kafka_common.sh
 
 ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 

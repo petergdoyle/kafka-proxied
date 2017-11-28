@@ -1,5 +1,6 @@
 #!/bin/sh
-. ../kafka/common.sh
+cd $(dirname $0) 
+. ./kafka_common.sh
 
 if [ -z $KAFKA_HOME ]; then
   echo "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"
@@ -21,6 +22,7 @@ function configure_broker() {
   # if ! [[ "$broker_id" =~ $number_regex ]]; then
   #   read -e -p "Enter an appropriate broker id (must be numeric and unique per server): " -i "1" broker_id
   # fi
+
   broker_id=$1
   sed -i "s/broker.id=.*/broker.id=$broker_id/g" $broker_config_file
   sed -i "s#log.dirs=.*#log.dirs=/tmp/kafka-logs/$broker_id#g" $broker_config_file

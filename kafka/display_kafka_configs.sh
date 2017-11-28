@@ -1,6 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./common.sh
+. ./kafka_common.sh
 
 files_found=`find $kafka_runtime_config_dir -type f -name '*properties'|wc -l`
 # selected_broker='1'

@@ -1,6 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./common.sh
+. ./kafka_common.sh
 
 MM_PIDS=`ps ax | grep -i MirrorMaker | grep -v grep | awk '{print $1}'`
 

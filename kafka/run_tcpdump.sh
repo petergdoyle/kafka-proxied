@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 display_interfaces=`ifconfig |grep '^[a-z]'|awk '{print $1}'| sed 's/.$//'| tr '\n' '  '`
 echo "Network interfaces: $display_interfaces"
 read -e -p "Enter the network interface: " -i "$interface" interface
