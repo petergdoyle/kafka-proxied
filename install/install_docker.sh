@@ -1,13 +1,14 @@
 #!/bin/sh
 . ../common.sh
 
-if [[ $EUID -ne 0 ]]; then
-  display_error "This script must be run as root"
-  exit 1
-fi
-
 eval 'docker --version' > /dev/null 2>&1
 if [ $? -eq 127 ]; then
+
+  if [[ $EUID -ne 0 ]]; then
+    display_error "This script must be run as root"
+    exit 1
+  fi
+
   display_info "installing docker and docker-compose..."
 
   yum -y remove docker docker-common  docker-selinux docker-engine
@@ -29,6 +30,11 @@ if [ $? -eq 127 ]; then
 
 else
   display_info "docker and docker-compose already installed"
+fi
+
+if [[ $EUID -ne 0 ]]; then
+  display_error "Adding users can only be done as root"
+  exit 1
 fi
 
 display_info "Users that run docker will now be added to the docker group. Those users must logout/login for group permissions to take effect " -i "" rsp
