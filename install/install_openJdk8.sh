@@ -19,10 +19,6 @@ if [ $? -eq 127 ]; then
   yum install -y java-1.8.0-openjdk*
   java_home=`alternatives --list |grep jre_1.8.0_openjdk| awk '{print $3}'`
   ln -s "$java_home" /usr/java/default
-  export JAVA_HOME=/usr/java/default
-  cat >/etc/profile.d/java.sh <<-EOF
-export JAVA_HOME=$JAVA_HOME
-EOF
 
   export JAVA_HOME='/usr/java/default'
   cat >/etc/profile.d/java.sh <<-EOF
