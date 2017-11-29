@@ -1,6 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./build_kafka_configuration.sh
+. ./kafka_common.sh
 
 if [ -z $KAFKA_HOME ]; then
   display_error "No env var KAFKA_HOME is set. Source your ~/.bash_profile or logout and log back in"

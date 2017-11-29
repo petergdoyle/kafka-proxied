@@ -1,6 +1,6 @@
 #!/bin/sh
 cd $(dirname $0)
-. ./build_kafka_configuration.sh
+. ./kafka_common.sh
 
 BKR_PIDS=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'`
 BKR_PID_CNT=`ps ax | grep -i 'kafka\.Kafka' | grep -v grep | awk '{print $1}'| wc -l`

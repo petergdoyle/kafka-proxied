@@ -1,5 +1,5 @@
 #!/bin/sh
-cd $(dirname $0) 
-. ./build_kafka_configuration.sh
+cd $(dirname $0)
+. ./kafka_common.sh
 
 capture_kafka
