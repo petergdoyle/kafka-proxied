@@ -19,7 +19,7 @@ ssl/*
 *.zip
 *.tar.gz
 
-docker/kafka/
+mirror-maker-docker/kafka/
 
 docker-compose.yml
 

@@ -1,5 +1,7 @@
 #!/bin/sh
-. ../kafka/build_kafka_configuration.sh
+
+. ../kafka/kafka_common.sh
+set_kafka_variables
 
 if [ ! -d $kafka_installation_dir ]; then
   display_error "Kafka is not installed. Run install_kafka script."
@@ -25,12 +27,20 @@ mkdir -pv kafka/
 cp -vr $KAFKA_HOME/* kafka/
 
 mm_consumer_config_template_file="$kafka_config_dir/$kafka_version/mm_consumer-template.properties"
-mm_producer_config_template_file="$kafak_config_dir/$kafka_version/mm_producer-template.properties"
+mm_producer_config_template_file="$kafka_config_dir/$kafka_version/mm_producer-template.properties"
+
 mm_consumer_config_file="$PWD/kafka/config/mm_consumer.properties"
 mm_producer_config_file="$PWD/kafka/config/mm_producer.properties"
 
 cp -vf $mm_consumer_config_template_file $mm_consumer_config_file
 cp -vf $mm_producer_config_template_file $mm_producer_config_file
+
+display_info "kafka_config_dir: $kafka_config_dir"
+display_info "kafka_version: $kafka_version"
+display_info "mm_consumer_config_template_file: $mm_consumer_config_template_file"
+display_info "mm_producer_config_template_file: $mm_producer_config_template_file"
+display_info "mm_consumer_config_file: $mm_consumer_config_file"
+display_info "mm_producer_config_file: $mm_producer_config_file"
 
 configure_mirror_maker
 
@@ -41,4 +51,6 @@ sed -i "s?ssl.truststore.location=.*?ssl.truststore.location=/kafka/config/keyst
 
 docker build $no_cache -t="mycompany/kafka" .
 
-docker rmi $(docker images -q -f dangling=true)
+if [ `docker images -q -f dangling=true| wc -l` -gt 0 ]; then #clean up dangling images if they exist
+  docker rmi $(docker images -q -f dangling=true)
+fi
