@@ -99,3 +99,10 @@ utils_dir=$project_dir/utils
 local_kafka_dir=$local_dir/kafka
 local_maven_dir=$local_dir/maven
 local_java_dir=$local_dir/java
+
+
+host_name=`hostname| cut -d"." -f1`
+node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`
+if [ "$node_name" == "" ]; then
+  node_name=$host_name
+fi
