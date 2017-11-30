@@ -1,6 +1,12 @@
 #!/bin/sh
 . ../common.sh
 
+host_name=`hostname| cut -d"." -f1`
+node_name=`echo $host_name |grep -Eo "broker[0-9]|zookeeper[0-9]" |awk '{print tolower($0)}'| grep '.*'`
+if [ "$node_name" == "" ]; then
+  node_name=$host_name
+fi
+
 kafka_base_location=$local_kafka_dir
 #first see if there is a symlink to some kafka installation
 kafka_home="$kafka_base_location/default"
