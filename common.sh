@@ -55,12 +55,11 @@ validate_url() {
     return 1
   fi
   response_code=$(curl --write-out %{http_code} --silent --output /dev/null $url)
-  # echo $response_code
-  # if [ "$response_code" -eq "000" ]; then
-    return $response_code
-  # else
-  #   return 0
-  # fi
+  if [[ ${response_code:0:1} != "2" ]] ; then
+    return 1
+  else
+    return 0
+  fi
 }
 
 

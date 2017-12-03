@@ -21,6 +21,7 @@ if [ $? -eq 127 ]; then
 export JAVA_HOME=$JAVA_HOME
 export PATH=\$PATH:\$JAVA_HOME/bin
 EOF
+      display_warn "$jdk_version has been installed. Please source your ~/.bash_profile.sh."
     fi
 
 else

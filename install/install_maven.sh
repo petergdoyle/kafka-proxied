@@ -31,6 +31,7 @@ if [ $? -eq 127 ]; then
 export MAVEN_HOME=$MAVEN_HOME
 export PATH=\$PATH:\$MAVEN_HOME/bin
 EOF
+    display_warn "$maven_version has been installed. Please source your ~/.bash_profile.sh."
   fi
 
 else
