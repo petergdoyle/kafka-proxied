@@ -31,7 +31,7 @@ function display_error() {
 
 function display_warn() {
   local msg="$1"
-  echo -e $BOLD$ORANGE"[warn] $msg"$RESET
+  echo -e $BOLD$YELLOW"[warn] $msg"$RESET
 }
 
 function display_H1() {

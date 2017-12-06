@@ -3,9 +3,13 @@ cd $(dirname $0)
 . ./kafka_common.sh
 
 ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
+ZK_PID_CNT=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'| wc -l`
 
-if [[ -z $ZK_PIDS ]]; then
-  display_info "Warning. No Zookeeper is running"
+if [ $ZK_PID_CNT -gt 0 ]; then
+  read -e -p "$ZK_PID_CNT broker processes already running. Do you want to continue (y/n)? " -i "y" confirm
+  if [ "$confirm" != "y" ]; then
+    exit 1
+  fi
 fi
 
 if [ ! -d $kafka_runtime_config_dir ]; then
@@ -17,7 +21,7 @@ if [ ! -d $kafka_runtime_console_logs_dir ]; then
 fi
 
 if [ ! -f $zookeeper_config_template_file ]; then
-  "cannot continue. no template file named $zookeeper_config_template_file exists"
+  display_error "Cannot continue. No template file named $zookeeper_config_template_file exists"
   exit 1
 fi
 
@@ -28,8 +32,7 @@ for i in $(eval echo "{1..$no_instances}"); do
   zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper-$i-config.properties"
   cp -vf $zookeeper_config_template_file  $zookeeper_config_file
   sed -i "s/clientPort=.*/clientPort=$zk_port/g" $zookeeper_config_file
-  zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-$i-console.log"
-
+  zookeeper_runtime_console_log_file="$kafka_runtime_console_logs_dir/$node_name-zookeeper-$i-console.log"
   cmd="$KAFKA_HOME/bin/zookeeper-server-start.sh $zookeeper_config_file> $zookeeper_runtime_console_log_file 2>&1"
   display_command "$cmd"
   prompt=$BOLD$YELLOW"About to start Zookeeper instance $i, continue? (y/n): $RESET"
@@ -47,6 +50,7 @@ for i in $(eval echo "{1..$no_instances}"); do
     default_value="y"
     read -e -p "$prompt" -i $default_value response
     if [ "$response" == 'y' ]; then
+      display_info "tailing on zookeeper log file for 5 seconds..."
       timeout 5s tail -f "$zookeeper_runtime_console_log_file"
     fi
   else

@@ -24,15 +24,17 @@ function set_kafka_variables() {
 
   kafka_installation_dir="$kafka_base_location/kafka_$scala_version-$kafka_version"
 
-  kafka_runtime_logs_dir="$kafka_base_location/default/logs"
+  # kafka_runtime_logs_dir="$kafka_base_location/default/logs"
+  kafka_runtime_logs_dir="$kafka_installation_dir/logs"
   kafka_controller_log_file="$kafka_runtime_logs_dir/controller.log"
 
-  kafka_runtime_console_logs_dir="$kafka_base_location/logs"
-  broker_runtime_console_log_file="$kafka_base_location/logs/$node_name-broker-console.log"
-  zookeeper_runtime_console_log_file="$kafka_base_location/logs/$node_name-zookeeper-console.log"
-  mm_runtime_console_log_file="$kafka_base_location/logs/$node_name-mirror-maker-console.log"
+  # kafka_runtime_console_logs_dir="$kafka_base_location/logs"
+  kafka_runtime_console_logs_dir="$kafka_installation_dir/logs"
+  broker_runtime_console_log_file="$kafka_runtime_console_logs_dir/$node_name-broker-console.log"
+  zookeeper_runtime_console_log_file="$kafka_runtime_console_logs_dir/$node_name-zookeeper-console.log"
+  mm_runtime_console_log_file="$kafka_runtime_console_logs_dir/$node_name-mirror-maker-console.log"
 
-  kafka_templates_config_dir="$PWD/config/$kafka_version"
+  kafka_templates_config_dir="$kafka_config_dir/$kafka_version"
   broker_config_template_file="$kafka_templates_config_dir/broker-template.properties"
   zookeeper_config_template_file="$kafka_templates_config_dir/zookeeper-template.properties"
   mm_producer_config_template_file="$kafka_templates_config_dir/mm_producer-template.properties"
@@ -40,7 +42,8 @@ function set_kafka_variables() {
   consumer_ssl_config_template_file="$kafka_templates_config_dir/console-consumer-ssl-template.properties"
   producer_ssl_config_template_file="$kafka_templates_config_dir/console-producer-ssl-template.properties"
 
-  kafka_runtime_config_dir="$kafka_base_location/config"
+  # kafka_runtime_config_dir="$kafka_base_location/config"
+  kafka_runtime_config_dir="$kafka_installation_dir/config"
   broker_config_file="$kafka_runtime_config_dir/$node_name-broker.properties"
   zookeeper_config_file="$kafka_runtime_config_dir/$node_name-zookeeper.properties"
   mm_producer_config_file="$kafka_runtime_config_dir/$node_name-mm_producer.properties"
@@ -55,6 +58,35 @@ function set_kafka_variables() {
 }
 
 set_kafka_variables
+
+function verify_config_templates() {
+  return_code=0
+  if [ ! -f $broker_config_template_file ]; then
+    display_error "missing template file $broker_config_template_file"
+    return_code=1
+  fi
+  if [ ! -f $zookeeper_config_template_file ]; then
+    display_error "missing template file $zookeeper_config_template_file"
+    return_code=1
+  fi
+  if [ ! -f $mm_producer_config_template_file ]; then
+    display_error "missing template file $mm_producer_config_template_file"
+    return_code=1
+  fi
+  if [ ! -f $mm_consumer_config_template_file ]; then
+    display_error "missing template file $mm_consumer_config_template_file"
+    return_code=1
+  fi
+  if [ ! -f $consumer_ssl_config_template_file ]; then
+    display_warn "missing template file $consumer_ssl_config_template_file"
+    return_code=0
+  fi
+  if [ ! -f $producer_ssl_config_template_file ]; then
+    display_warn "missing template file $producer_ssl_config_template_file"
+    return_code=0
+  fi
+  return $return_code
+}
 
 function check_kafka_installed() {
   if [ "$(ls -A $kafka_base_location)" ]; then
@@ -250,12 +282,11 @@ function configure_broker() {
   # if ! [[ "$broker_id" =~ $number_regex ]]; then
   #   read -e -p "Enter an appropriate broker id (must be numeric and unique per server): " -i "1" broker_id
   # fi
-
   broker_id=$1
   sed -i "s/broker.id=.*/broker.id=$broker_id/g" $broker_config_file
   sed -i "s#log.dirs=.*#log.dirs=/tmp/kafka-logs/$broker_id#g" $broker_config_file
 
-  broker_port="909$i"
+  broker_port="909$1"
   read -e -p "Enter the broker port: " -i "$broker_port" broker_port
   listeners="PLAINTEXT://:$broker_port"
   read -e -p "Enter the the address the socket server listens on (locally): " -i "$listeners" listeners

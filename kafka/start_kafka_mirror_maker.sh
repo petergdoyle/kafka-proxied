@@ -29,6 +29,7 @@ if [ ! -z $PIDS ]; then
   default_value="y"
   read -e -p "$prompt" -i $default_value response
   if [ "$response" == 'y' ]; then
+    display_info "tailing on mirror-maker log file for 5 seconds..."
     timeout 5s tail -f "$mm_runtime_console_log_file"
   fi
 else
