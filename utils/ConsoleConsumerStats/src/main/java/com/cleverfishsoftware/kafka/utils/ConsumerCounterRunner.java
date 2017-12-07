@@ -28,8 +28,25 @@ public class ConsumerCounterRunner {
         long sleep = Long.parseLong(args[4]);
         int numConsumers = Integer.parseInt(args[5]);
         final boolean verbose = Boolean.parseBoolean(args[6]);
+        final boolean sslTrue = Boolean.parseBoolean(args[7]);
+        String keystoreFile;
+        String keystorePassword;
 
         Properties kafkaProperties = new Properties();
+
+        if (sslTrue) {
+            try {
+                keystoreFile = args[8];
+                keystorePassword = args[9];
+                kafkaProperties.put("security.protocol", "SSL");
+                kafkaProperties.put("ssl.truststore.location", keystoreFile);
+                kafkaProperties.put("ssl.truststore.password", keystorePassword);
+            } catch (NullPointerException ex) {
+                System.out.println("Must supply the kestore and the password");
+                System.exit(-1);
+            }
+        }
+
         kafkaProperties.put("bootstrap.servers", bootstrapServers);
         kafkaProperties.put("group.id", consumerGroup);
         kafkaProperties.put("enable.auto.commit", "true");

@@ -29,6 +29,26 @@ read -e -p "Enter the sleep time: " -i "$sleep" sleep
 threads="1"
 read -e -p "Enter the number of Consumer Threads: " -i "$threads" threads
 
+ssl_true_response='n'
+read -e -p "Do you need to configure SSL for this Kafka bootstrap server (y/n): " -i "$ssl_true_response" ssl_true_response
+if [ "$ssl_true_response" == "y" ]; then
+  ssl_true='true'
+  keystore_file=$PWD my.prod.truststore.jks
+  while true; do
+    read -e -p "Specify the jks keystor file: " -i "$keystore_file" keystore_file
+    if [ -f $keystore_file ]; then
+      break
+    else
+      display_error "Specified file $keystore_file does not exist"
+    fi
+  done
+
+  keystore_password="majiic"
+  read -e -p "Specify the truststore password: " -i "$keystore_password" keystore_password
+else
+  ssl_true='false'
+fi
+
 verbose_response="n"
 read -e -p "Show message details: " -i "$verbose_response" verbose_response
 if [ "$verbose_response" == "y" ]; then
@@ -38,7 +58,7 @@ else
 fi
 
 class_name="com.cleverfishsoftware.kafka.utils.ConsumerCounterRunner"
-cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose"
+cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose $ssl_true $keystore_file $keystore_password"
 display_command "$cmd"
 echo -e $BOLD$VIOLET"[info] $cmd"$RESET
 
