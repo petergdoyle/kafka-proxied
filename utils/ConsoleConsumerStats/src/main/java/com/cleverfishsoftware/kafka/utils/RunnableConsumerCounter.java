@@ -3,10 +3,9 @@
 package com.cleverfishsoftware.kafka.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -15,7 +14,7 @@ import org.apache.kafka.common.errors.WakeupException;
 /**
  *
  */
-public class RunnableConsoleConsumerStats extends AbstractStatsConsumer implements Runnable {
+public class RunnableConsumerCounter implements Runnable {
 
     private final Properties props;
     private final KafkaConsumer<String, String> consumer;
@@ -23,8 +22,11 @@ public class RunnableConsoleConsumerStats extends AbstractStatsConsumer implemen
     private final String consumerGroup;
     private final String consumerId;
     private final long sleep;
+    final AtomicInteger byteCounter;
+    final AtomicInteger messageCounter;
+    final boolean verbose; 
 
-    public RunnableConsoleConsumerStats(String consumerGroup, String consumerId, Properties props, List<String> topics, long sleep) {
+    public RunnableConsumerCounter(final String consumerGroup, final String consumerId, final Properties props, final List<String> topics, final long sleep, final AtomicInteger byteCounter, final AtomicInteger messageCounter, final boolean verbose) {
         this.props = new Properties(props);
         this.topics = new ArrayList<>(topics.size());
         topics.stream().forEach((each) -> {
@@ -34,21 +36,24 @@ public class RunnableConsoleConsumerStats extends AbstractStatsConsumer implemen
         this.consumerId = consumerId;
         this.consumer = new KafkaConsumer<>(props);
         this.sleep = sleep;
+        this.byteCounter = byteCounter;
+        this.messageCounter = messageCounter;
+        this.verbose=verbose;
     }
 
     @Override
     public void run() {
         try {
             consumer.subscribe(topics);
-
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(1000);
                 for (ConsumerRecord<String, String> record : records) {
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("partition", record.partition());
-                    data.put("offset", record.offset());
-                    data.put("value", record.value());
-                    System.out.println(this.consumerGroup + "." + this.consumerId + ": " + data);
+                    String value = record.value();
+                    int messageCount = messageCounter.incrementAndGet();
+                    int byteCount = byteCounter.addAndGet(value.length());
+                    if (verbose) {
+                        System.out.println(RunnableConsumerCounter.class.getName() + " messages received: " + messageCount + " bytes received: " + byteCount);
+                    }
                     if (sleep > 0) {
                         Thread.sleep(sleep);
                     }

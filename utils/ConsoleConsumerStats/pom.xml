@@ -50,7 +50,7 @@
                 <manifest>
                   <addClasspath>true</addClasspath>
                   <classpathPrefix>lib/</classpathPrefix>
-                  <mainClass>${package-name}.${class-name}</mainClass>
+                  <!--<mainClass>${package-name}.${class-name}</mainClass>-->
                 </manifest>
               </archive>
             </configuration>

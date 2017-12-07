@@ -8,20 +8,26 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
  */
-public class ConsoleConsumerStatsRunner {
-    
+public class ConsoleConsumerRunner {
+
     public static void main(String[] args) {
 
-        String bootstrapServers = args[0];
-        String consumerGroup = args[1];
-        String consumerId = args[2];
-        List<String> topics = Arrays.asList(args[3].split(","));
+        final String bootstrapServers = args[0];
+        final String consumerGroup = args[1];
+        final String consumerId = args[2];
+        final List<String> topics = Arrays.asList(args[3].split(","));
         long sleep = Long.parseLong(args[4]);
+        int numConsumers = Integer.parseInt(args[5]);
+        final boolean verbose = Boolean.parseBoolean(args[6]);
 
         Properties kafkaProperties = new Properties();
         kafkaProperties.put("bootstrap.servers", bootstrapServers);
@@ -34,12 +40,20 @@ public class ConsoleConsumerStatsRunner {
         kafkaProperties.put("receive.buffer.bytes", "262144");
         kafkaProperties.put("max.partition.fetch.bytes", "2097152");
 
-        int numConsumers = 1;
-        ExecutorService executor = Executors.newFixedThreadPool(numConsumers);
+        final AtomicInteger byteCounter = new AtomicInteger(0);
+        final AtomicInteger messageCounter = new AtomicInteger(0);
 
-        final List<RunnableConsoleConsumerStats> consumers = new ArrayList<>();
+        final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        RunnableConsumerCounterWriter runnableConsoleConsumerWriter = new RunnableConsumerCounterWriter(byteCounter, messageCounter);
+        final ScheduledFuture<?> handle = scheduler.scheduleWithFixedDelay(runnableConsoleConsumerWriter, 10, 10, SECONDS);
+//        scheduler.schedule(() -> { // add a limit to run the scheduled task, in this example for one hour
+//            handle.cancel(true);
+//        }, 60 * 60, SECONDS);
+
+        final ExecutorService executor = Executors.newFixedThreadPool(numConsumers);
+        final List<RunnableConsumerCounter> consumers = new ArrayList<>();
         for (int i = 0; i < numConsumers; i++) {
-            RunnableConsoleConsumerStats consumer = new RunnableConsoleConsumerStats(consumerGroup, consumerId, kafkaProperties, topics, sleep);
+            RunnableConsumerCounter consumer = new RunnableConsumerCounter(consumerGroup, consumerId, kafkaProperties, topics, sleep, byteCounter, messageCounter, verbose);
             consumers.add(consumer);
             executor.submit(consumer);
         }

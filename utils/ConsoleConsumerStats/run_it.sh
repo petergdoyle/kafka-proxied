@@ -7,12 +7,6 @@ BLUE="\033[1;36m"
 VIOLET="\033[1;34m"
 RESET="\033[0m"
 
-# String bootstrapServers = args[0];
-# String consumerGroup = args[1];
-# String consumerId = args[2];
-# List<String> topics = Arrays.asList(args[3].split(","));
-# long sleep = Long.parseLong(args[4]);
-
 bootstrap_server="localhost:9091"
 read -e -p "Enter Kafka bootstrap server for kafka conxumer to take data: " -i "$bootstrap_server" bootstrap_server
 
@@ -32,7 +26,19 @@ read -e -p "Enter the topic name: " -i "$topic" topic
 sleep="0"
 read -e -p "Enter the sleep time: " -i "$sleep" sleep
 
-cmd="java -jar target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $bootstrap_server $consumer_group_id $consumer_id $topic $sleep"
+threads="1"
+read -e -p "Enter the number of Consumer Threads: " -i "$threads" threads
+
+verbose_response="n"
+read -e -p "Show message details: " -i "$verbose_response" verbose_response
+if [ "$verbose_response" == "y" ]; then
+  verbose='true'
+else
+  verbose="false"
+fi
+
+class_name="com.cleverfishsoftware.kafka.utils.ConsoleConsumerRunner"
+cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose"
 display_command "$cmd"
 echo -e $BOLD$VIOLET"[info] $cmd"$RESET
 
