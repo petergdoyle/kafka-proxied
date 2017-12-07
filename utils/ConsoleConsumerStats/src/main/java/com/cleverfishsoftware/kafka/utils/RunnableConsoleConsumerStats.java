@@ -15,7 +15,7 @@ import org.apache.kafka.common.errors.WakeupException;
 /**
  *
  */
-public class RunnableConsoleConsumerStats implements Runnable {
+public class RunnableConsoleConsumerStats extends AbstractStatsConsumer implements Runnable {
 
     private final Properties props;
     private final KafkaConsumer<String, String> consumer;
