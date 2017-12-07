@@ -37,7 +37,7 @@ else
   verbose="false"
 fi
 
-class_name="com.cleverfishsoftware.kafka.utils.ConsoleConsumerRunner"
+class_name="com.cleverfishsoftware.kafka.utils.ConsumerCounterRunner"
 cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose"
 display_command "$cmd"
 echo -e $BOLD$VIOLET"[info] $cmd"$RESET
