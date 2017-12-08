@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "petergdoyle/CentOS-7-x86_64-Minimal-1511"
   config.ssh.insert_key = false
-
+  config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "0.0.0.0", id: "http service port", auto_correct: true
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
     vb.memory = "1024"

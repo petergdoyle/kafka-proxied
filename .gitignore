@@ -18,6 +18,7 @@ ssl/*
 
 *.zip
 *.tar.gz
+*.log
 
 mirror-maker-docker/kafka/
 

@@ -1,0 +1,25 @@
+{
+  "name": "consoleconsumerstatsviewer",
+  "version": "0.0.1",
+  "description": "simple app to run d3 visualization of some datapoints collected on kafka consumers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petergdoyle/kafka-proxied.git"
+  },
+  "keywords": [
+    "kafka",
+    "d3",
+    "nodejs"
+  ],
+  "author": "Peter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petergdoyle/kafka-proxied/issues"
+  },
+  "homepage": "https://github.com/petergdoyle/kafka-proxied#readme"
+}
