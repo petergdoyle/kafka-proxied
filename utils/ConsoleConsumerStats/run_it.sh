@@ -57,8 +57,11 @@ else
   verbose="false"
 fi
 
+report_interval="30"
+read -e -p "Enter the interval to report data (in seconds): " -i "$report_interval" report_interval
+
 class_name="com.cleverfishsoftware.kafka.utils.ConsumerCounterRunner"
-cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose $ssl_true $keystore_file $keystore_password"
+cmd="java -cp .:target/ConsoleConsumerStats-1.0-SNAPSHOT.jar $class_name $bootstrap_server $consumer_group_id $consumer_id $topic $sleep $threads $verbose $report_interval $ssl_true $keystore_file $keystore_password"
 display_command "$cmd"
 echo -e $BOLD$VIOLET"[info] $cmd"$RESET
 
