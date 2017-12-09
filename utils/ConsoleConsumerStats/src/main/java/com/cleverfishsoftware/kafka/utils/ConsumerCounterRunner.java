@@ -25,24 +25,24 @@ public class ConsumerCounterRunner {
         final String consumerGroup = args[1];
         final String consumerId = args[2];
         final List<String> topics = Arrays.asList(args[3].split(","));
-        long sleep = Long.parseLong(args[4]);
-        int numConsumers = Integer.parseInt(args[5]);
+        final long sleep = Long.parseLong(args[4]);
+        final int numConsumers = Integer.parseInt(args[5]);
         final boolean verbose = Boolean.parseBoolean(args[6]);
-        final boolean sslTrue = Boolean.parseBoolean(args[7]);
-        String keystoreFile;
-        String keystorePassword;
+        final int delayInSeconds = Integer.getInteger(args[7]);
 
+        final boolean sslTrue = Boolean.parseBoolean(args[8]);
+        String keystoreFileName = null;
+        String keystorePassword = null;
         Properties kafkaProperties = new Properties();
-
         if (sslTrue) {
             try {
-                keystoreFile = args[8];
-                keystorePassword = args[9];
+                keystoreFileName = args[9];
+                keystorePassword = args[10];
                 kafkaProperties.put("security.protocol", "SSL");
-                kafkaProperties.put("ssl.truststore.location", keystoreFile);
+                kafkaProperties.put("ssl.truststore.location", keystoreFileName);
                 kafkaProperties.put("ssl.truststore.password", keystorePassword);
-            } catch (NullPointerException ex) {
-                System.out.println("Must supply the kestore and the password");
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                System.out.println("Must supply the kestore and the password if ssl is required. Change ssl flag or provide the filename of the keystor and the password.");
                 System.exit(-1);
             }
         }
@@ -62,7 +62,8 @@ public class ConsumerCounterRunner {
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         RunnableConsumerCounterWriter runnableConsoleConsumerWriter = new RunnableConsumerCounterWriter(byteCounter, messageCounter);
-        final ScheduledFuture<?> handle = scheduler.scheduleWithFixedDelay(runnableConsoleConsumerWriter, 10, 10, SECONDS);
+        final int initialDelay=delayInSeconds; // don't report until end of first interval 
+        final ScheduledFuture<?> handle = scheduler.scheduleWithFixedDelay(runnableConsoleConsumerWriter, initialDelay, delayInSeconds, SECONDS);
 //        scheduler.schedule(() -> { // add a limit to run the scheduled task, in this example for one hour
 //            handle.cancel(true);
 //        }, 60 * 60, SECONDS);
