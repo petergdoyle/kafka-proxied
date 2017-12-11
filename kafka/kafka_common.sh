@@ -315,10 +315,21 @@ function configure_broker() {
   log_segment_size=$((1024*1024*1024*$log_segment_size_gb))
   sed -i "s#log.segment.bytes=.*#log.segment.bytes=$log_segment_size#g" $broker_config_file
 
-  read -e -p "Enter Kafka Log default Retention Hours: " -i "1" kafka_log_retention_hrs
+  while true; do
+  	read -e -p "Enter kafka Log default Retention Time( hours, minutes, ms ): " -i "hours" kafka_log_retention_type
+	case $kafka_log_retention_type in
+		"hours") break
+			;;
+		"minutes") break
+			;;
+		"ms") break
+			;;
+	esac
+  done
+  read -e -p "Enter Kafka Log default Retention $kafka_log_retention_type: " -i "1" kafka_log_retention_time
   read -e -p "Enter Kafka Log default Retention Size (Mb): " -i "25" kafka_log_retention_size_mb
   kafka_log_retention_size=$((1024*1024*$kafka_log_retention_size_mb))
-  sed -i "s/log.retention.hours=.*/log.retention.hours=$kafka_log_retention_hrs/g" $broker_config_file
+  sed -i "s/log.retention.hours=.*/log.retention.$kafka_log_retention_type=$kafka_log_retention_time/g" $broker_config_file
   sed -i "s/log.retention.bytes=.*/log.retention.bytes=$kafka_log_retention_size/g" $broker_config_file
 
 }
