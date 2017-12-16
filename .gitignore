@@ -21,8 +21,7 @@ ssl/*
 *.log
 
 mirror-maker-docker/kafka/
-
-docker-compose.yml
+mirror-maker-docker/docker-compose.yml
 
 burrow/Burrow/
 
