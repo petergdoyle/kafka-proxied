@@ -1,6 +1,11 @@
 #!/bin/sh
 . ../../common.sh
 
+for var in "$@"
+do
+    echo "$var"
+done
+
 num_messages='1000'
 read -e -p "Enter number of messages to generate: " -i "$num_messages" num_messages
 message_interval='60'
@@ -21,6 +26,6 @@ message_size_upper_bound='64000'
 message_rate_lower_bound='3000'
 message_rate_upper_bound='5000'
 for i in `seq 1 $num_messages`; do
-  echo "$host_public_ip,$topic_name,$consumer_group_name,$timestamp,`shuf -i $message_size_lower_bound-$message_size_upper_bound -n 1`,`shuf -i $message_rate_lower_bound-$message_rate_upper_bound -n 1`"
+  echo "insert msg,consumer_group=$consumer_group_name,ip=$host_public_ip,topic=$topic_name  value=`shuf -i $message_size_lower_bound-$message_size_upper_bound -n 1` `shuf -i $message_rate_lower_bound-$message_rate_upper_bound -n 1`"
   ((timestamp+=$message_interval))
 done
