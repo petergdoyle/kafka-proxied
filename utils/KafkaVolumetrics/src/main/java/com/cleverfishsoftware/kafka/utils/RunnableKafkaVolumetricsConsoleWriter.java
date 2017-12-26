@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  *
  */
-public class RunnableConsumerCounterWriter implements Runnable {
+public class RunnableKafkaVolumetricsConsoleWriter implements Runnable {
 
     final AtomicInteger messageSize;
     final AtomicInteger messageCounter;
@@ -22,7 +22,7 @@ public class RunnableConsumerCounterWriter implements Runnable {
 
     final SimpleDateFormat excelDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public RunnableConsumerCounterWriter(AtomicInteger messageSize, AtomicInteger messageCounter) {
+    public RunnableKafkaVolumetricsConsoleWriter(AtomicInteger messageSize, AtomicInteger messageCounter) {
         this.messageSize = messageSize;
         this.messageCounter = messageCounter;
     }

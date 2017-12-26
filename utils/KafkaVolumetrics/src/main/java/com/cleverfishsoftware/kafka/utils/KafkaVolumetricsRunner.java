@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  *
  */
-public class ConsumerCounterRunner {
+public class KafkaVolumetricsRunner {
 
     public static void main(String[] args) {
 
@@ -61,7 +61,7 @@ public class ConsumerCounterRunner {
         final AtomicInteger messageCounter = new AtomicInteger(0);
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        RunnableConsumerCounterWriter runnableConsoleConsumerWriter = new RunnableConsumerCounterWriter(byteCounter, messageCounter);
+        RunnableConsumerCounterConsoleWriter runnableConsoleConsumerWriter = new RunnableConsumerCounterConsoleWriter(byteCounter, messageCounter);
         final int initialDelay=delayInSeconds; // don't report until end of first interval 
         final ScheduledFuture<?> handle = scheduler.scheduleWithFixedDelay(runnableConsoleConsumerWriter, initialDelay, delayInSeconds, SECONDS);
 //        scheduler.schedule(() -> { // add a limit to run the scheduled task, in this example for one hour

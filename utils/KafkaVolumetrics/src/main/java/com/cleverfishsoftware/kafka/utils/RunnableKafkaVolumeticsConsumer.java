@@ -14,7 +14,7 @@ import org.apache.kafka.common.errors.WakeupException;
 /**
  *
  */
-public class RunnableConsumerCounter implements Runnable {
+public class RunnableKafkaVolumeticsConsumer implements Runnable {
 
     private final Properties props;
     private final KafkaConsumer<String, String> consumer;
@@ -26,7 +26,7 @@ public class RunnableConsumerCounter implements Runnable {
     final AtomicInteger messageCounter;
     final boolean verbose; 
 
-    public RunnableConsumerCounter(final String consumerGroup, final String consumerId, final Properties props, final List<String> topics, final long sleep, final AtomicInteger byteCounter, final AtomicInteger messageCounter, final boolean verbose) {
+    public RunnableKafkaVolumeticsConsumer(final String consumerGroup, final String consumerId, final Properties props, final List<String> topics, final long sleep, final AtomicInteger byteCounter, final AtomicInteger messageCounter, final boolean verbose) {
         this.props = new Properties(props);
         this.topics = new ArrayList<>(topics.size());
         topics.stream().forEach((each) -> {
@@ -52,7 +52,7 @@ public class RunnableConsumerCounter implements Runnable {
                     int messageCount = messageCounter.incrementAndGet();
                     int byteCount = byteCounter.addAndGet(value.length());
                     if (verbose) {
-                        System.out.println(RunnableConsumerCounter.class.getName() + " messages received: " + messageCount + " bytes received: " + byteCount);
+                        System.out.println(RunnableKafkaVolumeticsConsumer.class.getName() + " messages received: " + messageCount + " bytes received: " + byteCount);
                     }
                     if (sleep > 0) {
                         Thread.sleep(sleep);
