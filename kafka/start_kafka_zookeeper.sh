@@ -6,7 +6,7 @@ ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`
 ZK_PID_CNT=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'| wc -l`
 
 if [ $ZK_PID_CNT -gt 0 ]; then
-  read -e -p "$ZK_PID_CNT broker processes already running. Do you want to continue (y/n)? " -i "y" confirm
+  read -e -p "$ZK_PID_CNT zookeeper processes already running. Do you want to continue (y/n)? " -i "y" confirm
   if [ "$confirm" != "y" ]; then
     exit 1
   fi

@@ -454,21 +454,21 @@ function cleanup_kafka() {
     fi
   fi
 
-  local dir=$kafka_runtime_config_dir
-  local name="kafka runtime config dir"
-  if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
-    echo "$name($dir) Exists and is not Empty";
-    read -e -p "Destroy old kafka configuration files? (y/n): " -i "y" response
-    if [ "$response" == 'y' ]; then
-      rm -frv $kafka_runtime_config_dir/*
-    fi
-  else
-    display_info "$name($dir) Doesn't Exist or is Empty"
-    if [ -d $dir ]; then
-      mkdir -pv $kafka_runtime_config_dir \
-      && chmod 1777 $kafka_runtime_config_dir
-    fi
-  fi
+  # local dir=$kafka_runtime_config_dir
+  # local name="kafka runtime config dir"
+  # if [ -d $dir ] && [ ! -z "$(ls -A $dir)" ]; then
+  #   echo "$name($dir) Exists and is not Empty";
+  #   read -e -p "Destroy old kafka configuration files? (y/n): " -i "y" response
+  #   if [ "$response" == 'y' ]; then
+  #     rm -frv $kafka_runtime_config_dir/*
+  #   fi
+  # else
+  #   display_info "$name($dir) Doesn't Exist or is Empty"
+  #   if [ -d $dir ]; then
+  #     mkdir -pv $kafka_runtime_config_dir \
+  #     && chmod 1777 $kafka_runtime_config_dir
+  #   fi
+  # fi
 
   local dir=$kafka_broker_logs_dir
   local name="kafka broker logs dir"
