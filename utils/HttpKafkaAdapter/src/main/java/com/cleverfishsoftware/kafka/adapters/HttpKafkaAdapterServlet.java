@@ -1,13 +1,14 @@
+
 /*
  */
 package com.cleverfishsoftware.kafka.adapters;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,28 +19,21 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(
         name = "HttpKafkaAdapterServlet",
-        urlPatterns = {"/HttpKafkaAdapterServlet"},
-        initParams = {
-            @WebInitParam(name = "kafka.properties", value = "kafka-producer-0.9.0.1.properties"),
-            @WebInitParam(name = "kafka.topic", value = "kafka-simple-topic-1")
-        }
+        urlPatterns = {"/HttpKafkaAdapterServlet"}
+//        ,
+//        initParams = {
+//            @WebInitParam(name = "kafka.properties", value = "kafka-producer-0.10.2.1.properties"),
+//            @WebInitParam(name = "kafka.topic", value = "kafka-simple-topic-1")
+//        }
 )
 public class HttpKafkaAdapterServlet extends HttpServlet {
-    
-    private KafkaMessageSender kafkaMessageSender;
-    
+
+    private KafkaMessageSender kafkaMessageSender = new KafkaMessageSender();
+
     @Override
     public void init() throws ServletException {
         super.init();
-        try {
-            String kafkaProperties = this.getInitParameter("kafka.properties");
-            String kafkaTopic = this.getInitParameter("kafka.topic");
-            Properties properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream(kafkaProperties));
-            kafkaMessageSender = new KafkaMessageSenderBuilder().setProperties(properties).setTopic(kafkaTopic).createKafkaMessageSender();
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
+        kafkaMessageSender = new KafkaMessageSender();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -68,15 +62,15 @@ public class HttpKafkaAdapterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         response.setContentType("text/plain;charset=UTF-8");
-        
+
         String requestBodyAsString = getRequestBodyAsString(request);
         kafkaMessageSender.send(requestBodyAsString);
-        
+
         response.setStatus(HttpServletResponse.SC_ACCEPTED);
     }
-    
+
     private String getRequestBodyAsString(HttpServletRequest request) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
