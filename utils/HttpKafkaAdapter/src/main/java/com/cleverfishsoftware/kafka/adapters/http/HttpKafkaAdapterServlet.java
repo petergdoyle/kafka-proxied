@@ -1,13 +1,12 @@
 
 /*
  */
-package com.cleverfishsoftware.kafka.adapters;
+package com.cleverfishsoftware.kafka.adapters.http;
 
+import com.cleverfishsoftware.kafka.adapters.KafkaMessageSender;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

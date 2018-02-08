@@ -3,7 +3,7 @@
  */
 package com.cleverfishsoftware.kafka.adapters.spring;
 
-import com.cleverfishsoftware.kafka.adapters.HttpKafkaAdapterServlet;
+import com.cleverfishsoftware.kafka.adapters.http.HttpKafkaAdapterServlet;
 import java.util.Arrays;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
