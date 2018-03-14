@@ -16,7 +16,10 @@ public class KafkaMessageSender {
     private final Properties properties;
     private final String topic;
     private final KafkaProducer<String, String> producer;
-    private final String DEFAULT_KAFKA_TOPIC = "kafka-simple-topic-1";
+    private final static String DEFAULT_KAFKA_TOPIC = "kafka-simple-topic-1";
+    private final static String DEFAULT_KAFKA_BOOTSTRAP_SERVERS = "localhost:9091";
+    private final static String DEFAULT_KAFKA_VENDOR = "none";
+    private final static String DEFAULT_KAFKA_ACKS = "all";
 
     public KafkaMessageSender(final Properties properties, final String topic) {
         this.properties = properties;
@@ -26,12 +29,12 @@ public class KafkaMessageSender {
 
     public KafkaMessageSender() {
         this.properties = new Properties();
-        this.properties.setProperty("bootstrap.servers", "localhost:9091");
-        this.properties.setProperty("compression.type", "none");
+        this.properties.setProperty("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS", DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
+        this.properties.setProperty("compression.type", DEFAULT_KAFKA_VENDOR);
         this.properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         this.properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        this.properties.setProperty("acks", "all");
-        this.topic = DEFAULT_KAFKA_TOPIC;
+        this.properties.setProperty("acks", DEFAULT_KAFKA_ACKS);
+        this.topic = System.getProperty("KAFKA_TOPIC", DEFAULT_KAFKA_TOPIC);
         this.producer = new KafkaProducer<>(properties);
     }
 
