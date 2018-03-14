@@ -116,4 +116,4 @@ display_info "Kafka $kafka_version configuration files are located at $kafka_run
 
 display_info "Kafka $kafka_version console logs are located at $kafka_runtime_console_logs_dir"
 
-display_info "Kafka $kafka_version has been installed. Please source your ~/.bash_profile.sh."
+display_info "Kafka $kafka_version has been installed. Please source your ~/.bash_profile."
