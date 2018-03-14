@@ -41,6 +41,7 @@ function set_kafka_variables() {
   mm_consumer_config_template_file="$kafka_templates_config_dir/mm_consumer-template.properties"
   consumer_ssl_config_template_file="$kafka_templates_config_dir/console-consumer-ssl-template.properties"
   producer_ssl_config_template_file="$kafka_templates_config_dir/console-producer-ssl-template.properties"
+  kafka_tools_log4j_file="$kafka_templates_config_dir/tools-log4j.properties"
 
   # kafka_runtime_config_dir="$kafka_base_location/config"
   kafka_runtime_config_dir="$kafka_installation_dir/config"
@@ -110,6 +111,14 @@ function check_env() {
     fi
   fi
 
+}
+
+function change_log_level_info() {
+  sed -i -e "s/log4j.rootLogger=WARN/log4j.rootLogger=INFO/g" $kafka_tools_log4j_file
+}
+
+function change_log_level_info() {
+  sed -i -e "s/log4j.rootLogger=INFO/log4j.rootLogger=WARN/g" $kafka_tools_log4j_file
 }
 
 # ZK_PIDS=`ps ax | grep -i QuorumPeerMain | grep -v grep | awk '{print $1}'`

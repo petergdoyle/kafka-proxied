@@ -103,12 +103,13 @@ fi
 display_info "copying custom config files for kafka v$kafka_version..."
 find $kafka_templates_config_dir ! -name '*template*' -type f  ! -name 'link' -exec cp -vf {} $kafka_installation_dir/config \;
 
+change_log_level_info
+
 # rm -fvr $kafka_runtime_config_dir
 # mkdir -pv $kafka_runtime_config_dir
 #
 # rm -fvr $kafka_runtime_console_logs_dir
 # mkdir -pv $kafka_runtime_console_logs_dir
-
 
 display_info "Kafka $kafka_version is now installed at $kafka_installation_dir and symlinked at $kafka_base_location/default"
 
@@ -116,4 +117,4 @@ display_info "Kafka $kafka_version configuration files are located at $kafka_run
 
 display_info "Kafka $kafka_version console logs are located at $kafka_runtime_console_logs_dir"
 
-display_info "Kafka $kafka_version has been installed. Please source your ~/.bash_profile."
+display_info "Kafka $kafka_version has been installed. Please source your ~/.bash_profile"
