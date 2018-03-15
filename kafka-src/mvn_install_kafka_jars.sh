@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 groupid='kafka'
 version='1.0.0-SNAPSHOT'

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 parent_dir="$(dirname "$(pwd)")"
 gradle_version='4.0.1'

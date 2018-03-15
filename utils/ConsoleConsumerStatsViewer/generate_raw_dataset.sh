@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../../common.sh
 
 for var in "$@"

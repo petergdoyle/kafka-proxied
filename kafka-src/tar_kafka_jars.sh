@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir kafka-sources
 mkdir kafka-binaries

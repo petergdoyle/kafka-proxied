@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 broker_host_port='localhost:9091'

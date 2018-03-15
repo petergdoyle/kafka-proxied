@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../../common.sh
 
 data=$data_dir/MOCK_DATA.json

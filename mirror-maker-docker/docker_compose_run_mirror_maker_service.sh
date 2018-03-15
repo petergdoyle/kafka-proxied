@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f kafka/config/mm_consumer.properties ]; then
   display_error "No mirror-maker configuration found. Run docker_build_kafka_image first."

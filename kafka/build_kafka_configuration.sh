@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . /kafka_common.sh
 
 if [ -z $KAFKA_HOME ]; then

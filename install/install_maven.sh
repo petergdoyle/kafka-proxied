@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../common.sh
 
 java -version > /dev/null 2>&1
