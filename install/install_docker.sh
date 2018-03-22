@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../common.sh
 
 eval 'docker --version' > /dev/null 2>&1

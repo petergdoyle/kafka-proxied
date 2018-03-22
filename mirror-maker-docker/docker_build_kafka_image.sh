@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . ../kafka/kafka_common.sh
 set_kafka_variables

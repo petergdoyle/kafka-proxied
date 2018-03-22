@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../common.sh
 
 BASE_URL_9=http://download.oracle.com/otn-pub/java/jdk/9.0.1+11/jdk-9.0.1_

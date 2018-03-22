@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../common.sh
 
 v1='0.10.1.1'

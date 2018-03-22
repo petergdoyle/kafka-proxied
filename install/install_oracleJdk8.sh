@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ../common.sh
 
 jdk_version='jdk-8u161'

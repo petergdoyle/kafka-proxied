@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BOLD="\033[1m"
 YELLOW="\033[38;5;11m"

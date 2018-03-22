@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd $(dirname $0)
 . ../common.sh
 
@@ -9,9 +9,12 @@ if [ -z "$ZK_PIDS" ]; then
   exit 0
 else
   for each in $ZK_PIDS; do
-    msg="about to kill process(es): $each"
-    echo -e $msg
+    display_warn "about to terminate process ${each}..."
     sleep 1
-    kill -9 $each
+    if kill -TERM $each ; then
+	display_info "Terminated process ${each}."
+    else
+	display_error "Failed to terminate process ${each}!"
+    fi
   done
 fi

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 kafka_git_url="https://github.com/apache/kafka.git"
 target_dir="kafka.git"

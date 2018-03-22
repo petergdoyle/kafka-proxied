@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 display_interfaces=`ifconfig |grep '^[a-z]'|awk '{print $1}'| sed 's/.$//'| tr '\n' '  '`
 echo "Network interfaces: $display_interfaces"
