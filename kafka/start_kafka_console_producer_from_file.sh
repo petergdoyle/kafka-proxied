@@ -49,5 +49,12 @@ fi
 for i in $(eval echo "{$id_range_lo..$id_range_hi}"); do echo `hostname`-auto-generated-message-$i; done > messages
 
 cmd="$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $bootstrap_server $producer_ssl_config --topic $topic_name< messages"
+
 display_command "$cmd"
-eval "$cmd"
+
+prompt=$BOLD$YELLOW"About to start Kafka Console Producer as shown, continue? (y/n): $RESET"
+default_value="y"
+read -e -p "$(echo -e $prompt)" -i $default_value response
+if [ "$response" == 'y' ]; then
+  eval "$cmd"
+fi

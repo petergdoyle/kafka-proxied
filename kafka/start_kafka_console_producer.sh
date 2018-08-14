@@ -42,4 +42,10 @@ fi
 cmd="$KAFKA_HOME/bin/kafka-console-producer.sh $producer_ssl_config --broker-list $bootstrap_server --topic $topic"
 
 display_command "$cmd"
-eval "$cmd"
+
+prompt=$BOLD$YELLOW"About to start Kafka Console Producer as shown, continue? (y/n): $RESET"
+default_value="y"
+read -e -p "$(echo -e $prompt)" -i $default_value response
+if [ "$response" == 'y' ]; then
+  eval "$cmd"
+fi
