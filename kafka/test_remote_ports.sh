@@ -36,5 +36,7 @@ nc_opt2=' -n' #refuse delays for reverse DNS lookups
 nc_opt3=' -v' #verbose output
 nc_opt4=' -z' #Zero-I/O mode, report connection status only
 for each in "${ports[@]}"; do
-  nc $nc_opt1 $nc_opt2 $nc_opt3 $nc_opt4 $host_name $each
+  cmd="nc $nc_opt1 $nc_opt2 $nc_opt3 $nc_opt4 $host_name $each"
+  echo $cmd...
+  eval $cmd
 done
