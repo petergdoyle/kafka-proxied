@@ -31,12 +31,12 @@ done
 echo "The host $host_name will be scanned on port(s): ${ports[@]}..."
 
 
-nc_opt1=' -w 1' #limit timeouts to 1 second
-nc_opt2=' -n' #refuse delays for reverse DNS lookups
-nc_opt3=' -v' #verbose output
-nc_opt4=' -z' #Zero-I/O mode, report connection status only
+nc_opt1='-w 1' #limit timeouts to 1 second
+nc_opt2='-n' #refuse delays for reverse DNS lookups
+nc_opt3='-v' #verbose output
+nc_opt4='-z' #Zero-I/O mode, report connection status only
 for each in "${ports[@]}"; do
   cmd="nc $nc_opt1 $nc_opt2 $nc_opt3 $nc_opt4 $host_name $each"
-  display_info "Running command $cmd..." 
+  display_info "Running command: $cmd" 
   eval $cmd
 done
