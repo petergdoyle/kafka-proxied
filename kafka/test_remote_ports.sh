@@ -20,7 +20,7 @@ port='2181'
 while true; do
   read -e -p "Enter the port to scan on $host_name: " -i "$port" port
   ports=("${ports[@]}" "$port")
-  local response="y"
+  response="y"
   read -e -p "Enter another port? (y/n): " -i "$response" response
   if [ $response != "y" ]; then
     break
