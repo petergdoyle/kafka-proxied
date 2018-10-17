@@ -18,7 +18,7 @@ ports=()
 port='2181'
 #add port to port array
 while true; do
-  read -e -p "Enter the port to scan on $host_name: " -i "$port" port
+  read -e -p "Enter a port to scan $host_name: " -i "$port" port
   ports=("${ports[@]}" "$port")
   response="y"
   read -e -p "Enter another port? (y/n): " -i "$response" response
