@@ -117,7 +117,7 @@ function change_log_level_info() {
   sed -i -e "s/log4j.rootLogger=WARN/log4j.rootLogger=INFO/g" $kafka_tools_log4j_file
 }
 
-function change_log_level_info() {
+function change_log_level_warn() {
   sed -i -e "s/log4j.rootLogger=INFO/log4j.rootLogger=WARN/g" $kafka_tools_log4j_file
 }
 
